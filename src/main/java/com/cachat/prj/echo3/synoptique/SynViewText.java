@@ -20,7 +20,7 @@ public class SynViewText extends SynViewBasic {
     /**
      * taille
      */
-    private int fontSize;
+    private double fontSize;
     /**
      * underline
      */
@@ -59,7 +59,7 @@ public class SynViewText extends SynViewBasic {
         this.text = text;
     }
 
-    public SynViewText(String text, int fontSize) {
+    public SynViewText(String text, double fontSize) {
         this();
         this.text = text;
         this.fontSize = fontSize;
@@ -73,11 +73,11 @@ public class SynViewText extends SynViewBasic {
         this.text = text;
     }
 
-    public int getFontSize() {
+    public double getFontSize() {
         return fontSize;
     }
 
-    public void setFontSize(int fontSize) {
+    public void setFontSize(double fontSize) {
         this.fontSize = fontSize;
     }
 

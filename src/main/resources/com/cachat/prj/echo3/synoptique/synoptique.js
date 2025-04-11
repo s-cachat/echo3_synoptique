@@ -58,8 +58,7 @@ Synoptique.Action = Core.extend(Echo.Serial.PropertyTranslator, {
                 update: []
             };
             console.log(pElement);
-            var eActions = pElement.childNodes[0].childNodes;
-            for (eAction of pElement.childNodes[0].childNodes) {
+            for (var eAction of pElement.childNodes[0].childNodes) {
                 var action = {};
                 for (const eVal of eAction.childNodes) {
                     switch (eVal.nodeName) {
@@ -118,6 +117,9 @@ Synoptique.Action = Core.extend(Echo.Serial.PropertyTranslator, {
                                         break;
                                     case "subType":
                                         action.view.subType = eView.textContent;
+                                        break;
+                                    case "src":
+                                        action.view.src = eView.textContent;
                                         break;
                                     case "text":
                                         action.view.text = eView.textContent;
@@ -252,6 +254,15 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             if (action.view.strokeWidth) {
                 obj.strokeWidth = action.view.strokeWidth;
             }
+            const _this = this;
+            if (action.view.uid !== undefined && obj.view !== undefined && obj.view.uid !== undefined && action.view.uid !== obj.view.uid) {
+                var url = "synView/" + obj.view.renderId + "/" + action.view.uid + "/" + obj.view.file;
+                obj.setSrc(url).then(function (img) {
+                    console.log("post update image ", obj.uid, " with view " + action.view.uid, " _this is ", _this, " fab is ", _this._fabric);
+                    obj.setCoords();
+                    _this._fabric.renderAll();
+                });
+            }
             var hasControl = undefined;
             var selectable = undefined;
 
@@ -288,7 +299,6 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             obj.hasBorders = hasControl;
             obj.hasControls = hasControl;
             selectable = hasControl;
-            const _this = this;
 
             if (hasControl !== undefined) {
                 if (hasControl) {
@@ -333,10 +343,33 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 obj.set('selectable', selectable);
             }
             if (obj.isText) {
-                if (action.text) {
-                    obj.set('text', text);
+                if (action.view.text) {
+                    obj.set('text', action.view.text);
                 }
-                //TODO change content, style
+                if (action.view.fontSize) {
+                    obj.set('fontSize', action.view.fontSize);
+                }
+                if (action.view.underline) {
+                    obj.set('underline', action.view.underline);
+                }
+                if (action.view.linethrough) {
+                    obj.set('linethrough', action.view.linethrough);
+                }
+                if (action.view.overline) {
+                    obj.set('overline', action.view.overline);
+                }
+                if (action.view.fontStyle) {
+                    obj.set('fontStyle', action.view.fontStyle);
+                }
+                if (action.view.fontFamily) {
+                    obj.set('fontFamily', action.view.fontFamily);
+                }
+                if (action.view.textAlign) {
+                    obj.set('textAlign', action.view.textAlign);
+                }
+                if (action.view.textBackgroundColor) {
+                    obj.set('textBackgroundColor', "#" + action.view.textBackgroundColor.toString(16).padStart(6, '0'));
+                }
             }
         }
     },
@@ -352,35 +385,20 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             try {
                 this._fabric.on('mouse:wheel', function (opt) {
                     var delta = opt.e.deltaY;
-                    var zoom = canvas.getZoom();
+                    var zoom = _this._fabric.getZoom();
                     zoom *= 0.999 ** delta;
                     if (zoom > 20)
                         zoom = 20;
                     if (zoom < 0.01)
                         zoom = 0.01;
-                    canvas.setZoom(zoom);
+                    _this._fabric.setZoom(zoom);
                     opt.e.preventDefault();
                     opt.e.stopPropagation();
                 });
             } catch (e) {
                 console.log(e);
             }
-            var rect = new fabric.Rect({
-                left: 100,
-                top: 100,
-                fill: '#FFBB22',
-                width: 20,
-                height: 20
-            });
-            rect.uid = "S99";
-            this._fabric.add(rect);
 
-            rect.on("modified", function (e) {
-                _this._modifiedEvent(rect, e);
-            });
-            rect.on("mouseup", function (e) {
-                _this._clicEvent(rect, e);
-            });
         } else {
             console.log("Synoptique renderDisplay");
         }
@@ -394,7 +412,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                     case "synViewBasic":
                         switch (action.view.subType) {
                             case "CIRCLE":
-                                obj = new fabric.Circle();
+                                obj = new fabric.Circle({radius: 100, width: 200, height: 200});
                                 obj.hasRadius = true;
                                 break;
                             case "ELLIPSE":
@@ -410,7 +428,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                                 obj = new fabric.Rect();
                                 break;
                             case "TEXT":
-                                obj = new fabric.Text("");
+                                obj = new fabric.Text("TEST", {fontSize: 10});
                                 obj.isText = true;
                                 break;
                             default:
@@ -422,39 +440,51 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                         }
                         break;
                     case "synViewSvg":
-                        var url = "synView/" + this.component.renderId + "/" + action.view.uid + "/view.svg";
-                        console.log("create image view with url ", action.view.type);
-                        fabric.Image.fromURL(url, {"left": 0, "top": 0, "scaleX": 1, "scaleY": 1})
+                        var _renderId = this.component.renderId;
+                        var url = "synView/" + _renderId + "/" + action.view.uid + "/view.svg";
+                        console.log("create image view ", action.view.type, " url:", url, " action:", action, " fabric:", _this._fabric);
+                        fabric.Image.fromURL(url, {"left": action.left, "top": action.top, "height": action.height, "width": action.width})
                                 .then(function (nobj) {
-                            _this._objectPostCreate(action, nobj);
-                            _this._fabric.renderAll();
-                        });
+                                    nobj.view = {
+                                        uid: action.view.uid,
+                                        renderId: _renderId,
+                                        file: "view.svg"
+                                    };
+                                    _this._objectPostCreate(action, nobj);
+                                    _this._fabric.renderAll();
+                                });
                         break;
                     case "synViewJpg":
+                        var _renderId = this.component.renderId;
                         var url = "synView/" + this.component.renderId + "/" + action.view.uid + "/view.jpg";
-                        console.log("create image view with url ", action.view.type, " action:", action, " fabric:", _this._fabric);
+                        console.log("create image view ", action.view.type, " url:", url, " action:", action, " fabric:", _this._fabric);
 
-                        var URL = "https://www.tutorialspoint.com/images/trending_categories.png?v2";
-
-                        fabric.Image.fromURL(URL, function (oImg) {
-                            _this._fabric.add(oImg);
-                            _this._fabric.renderAll();
-                        }, {"left": 120, "top": 120, "scaleX": 0.25, "scaleY": 0.25});
-
-
-                        fabric.Image.fromURL(url, function (nobj) {
-                            console.log("synViewJpg loaded, postcreating ", url);
-                            _this._objectPostCreate(action, nobj);
-                            _this._fabric.renderAll();
-                        }, {"left": 0, "top": 0, "scaleX": 1, "scaleY": 1});
+                        fabric.Image.fromURL(url, {"left": action.left, "top": action.top,"height": action.height, "width": action.width})
+                                .then(function (nobj) {
+                                    nobj.view = {
+                                        uid: action.view.uid,
+                                        renderId: _renderId,
+                                        file: "view.jpg"
+                                    };
+                                    console.log("synViewJpg loaded, postcreating ", url);
+                                    _this._objectPostCreate(action, nobj);
+                                    _this._fabric.renderAll();
+                                });
                         break;
                     case "synViewPng":
+                        var _renderId = this.component.renderId;
                         var url = "synView/" + this.component.renderId + "/" + action.view.uid + "/view.png";
                         console.log("create image view with url ", action.view.type);
-                        fabric.Image.fromURL(url, function (nobj) {
-                            _this._objectPostCreate(action, nobj);
-                            _this._fabric.renderAll();
-                        }, {"left": 0, "top": 0, "scaleX": 1, "scaleY": 1});
+                        fabric.Image.fromURL(url, {"left": action.left, "top": action.top,"height": action.height, "width": action.width})
+                                .then(function (nobj) {
+                                    nobj.view = {
+                                        uid: action.view.uid,
+                                        renderId: _renderId,
+                                        file: "view.png"
+                                    };
+                                    _this._objectPostCreate(action, nobj);
+                                    _this._fabric.renderAll();
+                                });
                         break;
                     default:
                         console.log("unsupported view type ", action.view.type);
@@ -474,6 +504,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 this._content[action.uid] = undefined;
             }
         }
+        _this._fabric.renderAll();
     },
     _objectPostCreate(action, obj) {
         console.log("postcreating uid:", action.uid, " action:", action, " obj:", obj, " fabric:", this._fabric);

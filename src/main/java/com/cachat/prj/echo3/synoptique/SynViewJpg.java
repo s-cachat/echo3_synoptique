@@ -23,7 +23,8 @@ public class SynViewJpg extends SynView {
     }
 
     /**
-     * crée une image à partir d'une resource (utilise le classloader de SynViewPng)
+     * crée une image à partir d'une resource (utilise le classloader de
+     * SynViewPng)
      *
      * @param resourceUrl l'url d'une resource image jpg
      * @return la vue
@@ -33,19 +34,18 @@ public class SynViewJpg extends SynView {
     public static SynViewJpg buildFromResource(String resourceUrl) throws IOException {
         return new SynViewJpg(SynViewJpg.class.getResourceAsStream(resourceUrl).readAllBytes());
     }
+
     /**
-     * crée une image à partir d'une resource (utilise le classloader de la classe donnée en paramètre)
+     * crée une image à partir d'une resource (utilise le classloader de la
+     * classe donnée en paramètre)
      *
+     * @param clazz la classe de référence pour le chargement des ressources
      * @param resourceUrl l'url d'une resource image jpg
      * @return la vue
      * @throws IOException en cas d'erreur lors de la génération de l'image
      * encodée
      */
-    public static SynViewJpg buildFromResource(Class clazz,String resourceUrl) throws IOException {
-        System.err.println("A: "+clazz.getResource("/com/cachat/prj/trafxpark/gui/data/barriereOuverte.svg"));
-        System.err.println("B: "+(resourceUrl));
-        System.err.println("C: "+clazz.getResource(""));
-        System.err.println("D: "+clazz.getResource(resourceUrl));
+    public static SynViewJpg buildFromResource(Class clazz, String resourceUrl) throws IOException {
         return new SynViewJpg(clazz.getResourceAsStream(resourceUrl).readAllBytes());
     }
 

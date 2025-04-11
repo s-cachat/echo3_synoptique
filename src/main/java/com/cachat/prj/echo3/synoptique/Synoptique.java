@@ -112,6 +112,20 @@ public class Synoptique extends Component implements Positionable, Sizeable {
     }
 
     /**
+     * enregistre une nouvelle vue (par exemple si un objet avait une vue,
+     * enregistrée lors de l'ajout, puis qu'on change sa vue
+     *
+     * @param obj l'objet
+     * @param view la nouvelle vue
+     */
+    public void registerNewView(SynObject obj, SynView view) {
+        if (view != null && !(view instanceof SynViewBasic)) {
+            logger.severe("Store view " + view.getClass().getSimpleName() + " " + view.getUid() + " for object " + obj.getUid());
+            views.put(view.getUid(), view);
+        }
+    }
+
+    /**
      * modifie un objet
      *
      * @param obj l'objet

@@ -13,11 +13,11 @@ import java.io.IOException;
  */
 @WebServlet(urlPatterns = "/synView/*")
 public class SynViewServlet extends HttpServlet {
-    
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path[] = req.getPathInfo().split("/");
-        Synoptique s = SynManager.getInstance().getSynoptique(req.getSession(),path[1]);
+        Synoptique s = SynManager.getInstance().getSynoptique(req.getSession(), path[1]);
         if (s == null) {
             resp.sendError(404, path[1]);
             return;
@@ -32,6 +32,8 @@ public class SynViewServlet extends HttpServlet {
             resp.sendError(500, "bad content type " + v.getContentType());
             return;
         }
+        resp.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
+        resp.setHeader("Pragma", "no-cache");
         resp.setContentType(v.getContentType());
         resp.setContentLength(c.length);
         resp.getOutputStream().write(c);

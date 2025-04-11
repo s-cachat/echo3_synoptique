@@ -9,10 +9,10 @@ import java.util.List;
  * @author scachat
  */
 public class SynObject {
-
+    
     public SynObject() {
     }
-
+    
     public SynObject(double left, double top, double width, double height, SynView view) {
         this.left = left;
         this.top = top;
@@ -59,7 +59,7 @@ public class SynObject {
     /**
      * clickable (génération de clicEvent
      */
-    protected boolean clickable = false;
+    protected boolean clickable = true;
     /**
      * les listeners pour l'édition
      */
@@ -80,91 +80,94 @@ public class SynObject {
      * notre synoptique
      */
     private Synoptique synoptique;
-
+    
     public double getLeft() {
         return left;
     }
-
+    
     public void setLeft(double left) {
         this.left = left;
     }
-
+    
     public double getTop() {
         return top;
     }
-
+    
     public void setTop(double top) {
         this.top = top;
     }
-
+    
     public double getWidth() {
         return width;
     }
-
+    
     public void setWidth(double width) {
         this.width = width;
     }
-
+    
     public double getHeight() {
         return height;
     }
-
+    
     public void setHeight(double height) {
         this.height = height;
     }
-
+    
     public double getAngle() {
         return angle;
     }
-
+    
     public void setAngle(double angle) {
         this.angle = angle;
     }
-
+    
     public boolean isVisible() {
         return visible;
     }
-
+    
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
-
+    
     public boolean isMovable() {
         return movable;
     }
-
+    
     public void setMovable(boolean movable) {
         this.movable = movable;
     }
-
+    
     public boolean isClickable() {
         return clickable;
     }
-
+    
     public void setClickable(boolean clickable) {
         this.clickable = clickable;
     }
-
+    
     public boolean isResizeable() {
         return resizeable;
     }
-
+    
     public void setResizeable(boolean resizeable) {
         this.resizeable = resizeable;
     }
-
+    
     public SynView getView() {
         return view;
     }
-
+    
     public void setView(SynView view) {
         this.view = view;
+        if (synoptique != null) {
+            synoptique.registerNewView(this, view);
+        }
     }
-
+    
     public SynView getHoverView() {
         return hoverView;
     }
-
+    
     public void setHoverView(SynView hoverView) {
         this.hoverView = hoverView;
     }
@@ -218,11 +221,11 @@ public class SynObject {
     /*package protected */ void setSynoptique(Synoptique synoptique) {
         this.synoptique = synoptique;
     }
-
+    
     public String getUid() {
         return uid;
     }
-
+    
     public void setUid(String uid) {
         this.uid = uid;
     }
@@ -271,5 +274,5 @@ public class SynObject {
     public boolean hasEditListener() {
         return editListeners != null && !editListeners.isEmpty();
     }
-
+    
 }

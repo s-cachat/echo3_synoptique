@@ -51,7 +51,7 @@ public class SynViewSvg extends SynView {
      * encodée
      */
     public SynViewSvg(String content) throws IOException {
-        contentType = "image/svg";
+        contentType = "image/svg+xml";
         this.content = content.getBytes(Charset.forName("UTF8"));
     }
 
