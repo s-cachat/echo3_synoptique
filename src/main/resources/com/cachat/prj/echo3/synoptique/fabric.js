@@ -1,3 +1,4 @@
+//https://cdn.jsdelivr.net/npm/fabric@6.4.3/dist/index.js
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
