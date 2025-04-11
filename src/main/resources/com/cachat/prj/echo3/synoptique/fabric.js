@@ -1,4 +1,4 @@
-//https://cdn.jsdelivr.net/npm/fabric@6.4.3/dist/index.js
+//https://cdn.jsdelivr.net/npm/fabric@6.6.2/dist/index.js
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -412,7 +412,7 @@
   }
   const cache = new Cache();
 
-  var version = "6.4.3";
+  var version = "6.6.2";
 
   // use this syntax so babel plugin see this import here
   const VERSION = version;
@@ -1563,10 +1563,20 @@
    */
   const copyCanvasElement = canvas => {
     var _newCanvas$getContext;
+    const newCanvas = createCanvasElementFor(canvas);
+    (_newCanvas$getContext = newCanvas.getContext('2d')) === null || _newCanvas$getContext === void 0 || _newCanvas$getContext.drawImage(canvas, 0, 0);
+    return newCanvas;
+  };
+
+  /**
+   * Creates a canvas element as big as another
+   * @param {CanvasElement} canvas to copy size and content of
+   * @return {CanvasElement} initialized canvas element
+   */
+  const createCanvasElementFor = canvas => {
     const newCanvas = createCanvasElement();
     newCanvas.width = canvas.width;
     newCanvas.height = canvas.height;
-    (_newCanvas$getContext = newCanvas.getContext('2d')) === null || _newCanvas$getContext === void 0 || _newCanvas$getContext.drawImage(canvas, 0, 0);
     return newCanvas;
   };
 
@@ -1575,13 +1585,16 @@
    * possibly useless
    * @param {CanvasElement} canvasEl to copy size and content of
    * @param {String} format 'jpeg' or 'png', in some browsers 'webp' is ok too
-   * @param {Number} quality <= 1 and > 0
+   * @param {number} quality <= 1 and > 0
    * @return {String} data url
    */
   const toDataURL = (canvasEl, format, quality) => canvasEl.toDataURL("image/".concat(format), quality);
   const isHTMLCanvas = canvas => {
     return !!canvas && canvas.getContext !== undefined;
   };
+  const toBlob = (canvasEl, format, quality) => new Promise((resolve, _) => {
+    canvasEl.toBlob(resolve, "image/".concat(format), quality);
+  });
 
   /**
    * Transforms degrees to radians.
@@ -2001,666 +2014,6 @@
   };
 
   /**
-   * Map of the 148 color names with HEX code
-   * @see: https://www.w3.org/TR/css3-color/#svg-color
-   */
-  const ColorNameMap = {
-    aliceblue: '#F0F8FF',
-    antiquewhite: '#FAEBD7',
-    aqua: '#0FF',
-    aquamarine: '#7FFFD4',
-    azure: '#F0FFFF',
-    beige: '#F5F5DC',
-    bisque: '#FFE4C4',
-    black: '#000',
-    blanchedalmond: '#FFEBCD',
-    blue: '#00F',
-    blueviolet: '#8A2BE2',
-    brown: '#A52A2A',
-    burlywood: '#DEB887',
-    cadetblue: '#5F9EA0',
-    chartreuse: '#7FFF00',
-    chocolate: '#D2691E',
-    coral: '#FF7F50',
-    cornflowerblue: '#6495ED',
-    cornsilk: '#FFF8DC',
-    crimson: '#DC143C',
-    cyan: '#0FF',
-    darkblue: '#00008B',
-    darkcyan: '#008B8B',
-    darkgoldenrod: '#B8860B',
-    darkgray: '#A9A9A9',
-    darkgrey: '#A9A9A9',
-    darkgreen: '#006400',
-    darkkhaki: '#BDB76B',
-    darkmagenta: '#8B008B',
-    darkolivegreen: '#556B2F',
-    darkorange: '#FF8C00',
-    darkorchid: '#9932CC',
-    darkred: '#8B0000',
-    darksalmon: '#E9967A',
-    darkseagreen: '#8FBC8F',
-    darkslateblue: '#483D8B',
-    darkslategray: '#2F4F4F',
-    darkslategrey: '#2F4F4F',
-    darkturquoise: '#00CED1',
-    darkviolet: '#9400D3',
-    deeppink: '#FF1493',
-    deepskyblue: '#00BFFF',
-    dimgray: '#696969',
-    dimgrey: '#696969',
-    dodgerblue: '#1E90FF',
-    firebrick: '#B22222',
-    floralwhite: '#FFFAF0',
-    forestgreen: '#228B22',
-    fuchsia: '#F0F',
-    gainsboro: '#DCDCDC',
-    ghostwhite: '#F8F8FF',
-    gold: '#FFD700',
-    goldenrod: '#DAA520',
-    gray: '#808080',
-    grey: '#808080',
-    green: '#008000',
-    greenyellow: '#ADFF2F',
-    honeydew: '#F0FFF0',
-    hotpink: '#FF69B4',
-    indianred: '#CD5C5C',
-    indigo: '#4B0082',
-    ivory: '#FFFFF0',
-    khaki: '#F0E68C',
-    lavender: '#E6E6FA',
-    lavenderblush: '#FFF0F5',
-    lawngreen: '#7CFC00',
-    lemonchiffon: '#FFFACD',
-    lightblue: '#ADD8E6',
-    lightcoral: '#F08080',
-    lightcyan: '#E0FFFF',
-    lightgoldenrodyellow: '#FAFAD2',
-    lightgray: '#D3D3D3',
-    lightgrey: '#D3D3D3',
-    lightgreen: '#90EE90',
-    lightpink: '#FFB6C1',
-    lightsalmon: '#FFA07A',
-    lightseagreen: '#20B2AA',
-    lightskyblue: '#87CEFA',
-    lightslategray: '#789',
-    lightslategrey: '#789',
-    lightsteelblue: '#B0C4DE',
-    lightyellow: '#FFFFE0',
-    lime: '#0F0',
-    limegreen: '#32CD32',
-    linen: '#FAF0E6',
-    magenta: '#F0F',
-    maroon: '#800000',
-    mediumaquamarine: '#66CDAA',
-    mediumblue: '#0000CD',
-    mediumorchid: '#BA55D3',
-    mediumpurple: '#9370DB',
-    mediumseagreen: '#3CB371',
-    mediumslateblue: '#7B68EE',
-    mediumspringgreen: '#00FA9A',
-    mediumturquoise: '#48D1CC',
-    mediumvioletred: '#C71585',
-    midnightblue: '#191970',
-    mintcream: '#F5FFFA',
-    mistyrose: '#FFE4E1',
-    moccasin: '#FFE4B5',
-    navajowhite: '#FFDEAD',
-    navy: '#000080',
-    oldlace: '#FDF5E6',
-    olive: '#808000',
-    olivedrab: '#6B8E23',
-    orange: '#FFA500',
-    orangered: '#FF4500',
-    orchid: '#DA70D6',
-    palegoldenrod: '#EEE8AA',
-    palegreen: '#98FB98',
-    paleturquoise: '#AFEEEE',
-    palevioletred: '#DB7093',
-    papayawhip: '#FFEFD5',
-    peachpuff: '#FFDAB9',
-    peru: '#CD853F',
-    pink: '#FFC0CB',
-    plum: '#DDA0DD',
-    powderblue: '#B0E0E6',
-    purple: '#800080',
-    rebeccapurple: '#639',
-    red: '#F00',
-    rosybrown: '#BC8F8F',
-    royalblue: '#4169E1',
-    saddlebrown: '#8B4513',
-    salmon: '#FA8072',
-    sandybrown: '#F4A460',
-    seagreen: '#2E8B57',
-    seashell: '#FFF5EE',
-    sienna: '#A0522D',
-    silver: '#C0C0C0',
-    skyblue: '#87CEEB',
-    slateblue: '#6A5ACD',
-    slategray: '#708090',
-    slategrey: '#708090',
-    snow: '#FFFAFA',
-    springgreen: '#00FF7F',
-    steelblue: '#4682B4',
-    tan: '#D2B48C',
-    teal: '#008080',
-    thistle: '#D8BFD8',
-    tomato: '#FF6347',
-    turquoise: '#40E0D0',
-    violet: '#EE82EE',
-    wheat: '#F5DEB3',
-    white: '#FFF',
-    whitesmoke: '#F5F5F5',
-    yellow: '#FF0',
-    yellowgreen: '#9ACD32'
-  };
-
-  /**
-   * Regex matching color in RGB or RGBA formats (ex: `rgb(0, 0, 0)`, `rgba(255, 100, 10, 0.5)`, `rgba( 255 , 100 , 10 , 0.5 )`, `rgb(1,1,1)`, `rgba(100%, 60%, 10%, 0.5)`)
-   * Also matching rgba(r g b / a) as per new specs
-   * https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/rgb
-   * Formal syntax at the time of writing:
-   * <rgb()> =
-   *  rgb( [ <percentage> | none ]{3} [ / [ <alpha-value> | none ] ]? )  |
-   *  rgb( [ <number> | none ]{3} [ / [ <alpha-value> | none ] ]? )
-   * <alpha-value> = <number> | <percentage>
-   *
-   * For learners this is how you can read this regex
-   * Regular expression for matching an rgba or rgb CSS color value
-   *
-   * /^          # Beginning of the string
-   * rgba?       # "rgb" or "rgba"
-   * \(\s*       # Opening parenthesis and optional whitespace
-   * (\d{0,3}    # 0 to three digits R channel
-   *  (?:\.\d+)? # Optional decimal with one or more digits
-   * )           # End of capturing group for the first color component
-   * %?          # Optional percent sign after the first color component
-   * \s*         # Optional whitespace
-   * [\s|,]      # Separator between color components can be a space or comma
-   * \s*         # Optional whitespace
-   * (\d{0,3}    # 0 to three digits G channel
-   *  (?:\.\d+)? # Optional decimal with one or more digits
-   * )           # End of capturing group for the second color component
-   * %?          # Optional percent sign after the second color component
-   * \s*         # Optional whitespace
-   * [\s|,]      # Separator between color components can be a space or comma
-   * \s*         # Optional whitespace
-   * (\d{0,3}    # 0 to three digits B channel
-   *  (?:\.\d+)? # Optional decimal with one or more digits
-   * )           # End of capturing group for the third color component
-   * %?          # Optional percent sign after the third color component
-   * \s*         # Optional whitespace
-   * (?:         # Beginning of non-capturing group for alpha value
-   *  \s*        # Optional whitespace
-   *  [,/]       # Comma or slash separator for alpha value
-   *  \s*        # Optional whitespace
-   *  (\d{0,3}   # Zero to three digits
-   *    (?:\.\d+)? # Optional decimal with one or more digits
-   *  )          # End of capturing group for alpha value
-   *  %?         # Optional percent sign after alpha value
-   *  \s*        # Optional whitespace
-   * )?          # End of non-capturing group for alpha value (optional)
-   * \)          # Closing parenthesis
-   * $           # End of the string
-   *
-   * The alpha channel can be in the format 0.4 .7 or 1 or 73%
-   *
-   * WARNING this regex doesn't fail on off spec colors. it matches everything that could be a color.
-   * So the spec does not allow for `rgba(30 , 45%  35, 49%)` but this will work anyways for us
-   */
-  const reRGBa = () => /^rgba?\(\s*(\d{0,3}(?:\.\d+)?%?)\s*[\s|,]\s*(\d{0,3}(?:\.\d+)?%?)\s*[\s|,]\s*(\d{0,3}(?:\.\d+)?%?)\s*(?:\s*[,/]\s*(\d{0,3}(?:\.\d+)?%?)\s*)?\)$/i;
-
-  /**
-   * Regex matching color in HSL or HSLA formats (ex: hsl(0, 0, 0), rgba(255, 100, 10, 0.5), rgba( 255 , 100 , 10 , 0.5 ), rgb(1,1,1), rgba(100%, 60%, 10%, 0.5))
-   * Also matching rgba(r g b / a) as per new specs
-   * https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/hsl
-   * Formal syntax at the time of writing:
-   * <hsl()> =
-   *   hsl( [ <hue> | none ] [ <percentage> | none ] [ <percentage> | none ] [ / [ <alpha-value> | none ] ]? )
-   *
-   * <hue> =
-   *   <number>  |
-   *   <angle>
-   *
-   * <alpha-value> =
-   *   <number>      |
-   *   <percentage>
-   *
-   * For learners this is how you can read this regex
-   * Regular expression for matching an hsla or hsl CSS color value
-   *
-   * /^hsla?\(         // Matches the beginning of the string and the opening parenthesis of "hsl" or "hsla"
-   * \s*               // Matches any whitespace characters (space, tab, etc.) zero or more times
-   * (\d{0,3}          // Hue: 0 to three digits - start capture in a group
-   * (?:\.\d+)?        // Hue: Optional (non capture group) decimal with one or more digits.
-   * (?:deg|turn|rad)? // Hue: Optionally include suffix deg or turn or rad
-   * )                 // Hue: End capture group
-   * \s*               // Matches any whitespace characters zero or more times
-   * [\s|,]            // Matches a space, tab or comma
-   * \s*               // Matches any whitespace characters zero or more times
-   * (\d{0,3}          // Saturation: 0 to three digits - start capture in a group
-   * (?:\.\d+)?        // Saturation: Optional decimal with one or more digits in a non-capturing group
-   * %?)               // Saturation: match optional % character and end capture group
-   * \s*               // Matches any whitespace characters zero or more times
-   * [\s|,]            // Matches a space, tab or comma
-   * \s*               // Matches any whitespace characters zero or more times
-   * (\d{0,3}          // Lightness: 0 to three digits - start capture in a group
-   * (?:\.\d+)?        // Lightness: Optional decimal with one or more digits in a non-capturing group
-   * %?)                // Lightness: match % character and end capture group
-   * \s*               // Matches any whitespace characters zero or more times
-   * (?:               // Alpha: Begins a non-capturing group for the alpha value
-   *   \s*             // Matches any whitespace characters zero or more times
-   *   [,/]            // Matches a comma or forward slash
-   *   \s*             // Matches any whitespace characters zero or more times
-   *   (\d*(?:\.\d+)?%?) // Matches zero or more digits, optionally followed by a decimal point and one or more digits, followed by an optional percentage sign and captures it in a group
-   *   \s*             // Matches any whitespace characters zero or more times
-   * )?                // Makes the alpha value group optional
-   * \)                // Matches the closing parenthesis
-   * $/i               // Matches the end of the string and sets the regular expression to case-insensitive mode
-   *
-   * WARNING this regex doesn't fail on off spec colors. It matches everything that could be a color.
-   * So the spec does not allow `hsl(30 , 45%  35, 49%)` but this will work anyways for us.
-   */
-  const reHSLa = () => /^hsla?\(\s*([+-]?\d{0,3}(?:\.\d+)?(?:deg|turn|rad)?)\s*[\s|,]\s*(\d{0,3}(?:\.\d+)?%?)\s*[\s|,]\s*(\d{0,3}(?:\.\d+)?%?)\s*(?:\s*[,/]\s*(\d*(?:\.\d+)?%?)\s*)?\)$/i;
-
-  /**
-   * Regex matching color in HEX format (ex: #FF5544CC, #FF5555, 010155, aff)
-   */
-  const reHex = () => /^#?(([0-9a-f]){3,4}|([0-9a-f]{2}){3,4})$/i;
-
-  /**
-   * @param {Number} p
-   * @param {Number} q
-   * @param {Number} t
-   * @return {Number}
-   */
-  const hue2rgb = (p, q, t) => {
-    if (t < 0) {
-      t += 1;
-    }
-    if (t > 1) {
-      t -= 1;
-    }
-    if (t < 1 / 6) {
-      return p + (q - p) * 6 * t;
-    }
-    if (t < 1 / 2) {
-      return q;
-    }
-    if (t < 2 / 3) {
-      return p + (q - p) * (2 / 3 - t) * 6;
-    }
-    return p;
-  };
-
-  /**
-   * Adapted from {@link https://gist.github.com/mjackson/5311256 https://gist.github.com/mjackson}
-   * @param {Number} r Red color value
-   * @param {Number} g Green color value
-   * @param {Number} b Blue color value
-   * @param {Number} a Alpha color value pass through
-   * @return {TRGBColorSource} Hsl color
-   */
-  const rgb2Hsl = (r, g, b, a) => {
-    r /= 255;
-    g /= 255;
-    b /= 255;
-    const maxValue = Math.max(r, g, b),
-      minValue = Math.min(r, g, b);
-    let h, s;
-    const l = (maxValue + minValue) / 2;
-    if (maxValue === minValue) {
-      h = s = 0; // achromatic
-    } else {
-      const d = maxValue - minValue;
-      s = l > 0.5 ? d / (2 - maxValue - minValue) : d / (maxValue + minValue);
-      switch (maxValue) {
-        case r:
-          h = (g - b) / d + (g < b ? 6 : 0);
-          break;
-        case g:
-          h = (b - r) / d + 2;
-          break;
-        case b:
-          h = (r - g) / d + 4;
-          break;
-      }
-      h /= 6;
-    }
-    return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100), a];
-  };
-  const fromAlphaToFloat = function () {
-    let value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '1';
-    return parseFloat(value) / (value.endsWith('%') ? 100 : 1);
-  };
-
-  /**
-   * Convert a value in the inclusive range [0, 255] to hex
-   */
-  const hexify = value => Math.min(Math.round(value), 255).toString(16).toUpperCase().padStart(2, '0');
-
-  /**
-   * Calculate the grey average value for rgb and pass through alpha
-   */
-  const greyAverage = _ref => {
-    let [r, g, b, a = 1] = _ref;
-    const avg = Math.round(r * 0.3 + g * 0.59 + b * 0.11);
-    return [avg, avg, avg, a];
-  };
-
-  /**
-   * @class Color common color operations
-   * @tutorial {@link http://fabricjs.com/fabric-intro-part-2/#colors colors}
-   */
-  class Color {
-    /**
-     *
-     * @param {string} [color] optional in hex or rgb(a) or hsl format or from known color list
-     */
-    constructor(color) {
-      _defineProperty(this, "isUnrecognised", false);
-      if (!color) {
-        // we default to black as canvas does
-        this.setSource([0, 0, 0, 1]);
-      } else if (color instanceof Color) {
-        this.setSource([...color._source]);
-      } else if (Array.isArray(color)) {
-        const [r, g, b, a = 1] = color;
-        this.setSource([r, g, b, a]);
-      } else {
-        this.setSource(this._tryParsingColor(color));
-      }
-    }
-
-    /**
-     * @private
-     * @param {string} [color] Color value to parse
-     * @returns {TRGBAColorSource}
-     */
-    _tryParsingColor(color) {
-      if (color in ColorNameMap) {
-        color = ColorNameMap[color];
-      }
-      return color === 'transparent' ? [255, 255, 255, 0] : Color.sourceFromHex(color) || Color.sourceFromRgb(color) || Color.sourceFromHsl(color) ||
-      // color is not recognized
-      // we default to black as canvas does
-      // eslint-disable-next-line no-constant-binary-expression
-      (this.isUnrecognised = true) && [0, 0, 0, 1];
-    }
-
-    /**
-     * Returns source of this color (where source is an array representation; ex: [200, 200, 100, 1])
-     * @return {TRGBAColorSource}
-     */
-    getSource() {
-      return this._source;
-    }
-
-    /**
-     * Sets source of this color (where source is an array representation; ex: [200, 200, 100, 1])
-     * @param {TRGBAColorSource} source
-     */
-    setSource(source) {
-      this._source = source;
-    }
-
-    /**
-     * Returns color representation in RGB format
-     * @return {String} ex: rgb(0-255,0-255,0-255)
-     */
-    toRgb() {
-      const [r, g, b] = this.getSource();
-      return "rgb(".concat(r, ",").concat(g, ",").concat(b, ")");
-    }
-
-    /**
-     * Returns color representation in RGBA format
-     * @return {String} ex: rgba(0-255,0-255,0-255,0-1)
-     */
-    toRgba() {
-      return "rgba(".concat(this.getSource().join(','), ")");
-    }
-
-    /**
-     * Returns color representation in HSL format
-     * @return {String} ex: hsl(0-360,0%-100%,0%-100%)
-     */
-    toHsl() {
-      const [h, s, l] = rgb2Hsl(...this.getSource());
-      return "hsl(".concat(h, ",").concat(s, "%,").concat(l, "%)");
-    }
-
-    /**
-     * Returns color representation in HSLA format
-     * @return {String} ex: hsla(0-360,0%-100%,0%-100%,0-1)
-     */
-    toHsla() {
-      const [h, s, l, a] = rgb2Hsl(...this.getSource());
-      return "hsla(".concat(h, ",").concat(s, "%,").concat(l, "%,").concat(a, ")");
-    }
-
-    /**
-     * Returns color representation in HEX format
-     * @return {String} ex: FF5555
-     */
-    toHex() {
-      const fullHex = this.toHexa();
-      return fullHex.slice(0, 6);
-    }
-
-    /**
-     * Returns color representation in HEXA format
-     * @return {String} ex: FF5555CC
-     */
-    toHexa() {
-      const [r, g, b, a] = this.getSource();
-      return "".concat(hexify(r)).concat(hexify(g)).concat(hexify(b)).concat(hexify(Math.round(a * 255)));
-    }
-
-    /**
-     * Gets value of alpha channel for this color
-     * @return {Number} 0-1
-     */
-    getAlpha() {
-      return this.getSource()[3];
-    }
-
-    /**
-     * Sets value of alpha channel for this color
-     * @param {Number} alpha Alpha value 0-1
-     * @return {Color} thisArg
-     */
-    setAlpha(alpha) {
-      this._source[3] = alpha;
-      return this;
-    }
-
-    /**
-     * Transforms color to its grayscale representation
-     * @return {Color} thisArg
-     */
-    toGrayscale() {
-      this.setSource(greyAverage(this.getSource()));
-      return this;
-    }
-
-    /**
-     * Transforms color to its black and white representation
-     * @param {Number} threshold
-     * @return {Color} thisArg
-     */
-    toBlackWhite(threshold) {
-      const [average,,, a] = greyAverage(this.getSource()),
-        bOrW = average < (threshold || 127) ? 0 : 255;
-      this.setSource([bOrW, bOrW, bOrW, a]);
-      return this;
-    }
-
-    /**
-     * Overlays color with another color
-     * @param {String|Color} otherColor
-     * @return {Color} thisArg
-     */
-    overlayWith(otherColor) {
-      if (!(otherColor instanceof Color)) {
-        otherColor = new Color(otherColor);
-      }
-      const source = this.getSource(),
-        otherAlpha = 0.5,
-        otherSource = otherColor.getSource(),
-        [R, G, B] = source.map((value, index) => Math.round(value * (1 - otherAlpha) + otherSource[index] * otherAlpha));
-      this.setSource([R, G, B, source[3]]);
-      return this;
-    }
-
-    /**
-     * Returns new color object, when given a color in RGB format
-     * @memberOf Color
-     * @param {String} color Color value ex: rgb(0-255,0-255,0-255)
-     * @return {Color}
-     */
-    static fromRgb(color) {
-      return Color.fromRgba(color);
-    }
-
-    /**
-     * Returns new color object, when given a color in RGBA format
-     * @static
-     * @function
-     * @memberOf Color
-     * @param {String} color
-     * @return {Color}
-     */
-    static fromRgba(color) {
-      return new Color(Color.sourceFromRgb(color));
-    }
-
-    /**
-     * Returns array representation (ex: [100, 100, 200, 1]) of a color that's in RGB or RGBA format
-     * @memberOf Color
-     * @param {String} color Color value ex: rgb(0-255,0-255,0-255), rgb(0%-100%,0%-100%,0%-100%)
-     * @return {TRGBAColorSource | undefined} source
-     */
-    static sourceFromRgb(color) {
-      const match = color.match(reRGBa());
-      if (match) {
-        const [r, g, b] = match.slice(1, 4).map(value => {
-          const parsedValue = parseFloat(value);
-          return value.endsWith('%') ? Math.round(parsedValue * 2.55) : parsedValue;
-        });
-        return [r, g, b, fromAlphaToFloat(match[4])];
-      }
-    }
-
-    /**
-     * Returns new color object, when given a color in HSL format
-     * @param {String} color Color value ex: hsl(0-260,0%-100%,0%-100%)
-     * @memberOf Color
-     * @return {Color}
-     */
-    static fromHsl(color) {
-      return Color.fromHsla(color);
-    }
-
-    /**
-     * Returns new color object, when given a color in HSLA format
-     * @static
-     * @function
-     * @memberOf Color
-     * @param {String} color
-     * @return {Color}
-     */
-    static fromHsla(color) {
-      return new Color(Color.sourceFromHsl(color));
-    }
-
-    /**
-     * Returns array representation (ex: [100, 100, 200, 1]) of a color that's in HSL or HSLA format.
-     * Adapted from <a href="https://rawgithub.com/mjijackson/mjijackson.github.com/master/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript.html">https://github.com/mjijackson</a>
-     * @memberOf Color
-     * @param {String} color Color value ex: hsl(0-360,0%-100%,0%-100%) or hsla(0-360,0%-100%,0%-100%, 0-1)
-     * @return {TRGBAColorSource | undefined} source
-     * @see http://http://www.w3.org/TR/css3-color/#hsl-color
-     */
-    static sourceFromHsl(color) {
-      const match = color.match(reHSLa());
-      if (!match) {
-        return;
-      }
-      const match1degrees = Color.parseAngletoDegrees(match[1]);
-      const h = (match1degrees % 360 + 360) % 360 / 360,
-        s = parseFloat(match[2]) / 100,
-        l = parseFloat(match[3]) / 100;
-      let r, g, b;
-      if (s === 0) {
-        r = g = b = l;
-      } else {
-        const q = l <= 0.5 ? l * (s + 1) : l + s - l * s,
-          p = l * 2 - q;
-        r = hue2rgb(p, q, h + 1 / 3);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1 / 3);
-      }
-      return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255), fromAlphaToFloat(match[4])];
-    }
-
-    /**
-     * Returns new color object, when given a color in HEX format
-     * @static
-     * @memberOf Color
-     * @param {String} color Color value ex: FF5555
-     * @return {Color}
-     */
-    static fromHex(color) {
-      return new Color(Color.sourceFromHex(color));
-    }
-
-    /**
-     * Returns array representation (ex: [100, 100, 200, 1]) of a color that's in HEX format
-     * @static
-     * @memberOf Color
-     * @param {String} color ex: FF5555 or FF5544CC (RGBa)
-     * @return {TRGBAColorSource | undefined} source
-     */
-    static sourceFromHex(color) {
-      if (color.match(reHex())) {
-        const value = color.slice(color.indexOf('#') + 1),
-          isShortNotation = value.length <= 4;
-        let expandedValue;
-        if (isShortNotation) {
-          expandedValue = value.split('').map(hex => hex + hex);
-        } else {
-          expandedValue = value.match(/.{2}/g);
-        }
-        const [r, g, b, a = 255] = expandedValue.map(hexCouple => parseInt(hexCouple, 16));
-        return [r, g, b, a / 255];
-      }
-    }
-
-    /**
-     * Converts a string that could be any angle notation (50deg, 0.5turn, 2rad)
-     * into degrees without the 'deg' suffix
-     * @static
-     * @memberOf Color
-     * @param {String} value ex: 0deg, 0.5turn, 2rad
-     * @return {Number} number in degrees or NaN if inputs are invalid
-     */
-    static parseAngletoDegrees(value) {
-      const lowercase = value.toLowerCase();
-      const numeric = parseFloat(lowercase);
-      if (lowercase.includes('rad')) {
-        return radiansToDegrees(numeric);
-      }
-      if (lowercase.includes('turn')) {
-        return numeric * 360;
-      }
-
-      // Value is probably just a number already in degrees eg '50'
-      return numeric;
-    }
-  }
-
-  /**
    * A wrapper around Number#toFixed, which contrary to native method returns number, not string.
    * @param {number|string} number number to operate on
    * @param {number} fractionDigits number of fraction digits to "leave"
@@ -2669,132 +2022,11 @@
   const toFixed = (number, fractionDigits) => parseFloat(Number(number).toFixed(fractionDigits));
 
   /**
-   * Returns array of attributes for given svg that fabric parses
-   * @param {SVGElementName} type Type of svg element (eg. 'circle')
-   * @return {Array} string names of supported attributes
-   */
-  const getSvgAttributes = type => {
-    const commonAttributes = ['instantiated_by_use', 'style', 'id', 'class'];
-    switch (type) {
-      case 'linearGradient':
-        return commonAttributes.concat(['x1', 'y1', 'x2', 'y2', 'gradientUnits', 'gradientTransform']);
-      case 'radialGradient':
-        return commonAttributes.concat(['gradientUnits', 'gradientTransform', 'cx', 'cy', 'r', 'fx', 'fy', 'fr']);
-      case 'stop':
-        return commonAttributes.concat(['offset', 'stop-color', 'stop-opacity']);
-    }
-    return commonAttributes;
-  };
-
-  /**
-   * Converts from attribute value to pixel value if applicable.
-   * Returns converted pixels or original value not converted.
-   * @param {string} value number to operate on
-   * @param {number} fontSize
-   * @return {number}
-   */
-  const parseUnit = function (value) {
-    let fontSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_SVG_FONT_SIZE;
-    const unit = /\D{0,2}$/.exec(value),
-      number = parseFloat(value);
-    const dpi = config.DPI;
-    switch (unit === null || unit === void 0 ? void 0 : unit[0]) {
-      case 'mm':
-        return number * dpi / 25.4;
-      case 'cm':
-        return number * dpi / 2.54;
-      case 'in':
-        return number * dpi;
-      case 'pt':
-        return number * dpi / 72;
-      // or * 4 / 3
-
-      case 'pc':
-        return number * dpi / 72 * 12;
-      // or * 16
-
-      case 'em':
-        return number * fontSize;
-      default:
-        return number;
-    }
-  };
-  // align can be either none or undefined or a combination of mid/max
-  const parseAlign = align => {
-    //divide align in alignX and alignY
-    if (align && align !== NONE) {
-      return [align.slice(1, 4), align.slice(5, 8)];
-    } else if (align === NONE) {
-      return [align, align];
-    }
-    return ['Mid', 'Mid'];
-  };
-
-  /**
-   * Parse preserveAspectRatio attribute from element
-   * https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/preserveAspectRatio
-   * @param {string} attribute to be parsed
-   * @return {Object} an object containing align and meetOrSlice attribute
-   */
-  const parsePreserveAspectRatioAttribute = attribute => {
-    const [firstPart, secondPart] = attribute.trim().split(' ');
-    const [alignX, alignY] = parseAlign(firstPart);
-    return {
-      meetOrSlice: secondPart || 'meet',
-      alignX,
-      alignY
-    };
-  };
-
-  /**
    * given an array of 6 number returns something like `"matrix(...numbers)"`
    * @param {TMat2D} transform an array with 6 numbers
    * @return {String} transform matrix for svg
    */
   const matrixToSVG = transform => 'matrix(' + transform.map(value => toFixed(value, config.NUM_FRACTION_DIGITS)).join(' ') + ')';
-
-  /**
-   * Adobe Illustrator (at least CS5) is unable to render rgba()-based fill values
-   * we work around it by "moving" alpha channel into opacity attribute and setting fill's alpha to 1
-   * @param prop
-   * @param value
-   * @param {boolean} inlineStyle The default is inline style, the separator used is ":", The other is "="
-   * @returns
-   */
-  const colorPropToSVG = function (prop, value) {
-    let inlineStyle = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-    let colorValue;
-    let opacityValue;
-    if (!value) {
-      colorValue = 'none';
-    } else if (value.toLive) {
-      colorValue = "url(#SVGID_".concat(value.id, ")");
-    } else {
-      const color = new Color(value),
-        opacity = color.getAlpha();
-      colorValue = color.toRgb();
-      if (opacity !== 1) {
-        opacityValue = opacity.toString();
-      }
-    }
-    if (inlineStyle) {
-      return "".concat(prop, ": ").concat(colorValue, "; ").concat(opacityValue ? "".concat(prop, "-opacity: ").concat(opacityValue, "; ") : '');
-    } else {
-      return "".concat(prop, "=\"").concat(colorValue, "\" ").concat(opacityValue ? "".concat(prop, "-opacity=\"").concat(opacityValue, "\" ") : '');
-    }
-  };
-  const createSVGRect = function (color, _ref) {
-    let {
-      left,
-      top,
-      width,
-      height
-    } = _ref;
-    let precision = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : config.NUM_FRACTION_DIGITS;
-    const svgColor = colorPropToSVG(FILL, color, false);
-    const [x, y, w, h] = [left, top, width, height].map(value => toFixed(value, precision));
-    return "<rect ".concat(svgColor, " x=\"").concat(x, "\" y=\"").concat(y, "\" width=\"").concat(w, "\" height=\"").concat(h, "\"></rect>");
-  };
 
   const isFiller = filler => {
     return !!filler && filler.toLive !== undefined;
@@ -3471,6 +2703,7 @@
       if (path) {
         path._set('canvas', this);
         // needed to setup a couple of variables
+        // todo migrate to the newer one
         path.shouldCache();
         path._transformDone = true;
         path.renderCache({
@@ -4088,9 +3321,7 @@
      * This essentially copies canvas dimensions since loadFromJSON does not affect canvas size.
      */
     cloneWithoutData() {
-      const el = createCanvasElement();
-      el.width = this.width;
-      el.height = this.height;
+      const el = createCanvasElementFor(this);
       return new this.constructor(el);
     }
 
@@ -4143,6 +3374,17 @@
       const finalMultiplier = multiplier * (enableRetinaScaling ? this.getRetinaScaling() : 1);
       return toDataURL(this.toCanvasElement(finalMultiplier, options), format, quality);
     }
+    toBlob() {
+      let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      const {
+        format = 'png',
+        quality = 1,
+        multiplier = 1,
+        enableRetinaScaling = false
+      } = options;
+      const finalMultiplier = multiplier * (enableRetinaScaling ? this.getRetinaScaling() : 1);
+      return toBlob(this.toCanvasElement(finalMultiplier, options), format, quality);
+    }
 
     /**
      * Create a new HTMLCanvas element painted with the current canvas content.
@@ -4179,10 +3421,11 @@
         translateY = (vp[5] - (top || 0)) * multiplier,
         newVp = [newZoom, 0, 0, newZoom, translateX, translateY],
         originalRetina = this.enableRetinaScaling,
-        canvasEl = createCanvasElement(),
+        canvasEl = createCanvasElementFor({
+          width: scaledWidth,
+          height: scaledHeight
+        }),
         objectsToRender = filter ? this._objects.filter(obj => filter(obj)) : this._objects;
-      canvasEl.width = scaledWidth;
-      canvasEl.height = scaledHeight;
       this.enableRetinaScaling = false;
       this.viewportTransform = newVp;
       this.width = scaledWidth;
@@ -4649,6 +3892,788 @@
       fireEvent(MOVING, commonEventInfo(eventData, transform, x, y));
     }
     return moveX || moveY;
+  };
+
+  /**
+   * Map of the 148 color names with HEX code
+   * @see: https://www.w3.org/TR/css3-color/#svg-color
+   */
+  const ColorNameMap = {
+    aliceblue: '#F0F8FF',
+    antiquewhite: '#FAEBD7',
+    aqua: '#0FF',
+    aquamarine: '#7FFFD4',
+    azure: '#F0FFFF',
+    beige: '#F5F5DC',
+    bisque: '#FFE4C4',
+    black: '#000',
+    blanchedalmond: '#FFEBCD',
+    blue: '#00F',
+    blueviolet: '#8A2BE2',
+    brown: '#A52A2A',
+    burlywood: '#DEB887',
+    cadetblue: '#5F9EA0',
+    chartreuse: '#7FFF00',
+    chocolate: '#D2691E',
+    coral: '#FF7F50',
+    cornflowerblue: '#6495ED',
+    cornsilk: '#FFF8DC',
+    crimson: '#DC143C',
+    cyan: '#0FF',
+    darkblue: '#00008B',
+    darkcyan: '#008B8B',
+    darkgoldenrod: '#B8860B',
+    darkgray: '#A9A9A9',
+    darkgrey: '#A9A9A9',
+    darkgreen: '#006400',
+    darkkhaki: '#BDB76B',
+    darkmagenta: '#8B008B',
+    darkolivegreen: '#556B2F',
+    darkorange: '#FF8C00',
+    darkorchid: '#9932CC',
+    darkred: '#8B0000',
+    darksalmon: '#E9967A',
+    darkseagreen: '#8FBC8F',
+    darkslateblue: '#483D8B',
+    darkslategray: '#2F4F4F',
+    darkslategrey: '#2F4F4F',
+    darkturquoise: '#00CED1',
+    darkviolet: '#9400D3',
+    deeppink: '#FF1493',
+    deepskyblue: '#00BFFF',
+    dimgray: '#696969',
+    dimgrey: '#696969',
+    dodgerblue: '#1E90FF',
+    firebrick: '#B22222',
+    floralwhite: '#FFFAF0',
+    forestgreen: '#228B22',
+    fuchsia: '#F0F',
+    gainsboro: '#DCDCDC',
+    ghostwhite: '#F8F8FF',
+    gold: '#FFD700',
+    goldenrod: '#DAA520',
+    gray: '#808080',
+    grey: '#808080',
+    green: '#008000',
+    greenyellow: '#ADFF2F',
+    honeydew: '#F0FFF0',
+    hotpink: '#FF69B4',
+    indianred: '#CD5C5C',
+    indigo: '#4B0082',
+    ivory: '#FFFFF0',
+    khaki: '#F0E68C',
+    lavender: '#E6E6FA',
+    lavenderblush: '#FFF0F5',
+    lawngreen: '#7CFC00',
+    lemonchiffon: '#FFFACD',
+    lightblue: '#ADD8E6',
+    lightcoral: '#F08080',
+    lightcyan: '#E0FFFF',
+    lightgoldenrodyellow: '#FAFAD2',
+    lightgray: '#D3D3D3',
+    lightgrey: '#D3D3D3',
+    lightgreen: '#90EE90',
+    lightpink: '#FFB6C1',
+    lightsalmon: '#FFA07A',
+    lightseagreen: '#20B2AA',
+    lightskyblue: '#87CEFA',
+    lightslategray: '#789',
+    lightslategrey: '#789',
+    lightsteelblue: '#B0C4DE',
+    lightyellow: '#FFFFE0',
+    lime: '#0F0',
+    limegreen: '#32CD32',
+    linen: '#FAF0E6',
+    magenta: '#F0F',
+    maroon: '#800000',
+    mediumaquamarine: '#66CDAA',
+    mediumblue: '#0000CD',
+    mediumorchid: '#BA55D3',
+    mediumpurple: '#9370DB',
+    mediumseagreen: '#3CB371',
+    mediumslateblue: '#7B68EE',
+    mediumspringgreen: '#00FA9A',
+    mediumturquoise: '#48D1CC',
+    mediumvioletred: '#C71585',
+    midnightblue: '#191970',
+    mintcream: '#F5FFFA',
+    mistyrose: '#FFE4E1',
+    moccasin: '#FFE4B5',
+    navajowhite: '#FFDEAD',
+    navy: '#000080',
+    oldlace: '#FDF5E6',
+    olive: '#808000',
+    olivedrab: '#6B8E23',
+    orange: '#FFA500',
+    orangered: '#FF4500',
+    orchid: '#DA70D6',
+    palegoldenrod: '#EEE8AA',
+    palegreen: '#98FB98',
+    paleturquoise: '#AFEEEE',
+    palevioletred: '#DB7093',
+    papayawhip: '#FFEFD5',
+    peachpuff: '#FFDAB9',
+    peru: '#CD853F',
+    pink: '#FFC0CB',
+    plum: '#DDA0DD',
+    powderblue: '#B0E0E6',
+    purple: '#800080',
+    rebeccapurple: '#639',
+    red: '#F00',
+    rosybrown: '#BC8F8F',
+    royalblue: '#4169E1',
+    saddlebrown: '#8B4513',
+    salmon: '#FA8072',
+    sandybrown: '#F4A460',
+    seagreen: '#2E8B57',
+    seashell: '#FFF5EE',
+    sienna: '#A0522D',
+    silver: '#C0C0C0',
+    skyblue: '#87CEEB',
+    slateblue: '#6A5ACD',
+    slategray: '#708090',
+    slategrey: '#708090',
+    snow: '#FFFAFA',
+    springgreen: '#00FF7F',
+    steelblue: '#4682B4',
+    tan: '#D2B48C',
+    teal: '#008080',
+    thistle: '#D8BFD8',
+    tomato: '#FF6347',
+    turquoise: '#40E0D0',
+    violet: '#EE82EE',
+    wheat: '#F5DEB3',
+    white: '#FFF',
+    whitesmoke: '#F5F5F5',
+    yellow: '#FF0',
+    yellowgreen: '#9ACD32'
+  };
+
+  /**
+   * Regex matching color in RGB or RGBA formats (ex: `rgb(0, 0, 0)`, `rgba(255, 100, 10, 0.5)`, `rgba( 255 , 100 , 10 , 0.5 )`, `rgb(1,1,1)`, `rgba(100%, 60%, 10%, 0.5)`)
+   * Also matching rgba(r g b / a) as per new specs
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/rgb
+   * Formal syntax at the time of writing:
+   * <rgb()> =
+   *  rgb( [ <percentage> | none ]{3} [ / [ <alpha-value> | none ] ]? )  |
+   *  rgb( [ <number> | none ]{3} [ / [ <alpha-value> | none ] ]? )
+   * <alpha-value> = <number> | <percentage>
+   *
+   * For learners this is how you can read this regex
+   * Regular expression for matching an rgba or rgb CSS color value
+   *
+   * /^          # Beginning of the string
+   * rgba?       # "rgb" or "rgba"
+   * \(\s*       # Opening parenthesis and optional whitespace
+   * (\d{0,3}    # 0 to three digits R channel
+   *  (?:\.\d+)? # Optional decimal with one or more digits
+   * )           # End of capturing group for the first color component
+   * %?          # Optional percent sign after the first color component
+   * \s*         # Optional whitespace
+   * [\s|,]      # Separator between color components can be a space or comma
+   * \s*         # Optional whitespace
+   * (\d{0,3}    # 0 to three digits G channel
+   *  (?:\.\d+)? # Optional decimal with one or more digits
+   * )           # End of capturing group for the second color component
+   * %?          # Optional percent sign after the second color component
+   * \s*         # Optional whitespace
+   * [\s|,]      # Separator between color components can be a space or comma
+   * \s*         # Optional whitespace
+   * (\d{0,3}    # 0 to three digits B channel
+   *  (?:\.\d+)? # Optional decimal with one or more digits
+   * )           # End of capturing group for the third color component
+   * %?          # Optional percent sign after the third color component
+   * \s*         # Optional whitespace
+   * (?:         # Beginning of non-capturing group for alpha value
+   *  \s*        # Optional whitespace
+   *  [,/]       # Comma or slash separator for alpha value
+   *  \s*        # Optional whitespace
+   *  (\d{0,3}   # Zero to three digits
+   *    (?:\.\d+)? # Optional decimal with one or more digits
+   *  )          # End of capturing group for alpha value
+   *  %?         # Optional percent sign after alpha value
+   *  \s*        # Optional whitespace
+   * )?          # End of non-capturing group for alpha value (optional)
+   * \)          # Closing parenthesis
+   * $           # End of the string
+   *
+   * The alpha channel can be in the format 0.4 .7 or 1 or 73%
+   *
+   * WARNING this regex doesn't fail on off spec colors. it matches everything that could be a color.
+   * So the spec does not allow for `rgba(30 , 45%  35, 49%)` but this will work anyways for us
+   */
+  const reRGBa = () => /^rgba?\(\s*(\d{0,3}(?:\.\d+)?%?)\s*[\s|,]\s*(\d{0,3}(?:\.\d+)?%?)\s*[\s|,]\s*(\d{0,3}(?:\.\d+)?%?)\s*(?:\s*[,/]\s*(\d{0,3}(?:\.\d+)?%?)\s*)?\)$/i;
+
+  /**
+   * Regex matching color in HSL or HSLA formats (ex: hsl(0, 0, 0), rgba(255, 100, 10, 0.5), rgba( 255 , 100 , 10 , 0.5 ), rgb(1,1,1), rgba(100%, 60%, 10%, 0.5))
+   * Also matching rgba(r g b / a) as per new specs
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/hsl
+   * Formal syntax at the time of writing:
+   * <hsl()> =
+   *   hsl( [ <hue> | none ] [ <percentage> | none ] [ <percentage> | none ] [ / [ <alpha-value> | none ] ]? )
+   *
+   * <hue> =
+   *   <number>  |
+   *   <angle>
+   *
+   * <alpha-value> =
+   *   <number>      |
+   *   <percentage>
+   *
+   * For learners this is how you can read this regex
+   * Regular expression for matching an hsla or hsl CSS color value
+   *
+   * /^hsla?\(         // Matches the beginning of the string and the opening parenthesis of "hsl" or "hsla"
+   * \s*               // Matches any whitespace characters (space, tab, etc.) zero or more times
+   * (\d{0,3}          // Hue: 0 to three digits - start capture in a group
+   * (?:\.\d+)?        // Hue: Optional (non capture group) decimal with one or more digits.
+   * (?:deg|turn|rad)? // Hue: Optionally include suffix deg or turn or rad
+   * )                 // Hue: End capture group
+   * \s*               // Matches any whitespace characters zero or more times
+   * [\s|,]            // Matches a space, tab or comma
+   * \s*               // Matches any whitespace characters zero or more times
+   * (\d{0,3}          // Saturation: 0 to three digits - start capture in a group
+   * (?:\.\d+)?        // Saturation: Optional decimal with one or more digits in a non-capturing group
+   * %?)               // Saturation: match optional % character and end capture group
+   * \s*               // Matches any whitespace characters zero or more times
+   * [\s|,]            // Matches a space, tab or comma
+   * \s*               // Matches any whitespace characters zero or more times
+   * (\d{0,3}          // Lightness: 0 to three digits - start capture in a group
+   * (?:\.\d+)?        // Lightness: Optional decimal with one or more digits in a non-capturing group
+   * %?)                // Lightness: match % character and end capture group
+   * \s*               // Matches any whitespace characters zero or more times
+   * (?:               // Alpha: Begins a non-capturing group for the alpha value
+   *   \s*             // Matches any whitespace characters zero or more times
+   *   [,/]            // Matches a comma or forward slash
+   *   \s*             // Matches any whitespace characters zero or more times
+   *   (\d*(?:\.\d+)?%?) // Matches zero or more digits, optionally followed by a decimal point and one or more digits, followed by an optional percentage sign and captures it in a group
+   *   \s*             // Matches any whitespace characters zero or more times
+   * )?                // Makes the alpha value group optional
+   * \)                // Matches the closing parenthesis
+   * $/i               // Matches the end of the string and sets the regular expression to case-insensitive mode
+   *
+   * WARNING this regex doesn't fail on off spec colors. It matches everything that could be a color.
+   * So the spec does not allow `hsl(30 , 45%  35, 49%)` but this will work anyways for us.
+   */
+  const reHSLa = () => /^hsla?\(\s*([+-]?\d{0,3}(?:\.\d+)?(?:deg|turn|rad)?)\s*[\s|,]\s*(\d{0,3}(?:\.\d+)?%?)\s*[\s|,]\s*(\d{0,3}(?:\.\d+)?%?)\s*(?:\s*[,/]\s*(\d*(?:\.\d+)?%?)\s*)?\)$/i;
+
+  /**
+   * Regex matching color in HEX format (ex: #FF5544CC, #FF5555, 010155, aff)
+   */
+  const reHex = () => /^#?(([0-9a-f]){3,4}|([0-9a-f]{2}){3,4})$/i;
+
+  /**
+   * @param {Number} p
+   * @param {Number} q
+   * @param {Number} t
+   * @return {Number}
+   */
+  const hue2rgb = (p, q, t) => {
+    if (t < 0) {
+      t += 1;
+    }
+    if (t > 1) {
+      t -= 1;
+    }
+    if (t < 1 / 6) {
+      return p + (q - p) * 6 * t;
+    }
+    if (t < 1 / 2) {
+      return q;
+    }
+    if (t < 2 / 3) {
+      return p + (q - p) * (2 / 3 - t) * 6;
+    }
+    return p;
+  };
+
+  /**
+   * Adapted from {@link https://gist.github.com/mjackson/5311256 https://gist.github.com/mjackson}
+   * @param {Number} r Red color value
+   * @param {Number} g Green color value
+   * @param {Number} b Blue color value
+   * @param {Number} a Alpha color value pass through
+   * @return {TRGBColorSource} Hsl color
+   */
+  const rgb2Hsl = (r, g, b, a) => {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    const maxValue = Math.max(r, g, b),
+      minValue = Math.min(r, g, b);
+    let h, s;
+    const l = (maxValue + minValue) / 2;
+    if (maxValue === minValue) {
+      h = s = 0; // achromatic
+    } else {
+      const d = maxValue - minValue;
+      s = l > 0.5 ? d / (2 - maxValue - minValue) : d / (maxValue + minValue);
+      switch (maxValue) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
+      }
+      h /= 6;
+    }
+    return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100), a];
+  };
+  const fromAlphaToFloat = function () {
+    let value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '1';
+    return parseFloat(value) / (value.endsWith('%') ? 100 : 1);
+  };
+
+  /**
+   * Convert a value in the inclusive range [0, 255] to hex
+   */
+  const hexify = value => Math.min(Math.round(value), 255).toString(16).toUpperCase().padStart(2, '0');
+
+  /**
+   * Calculate the grey average value for rgb and pass through alpha
+   */
+  const greyAverage = _ref => {
+    let [r, g, b, a = 1] = _ref;
+    const avg = Math.round(r * 0.3 + g * 0.59 + b * 0.11);
+    return [avg, avg, avg, a];
+  };
+
+  /**
+   * @class Color common color operations
+   * @tutorial {@link http://fabricjs.com/fabric-intro-part-2/#colors colors}
+   */
+  class Color {
+    /**
+     *
+     * @param {string} [color] optional in hex or rgb(a) or hsl format or from known color list
+     */
+    constructor(color) {
+      _defineProperty(this, "isUnrecognised", false);
+      if (!color) {
+        // we default to black as canvas does
+        this.setSource([0, 0, 0, 1]);
+      } else if (color instanceof Color) {
+        this.setSource([...color._source]);
+      } else if (Array.isArray(color)) {
+        const [r, g, b, a = 1] = color;
+        this.setSource([r, g, b, a]);
+      } else {
+        this.setSource(this._tryParsingColor(color));
+      }
+    }
+
+    /**
+     * @private
+     * @param {string} [color] Color value to parse
+     * @returns {TRGBAColorSource}
+     */
+    _tryParsingColor(color) {
+      color = color.toLowerCase();
+      if (color in ColorNameMap) {
+        color = ColorNameMap[color];
+      }
+      return color === 'transparent' ? [255, 255, 255, 0] : Color.sourceFromHex(color) || Color.sourceFromRgb(color) || Color.sourceFromHsl(color) ||
+      // color is not recognized
+      // we default to black as canvas does
+      // eslint-disable-next-line no-constant-binary-expression
+      (this.isUnrecognised = true) && [0, 0, 0, 1];
+    }
+
+    /**
+     * Returns source of this color (where source is an array representation; ex: [200, 200, 100, 1])
+     * @return {TRGBAColorSource}
+     */
+    getSource() {
+      return this._source;
+    }
+
+    /**
+     * Sets source of this color (where source is an array representation; ex: [200, 200, 100, 1])
+     * @param {TRGBAColorSource} source
+     */
+    setSource(source) {
+      this._source = source;
+    }
+
+    /**
+     * Returns color representation in RGB format
+     * @return {String} ex: rgb(0-255,0-255,0-255)
+     */
+    toRgb() {
+      const [r, g, b] = this.getSource();
+      return "rgb(".concat(r, ",").concat(g, ",").concat(b, ")");
+    }
+
+    /**
+     * Returns color representation in RGBA format
+     * @return {String} ex: rgba(0-255,0-255,0-255,0-1)
+     */
+    toRgba() {
+      return "rgba(".concat(this.getSource().join(','), ")");
+    }
+
+    /**
+     * Returns color representation in HSL format
+     * @return {String} ex: hsl(0-360,0%-100%,0%-100%)
+     */
+    toHsl() {
+      const [h, s, l] = rgb2Hsl(...this.getSource());
+      return "hsl(".concat(h, ",").concat(s, "%,").concat(l, "%)");
+    }
+
+    /**
+     * Returns color representation in HSLA format
+     * @return {String} ex: hsla(0-360,0%-100%,0%-100%,0-1)
+     */
+    toHsla() {
+      const [h, s, l, a] = rgb2Hsl(...this.getSource());
+      return "hsla(".concat(h, ",").concat(s, "%,").concat(l, "%,").concat(a, ")");
+    }
+
+    /**
+     * Returns color representation in HEX format
+     * @return {String} ex: FF5555
+     */
+    toHex() {
+      const fullHex = this.toHexa();
+      return fullHex.slice(0, 6);
+    }
+
+    /**
+     * Returns color representation in HEXA format
+     * @return {String} ex: FF5555CC
+     */
+    toHexa() {
+      const [r, g, b, a] = this.getSource();
+      return "".concat(hexify(r)).concat(hexify(g)).concat(hexify(b)).concat(hexify(Math.round(a * 255)));
+    }
+
+    /**
+     * Gets value of alpha channel for this color
+     * @return {Number} 0-1
+     */
+    getAlpha() {
+      return this.getSource()[3];
+    }
+
+    /**
+     * Sets value of alpha channel for this color
+     * @param {Number} alpha Alpha value 0-1
+     * @return {Color} thisArg
+     */
+    setAlpha(alpha) {
+      this._source[3] = alpha;
+      return this;
+    }
+
+    /**
+     * Transforms color to its grayscale representation
+     * @return {Color} thisArg
+     */
+    toGrayscale() {
+      this.setSource(greyAverage(this.getSource()));
+      return this;
+    }
+
+    /**
+     * Transforms color to its black and white representation
+     * @param {Number} threshold
+     * @return {Color} thisArg
+     */
+    toBlackWhite(threshold) {
+      const [average,,, a] = greyAverage(this.getSource()),
+        bOrW = average < (threshold || 127) ? 0 : 255;
+      this.setSource([bOrW, bOrW, bOrW, a]);
+      return this;
+    }
+
+    /**
+     * Overlays color with another color
+     * @param {String|Color} otherColor
+     * @return {Color} thisArg
+     */
+    overlayWith(otherColor) {
+      if (!(otherColor instanceof Color)) {
+        otherColor = new Color(otherColor);
+      }
+      const source = this.getSource(),
+        otherAlpha = 0.5,
+        otherSource = otherColor.getSource(),
+        [R, G, B] = source.map((value, index) => Math.round(value * (1 - otherAlpha) + otherSource[index] * otherAlpha));
+      this.setSource([R, G, B, source[3]]);
+      return this;
+    }
+
+    /**
+     * Returns new color object, when given a color in RGB format
+     * @memberOf Color
+     * @param {String} color Color value ex: rgb(0-255,0-255,0-255)
+     * @return {Color}
+     */
+    static fromRgb(color) {
+      return Color.fromRgba(color);
+    }
+
+    /**
+     * Returns new color object, when given a color in RGBA format
+     * @static
+     * @function
+     * @memberOf Color
+     * @param {String} color
+     * @return {Color}
+     */
+    static fromRgba(color) {
+      return new Color(Color.sourceFromRgb(color));
+    }
+
+    /**
+     * Returns array representation (ex: [100, 100, 200, 1]) of a color that's in RGB or RGBA format
+     * @memberOf Color
+     * @param {String} color Color value ex: rgb(0-255,0-255,0-255), rgb(0%-100%,0%-100%,0%-100%)
+     * @return {TRGBAColorSource | undefined} source
+     */
+    static sourceFromRgb(color) {
+      const match = color.match(reRGBa());
+      if (match) {
+        const [r, g, b] = match.slice(1, 4).map(value => {
+          const parsedValue = parseFloat(value);
+          return value.endsWith('%') ? Math.round(parsedValue * 2.55) : parsedValue;
+        });
+        return [r, g, b, fromAlphaToFloat(match[4])];
+      }
+    }
+
+    /**
+     * Returns new color object, when given a color in HSL format
+     * @param {String} color Color value ex: hsl(0-260,0%-100%,0%-100%)
+     * @memberOf Color
+     * @return {Color}
+     */
+    static fromHsl(color) {
+      return Color.fromHsla(color);
+    }
+
+    /**
+     * Returns new color object, when given a color in HSLA format
+     * @static
+     * @function
+     * @memberOf Color
+     * @param {String} color
+     * @return {Color}
+     */
+    static fromHsla(color) {
+      return new Color(Color.sourceFromHsl(color));
+    }
+
+    /**
+     * Returns array representation (ex: [100, 100, 200, 1]) of a color that's in HSL or HSLA format.
+     * Adapted from <a href="https://rawgithub.com/mjijackson/mjijackson.github.com/master/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript.html">https://github.com/mjijackson</a>
+     * @memberOf Color
+     * @param {String} color Color value ex: hsl(0-360,0%-100%,0%-100%) or hsla(0-360,0%-100%,0%-100%, 0-1)
+     * @return {TRGBAColorSource | undefined} source
+     * @see http://http://www.w3.org/TR/css3-color/#hsl-color
+     */
+    static sourceFromHsl(color) {
+      const match = color.match(reHSLa());
+      if (!match) {
+        return;
+      }
+      const match1degrees = Color.parseAngletoDegrees(match[1]);
+      const h = (match1degrees % 360 + 360) % 360 / 360,
+        s = parseFloat(match[2]) / 100,
+        l = parseFloat(match[3]) / 100;
+      let r, g, b;
+      if (s === 0) {
+        r = g = b = l;
+      } else {
+        const q = l <= 0.5 ? l * (s + 1) : l + s - l * s,
+          p = l * 2 - q;
+        r = hue2rgb(p, q, h + 1 / 3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1 / 3);
+      }
+      return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255), fromAlphaToFloat(match[4])];
+    }
+
+    /**
+     * Returns new color object, when given a color in HEX format
+     * @static
+     * @memberOf Color
+     * @param {String} color Color value ex: FF5555
+     * @return {Color}
+     */
+    static fromHex(color) {
+      return new Color(Color.sourceFromHex(color));
+    }
+
+    /**
+     * Returns array representation (ex: [100, 100, 200, 1]) of a color that's in HEX format
+     * @static
+     * @memberOf Color
+     * @param {String} color ex: FF5555 or FF5544CC (RGBa)
+     * @return {TRGBAColorSource | undefined} source
+     */
+    static sourceFromHex(color) {
+      if (color.match(reHex())) {
+        const value = color.slice(color.indexOf('#') + 1),
+          isShortNotation = value.length <= 4;
+        let expandedValue;
+        if (isShortNotation) {
+          expandedValue = value.split('').map(hex => hex + hex);
+        } else {
+          expandedValue = value.match(/.{2}/g);
+        }
+        const [r, g, b, a = 255] = expandedValue.map(hexCouple => parseInt(hexCouple, 16));
+        return [r, g, b, a / 255];
+      }
+    }
+
+    /**
+     * Converts a string that could be any angle notation (50deg, 0.5turn, 2rad)
+     * into degrees without the 'deg' suffix
+     * @static
+     * @memberOf Color
+     * @param {String} value ex: 0deg, 0.5turn, 2rad
+     * @return {Number} number in degrees or NaN if inputs are invalid
+     */
+    static parseAngletoDegrees(value) {
+      const lowercase = value.toLowerCase();
+      const numeric = parseFloat(lowercase);
+      if (lowercase.includes('rad')) {
+        return radiansToDegrees(numeric);
+      }
+      if (lowercase.includes('turn')) {
+        return numeric * 360;
+      }
+
+      // Value is probably just a number already in degrees eg '50'
+      return numeric;
+    }
+  }
+
+  /**
+   * Returns array of attributes for given svg that fabric parses
+   * @param {SVGElementName} type Type of svg element (eg. 'circle')
+   * @return {Array} string names of supported attributes
+   */
+  const getSvgAttributes = type => {
+    const commonAttributes = ['instantiated_by_use', 'style', 'id', 'class'];
+    switch (type) {
+      case 'linearGradient':
+        return commonAttributes.concat(['x1', 'y1', 'x2', 'y2', 'gradientUnits', 'gradientTransform']);
+      case 'radialGradient':
+        return commonAttributes.concat(['gradientUnits', 'gradientTransform', 'cx', 'cy', 'r', 'fx', 'fy', 'fr']);
+      case 'stop':
+        return commonAttributes.concat(['offset', 'stop-color', 'stop-opacity']);
+    }
+    return commonAttributes;
+  };
+
+  /**
+   * Converts from attribute value to pixel value if applicable.
+   * Returns converted pixels or original value not converted.
+   * @param {string} value number to operate on
+   * @param {number} fontSize
+   * @return {number}
+   */
+  const parseUnit = function (value) {
+    let fontSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_SVG_FONT_SIZE;
+    const unit = /\D{0,2}$/.exec(value),
+      number = parseFloat(value);
+    const dpi = config.DPI;
+    switch (unit === null || unit === void 0 ? void 0 : unit[0]) {
+      case 'mm':
+        return number * dpi / 25.4;
+      case 'cm':
+        return number * dpi / 2.54;
+      case 'in':
+        return number * dpi;
+      case 'pt':
+        return number * dpi / 72;
+      // or * 4 / 3
+
+      case 'pc':
+        return number * dpi / 72 * 12;
+      // or * 16
+
+      case 'em':
+        return number * fontSize;
+      default:
+        return number;
+    }
+  };
+  // align can be either none or undefined or a combination of mid/max
+  const parseAlign = align => {
+    //divide align in alignX and alignY
+    if (align && align !== NONE) {
+      return [align.slice(1, 4), align.slice(5, 8)];
+    } else if (align === NONE) {
+      return [align, align];
+    }
+    return ['Mid', 'Mid'];
+  };
+
+  /**
+   * Parse preserveAspectRatio attribute from element
+   * https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/preserveAspectRatio
+   * @param {string} attribute to be parsed
+   * @return {Object} an object containing align and meetOrSlice attribute
+   */
+  const parsePreserveAspectRatioAttribute = attribute => {
+    const [firstPart, secondPart] = attribute.trim().split(' ');
+    const [alignX, alignY] = parseAlign(firstPart);
+    return {
+      meetOrSlice: secondPart || 'meet',
+      alignX,
+      alignY
+    };
+  };
+
+  /**
+   * Adobe Illustrator (at least CS5) is unable to render rgba()-based fill values
+   * we work around it by "moving" alpha channel into opacity attribute and setting fill's alpha to 1
+   * @param prop
+   * @param value
+   * @param {boolean} inlineStyle The default is inline style, the separator used is ":", The other is "="
+   * @returns
+   */
+  const colorPropToSVG = function (prop, value) {
+    let inlineStyle = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    let colorValue;
+    let opacityValue;
+    if (!value) {
+      colorValue = 'none';
+    } else if (value.toLive) {
+      colorValue = "url(#SVGID_".concat(value.id, ")");
+    } else {
+      const color = new Color(value),
+        opacity = color.getAlpha();
+      colorValue = color.toRgb();
+      if (opacity !== 1) {
+        opacityValue = opacity.toString();
+      }
+    }
+    if (inlineStyle) {
+      return "".concat(prop, ": ").concat(colorValue, "; ").concat(opacityValue ? "".concat(prop, "-opacity: ").concat(opacityValue, "; ") : '');
+    } else {
+      return "".concat(prop, "=\"").concat(colorValue, "\" ").concat(opacityValue ? "".concat(prop, "-opacity=\"").concat(opacityValue, "\" ") : '');
+    }
+  };
+  const createSVGRect = function (color, _ref) {
+    let {
+      left,
+      top,
+      width,
+      height
+    } = _ref;
+    let precision = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : config.NUM_FRACTION_DIGITS;
+    const svgColor = colorPropToSVG(FILL, color, false);
+    const [x, y, w, h] = [left, top, width, height].map(value => toFixed(value, precision));
+    return "<rect ".concat(svgColor, " x=\"").concat(x, "\" y=\"").concat(y, "\" width=\"").concat(w, "\" height=\"").concat(h, "\"></rect>");
   };
 
   class FabricObjectSVGExportMixin {
@@ -6730,6 +6755,7 @@
      * Legacy identifier of the class. Prefer using utils like isType or instanceOf
      * Will be removed in fabric 7 or 8.
      * The setter exists to avoid type errors in old code and possibly current deserialization code.
+     * DO NOT build new code around this type value
      * @TODO add sustainable warning message
      * @type string
      * @deprecated
@@ -6846,8 +6872,8 @@
         // for sure this ALIASING_LIMIT is slightly creating problem
         // in situation in which the cache canvas gets an upper limit
         // also objectScale contains already scaleX and scaleY
-        width: neededX + ALIASING_LIMIT,
-        height: neededY + ALIASING_LIMIT,
+        width: Math.ceil(neededX + ALIASING_LIMIT),
+        height: Math.ceil(neededY + ALIASING_LIMIT),
         zoomX: objectScale.x,
         zoomY: objectScale.y,
         x: neededX,
@@ -6864,51 +6890,30 @@
     _updateCacheCanvas() {
       const canvas = this._cacheCanvas,
         context = this._cacheContext,
-        dims = this._limitCacheSize(this._getCacheCanvasDimensions()),
-        minCacheSize = config.minCacheSideLimit,
-        width = dims.width,
-        height = dims.height,
-        zoomX = dims.zoomX,
-        zoomY = dims.zoomY,
+        {
+          width,
+          height,
+          zoomX,
+          zoomY,
+          x,
+          y
+        } = this._limitCacheSize(this._getCacheCanvasDimensions()),
         dimensionsChanged = width !== canvas.width || height !== canvas.height,
         zoomChanged = this.zoomX !== zoomX || this.zoomY !== zoomY;
       if (!canvas || !context) {
         return false;
       }
-      let drawingWidth,
-        drawingHeight,
-        shouldRedraw = dimensionsChanged || zoomChanged,
-        additionalWidth = 0,
-        additionalHeight = 0,
-        shouldResizeCanvas = false;
-      if (dimensionsChanged) {
-        const canvasWidth = this._cacheCanvas.width,
-          canvasHeight = this._cacheCanvas.height,
-          sizeGrowing = width > canvasWidth || height > canvasHeight,
-          sizeShrinking = (width < canvasWidth * 0.9 || height < canvasHeight * 0.9) && canvasWidth > minCacheSize && canvasHeight > minCacheSize;
-        shouldResizeCanvas = sizeGrowing || sizeShrinking;
-        if (sizeGrowing && !dims.capped && (width > minCacheSize || height > minCacheSize)) {
-          additionalWidth = width * 0.1;
-          additionalHeight = height * 0.1;
-        }
-      }
-      if (isTextObject(this) && this.path) {
-        shouldRedraw = true;
-        shouldResizeCanvas = true;
-        // IMHO in those lines we are using zoomX and zoomY not the this version.
-        additionalWidth += this.getHeightOfLine(0) * this.zoomX;
-        additionalHeight += this.getHeightOfLine(0) * this.zoomY;
-      }
+      const shouldRedraw = dimensionsChanged || zoomChanged;
       if (shouldRedraw) {
-        if (shouldResizeCanvas) {
-          canvas.width = Math.ceil(width + additionalWidth);
-          canvas.height = Math.ceil(height + additionalHeight);
+        if (width !== canvas.width || height !== canvas.height) {
+          canvas.width = width;
+          canvas.height = height;
         } else {
           context.setTransform(1, 0, 0, 1, 0, 0);
           context.clearRect(0, 0, canvas.width, canvas.height);
         }
-        drawingWidth = dims.x / 2;
-        drawingHeight = dims.y / 2;
+        const drawingWidth = x / 2;
+        const drawingHeight = y / 2;
         this.cacheTranslationX = Math.round(canvas.width / 2 - drawingWidth) + drawingWidth;
         this.cacheTranslationY = Math.round(canvas.height / 2 - drawingHeight) + drawingHeight;
         context.translate(this.cacheTranslationX, this.cacheTranslationY);
@@ -7071,7 +7076,7 @@
         this.drawCacheOnCanvas(ctx);
       } else {
         this._removeCacheCanvas();
-        this.drawObject(ctx);
+        this.drawObject(ctx, false, {});
         this.dirty = false;
       }
       ctx.restore();
@@ -7085,7 +7090,25 @@
         this._createCacheCanvas();
       }
       if (this.isCacheDirty() && this._cacheContext) {
-        this.drawObject(this._cacheContext, options.forClipping);
+        const {
+          zoomX,
+          zoomY,
+          cacheTranslationX,
+          cacheTranslationY
+        } = this;
+        const {
+          width,
+          height
+        } = this._cacheCanvas;
+        this.drawObject(this._cacheContext, options.forClipping, {
+          zoomX,
+          zoomY,
+          cacheTranslationX,
+          cacheTranslationY,
+          width,
+          height,
+          parentClipPaths: []
+        });
         this.dirty = false;
       }
     }
@@ -7127,7 +7150,7 @@
     }
 
     /**
-     * When set to `true`, force the object to have its own cache, even if it is inside a group
+     * When returns `true`, force the object to have its own cache, even if it is inside a group
      * it may be needed when your object behave in a particular way on the cache and always needs
      * its own isolated canvas to render correctly.
      * Created to be overridden
@@ -7135,6 +7158,7 @@
      * @returns Boolean
      */
     needsItsOwnCache() {
+      // TODO re-evaluate this shadow condition
       if (this.paintFirst === STROKE && this.hasFill() && this.hasStroke() && !!this.shadow) {
         return true;
       }
@@ -7148,13 +7172,13 @@
      * Decide if the object should cache or not. Create its own cache level
      * objectCaching is a global flag, wins over everything
      * needsItsOwnCache should be used when the object drawing method requires
-     * a cache step. None of the fabric classes requires it.
+     * a cache step.
      * Generally you do not cache objects in groups because the group outside is cached.
      * Read as: cache if is needed, or if the feature is enabled but we are not already caching.
      * @return {Boolean}
      */
     shouldCache() {
-      this.ownCaching = this.needsItsOwnCache() || this.objectCaching && (!this.parent || !this.parent.isOnACache());
+      this.ownCaching = this.objectCaching && (!this.parent || !this.parent.isOnACache()) || this.needsItsOwnCache();
       return this.ownCaching;
     }
 
@@ -7173,7 +7197,7 @@
      * @param {CanvasRenderingContext2D} ctx Context to render on
      * @param {FabricObject} clipPath
      */
-    drawClipPathOnCache(ctx, clipPath) {
+    drawClipPathOnCache(ctx, clipPath, canvasWithClipPath) {
       ctx.save();
       // DEBUG: uncomment this line, comment the following
       // ctx.globalAlpha = 0.4
@@ -7182,14 +7206,8 @@
       } else {
         ctx.globalCompositeOperation = 'destination-in';
       }
-      //ctx.scale(1 / 2, 1 / 2);
-      if (clipPath.absolutePositioned) {
-        const m = invertTransform(this.calcTransformMatrix());
-        ctx.transform(m[0], m[1], m[2], m[3], m[4], m[5]);
-      }
-      clipPath.transform(ctx);
-      ctx.scale(1 / clipPath.zoomX, 1 / clipPath.zoomY);
-      ctx.drawImage(clipPath._cacheCanvas, -clipPath.cacheTranslationX, -clipPath.cacheTranslationY);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.drawImage(canvasWithClipPath, 0, 0);
       ctx.restore();
     }
 
@@ -7197,8 +7215,9 @@
      * Execute the drawing operation for an object on a specified context
      * @param {CanvasRenderingContext2D} ctx Context to render on
      * @param {boolean} forClipping apply clipping styles
+     * @param {DrawContext} context additional context for rendering
      */
-    drawObject(ctx, forClipping) {
+    drawObject(ctx, forClipping, context) {
       const originalFill = this.fill,
         originalStroke = this.stroke;
       if (forClipping) {
@@ -7209,9 +7228,27 @@
         this._renderBackground(ctx);
       }
       this._render(ctx);
-      this._drawClipPath(ctx, this.clipPath);
+      this._drawClipPath(ctx, this.clipPath, context);
       this.fill = originalFill;
       this.stroke = originalStroke;
+    }
+    createClipPathLayer(clipPath, context) {
+      const canvas = createCanvasElementFor(context);
+      const ctx = canvas.getContext('2d');
+      ctx.translate(context.cacheTranslationX, context.cacheTranslationY);
+      ctx.scale(context.zoomX, context.zoomY);
+      clipPath._cacheCanvas = canvas;
+      context.parentClipPaths.forEach(prevClipPath => {
+        prevClipPath.transform(ctx);
+      });
+      context.parentClipPaths.push(clipPath);
+      if (clipPath.absolutePositioned) {
+        const m = invertTransform(this.calcTransformMatrix());
+        ctx.transform(m[0], m[1], m[2], m[3], m[4], m[5]);
+      }
+      clipPath.transform(ctx);
+      clipPath.drawObject(ctx, true, context);
+      return canvas;
     }
 
     /**
@@ -7219,20 +7256,15 @@
      * @param {CanvasRenderingContext2D} ctx
      * @param {FabricObject} clipPath
      */
-    _drawClipPath(ctx, clipPath) {
+    _drawClipPath(ctx, clipPath, context) {
       if (!clipPath) {
         return;
       }
-      // needed to setup a couple of variables
-      // path canvas gets overridden with this one.
+      // needed to setup _transformDone
       // TODO find a better solution?
-      clipPath._set('canvas', this.canvas);
-      clipPath.shouldCache();
       clipPath._transformDone = true;
-      clipPath.renderCache({
-        forClipping: true
-      });
-      this.drawClipPathOnCache(ctx, clipPath);
+      const canvas = this.createClipPathLayer(clipPath, context);
+      this.drawClipPathOnCache(ctx, clipPath, canvas);
     }
 
     /**
@@ -7245,7 +7277,10 @@
     }
 
     /**
-     * Check if cache is dirty
+     * Check if cache is dirty and if is dirty clear the context.
+     * This check has a big side effect, it changes the underlying cache canvas if necessary.
+     * Do not call this method on your own to check if the cache is dirty, because if it is,
+     * it is also going to wipe the cache. This is badly designed and needs to be fixed.
      * @param {Boolean} skipCanvas skip canvas checks because this object is painted
      * on parent canvas.
      */
@@ -7355,10 +7390,6 @@
     _setLineDash(ctx, dashArray) {
       if (!dashArray || dashArray.length === 0) {
         return;
-      }
-      // Spec requires the concatenation of two copies of the dash array when the number of elements is odd
-      if (1 & dashArray.length) {
-        dashArray.push(...dashArray);
       }
       ctx.setLineDash(dashArray);
     }
@@ -7504,14 +7535,15 @@
     _applyPatternForTransformedGradient(ctx, filler) {
       var _pCtx$createPattern;
       const dims = this._limitCacheSize(this._getCacheCanvasDimensions()),
-        pCanvas = createCanvasElement(),
         retinaScaling = this.getCanvasRetinaScaling(),
         width = dims.x / this.scaleX / retinaScaling,
-        height = dims.y / this.scaleY / retinaScaling;
-      // in case width and height are less than 1px, we have to round up.
-      // since the pattern is no-repeat, this is fine
-      pCanvas.width = Math.ceil(width);
-      pCanvas.height = Math.ceil(height);
+        height = dims.y / this.scaleY / retinaScaling,
+        pCanvas = createCanvasElementFor({
+          // in case width and height are less than 1px, we have to round up.
+          // since the pattern is no-repeat, this is fine
+          width: Math.ceil(width),
+          height: Math.ceil(height)
+        });
       const pCtx = pCanvas.getContext('2d');
       if (!pCtx) {
         return;
@@ -7680,6 +7712,10 @@
     toDataURL() {
       let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       return toDataURL(this.toCanvasElement(options), options.format || 'png', options.quality || 1);
+    }
+    toBlob() {
+      let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      return toBlob(this.toCanvasElement(options), options.format || 'png', options.quality || 1);
     }
 
     /**
@@ -8279,8 +8315,6 @@
     } else {
       size = xSize;
     }
-    // this is still wrong
-    ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(myLeft, myTop, size / 2, 0, twoMathPi, false);
     ctx[methodName]();
@@ -8313,8 +8347,6 @@
     ctx.save();
     ctx.fillStyle = styleOverride.cornerColor || fabricObject.cornerColor || '';
     ctx.strokeStyle = styleOverride.cornerStrokeColor || fabricObject.cornerStrokeColor || '';
-    // this is still wrong
-    ctx.lineWidth = 1;
     ctx.translate(left, top);
     //  angle is relative to canvas plane
     const angle = fabricObject.getTotalAngle();
@@ -9442,7 +9474,7 @@
       const options = qrDecompose(matrix);
       ctx.save();
       ctx.translate(options.translateX, options.translateY);
-      ctx.lineWidth = 1 * this.borderScaleFactor;
+      ctx.lineWidth = this.borderScaleFactor; // 1 * this.borderScaleFactor;
       // since interactive groups have been introduced, an object could be inside a group and needing controls
       // the following equality check `this.group === this.parent` covers:
       // object without a group ( undefined === undefined )
@@ -11328,7 +11360,6 @@
    * This layout manager doesn't do anything and therefore keeps the exact layout the group had when {@link Group#toObject} was called.
    */
   class NoopLayoutManager extends LayoutManager {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     performLayout() {}
   }
   const groupDefaultValues = {
@@ -11665,9 +11696,9 @@
     }
 
     /**
-     * Decide if the object should cache or not. Create its own cache level
+     * Decide if the group should cache or not. Create its own cache level
      * needsItsOwnCache should be used when the object drawing method requires
-     * a cache step. None of the fabric classes requires it.
+     * a cache step.
      * Generally you do not cache objects in groups because the group is already cached.
      * @return {Boolean}
      */
@@ -11712,21 +11743,22 @@
      * Execute the drawing operation for an object on a specified context
      * @param {CanvasRenderingContext2D} ctx Context to render on
      */
-    drawObject(ctx) {
+    drawObject(ctx, forClipping, context) {
       this._renderBackground(ctx);
       for (let i = 0; i < this._objects.length; i++) {
         var _this$canvas;
+        const obj = this._objects[i];
         // TODO: handle rendering edge case somehow
-        if ((_this$canvas = this.canvas) !== null && _this$canvas !== void 0 && _this$canvas.preserveObjectStacking && this._objects[i].group !== this) {
+        if ((_this$canvas = this.canvas) !== null && _this$canvas !== void 0 && _this$canvas.preserveObjectStacking && obj.group !== this) {
           ctx.save();
           ctx.transform(...invertTransform(this.calcTransformMatrix()));
-          this._objects[i].render(ctx);
+          obj.render(ctx);
           ctx.restore();
-        } else if (this._objects[i].group === this) {
-          this._objects[i].render(ctx);
+        } else if (obj.group === this) {
+          obj.render(ctx);
         }
       }
-      this._drawClipPath(ctx, this.clipPath);
+      this._drawClipPath(ctx, this.clipPath, context);
     }
 
     /**
@@ -13038,6 +13070,7 @@
     string: lang_string,
     stylesFromArray: stylesFromArray,
     stylesToArray: stylesToArray,
+    toBlob: toBlob,
     toDataURL: toDataURL,
     toFixed: toFixed,
     transformPath: transformPath,
@@ -13185,6 +13218,7 @@
     fireMiddleClick: false,
     enablePointerEvents: false,
     containerClass: 'canvas-container',
+    // turn to true for fabric 7.0
     preserveObjectStacking: false
   };
 
@@ -14429,6 +14463,12 @@
        * @type FabricObject
        * @private
        */
+      /**
+       * a boolean that keeps track of the click state during a cycle of mouse down/up.
+       * If a mouse move occurs it becomes false.
+       * Is true by default, turns false on mouse move.
+       * Used to determine if a mouseUp is a click
+       */
       _defineProperty(this, "_isClick", void 0);
       _defineProperty(this, "textEditingManager", new TextEditingManager(this));
       ['_onMouseDown', '_onTouchStart', '_onMouseMove', '_onMouseUp', '_onTouchEnd', '_onResize',
@@ -14437,7 +14477,7 @@
       // '_onShake',
       // '_onLongPress',
       // '_onOrientationChange',
-      '_onMouseWheel', '_onMouseOut', '_onMouseEnter', '_onContextMenu', '_onDoubleClick', '_onDragStart', '_onDragEnd', '_onDragProgress', '_onDragOver', '_onDragEnter', '_onDragLeave', '_onDrop'].forEach(eventHandler => {
+      '_onMouseWheel', '_onMouseOut', '_onMouseEnter', '_onContextMenu', '_onClick', '_onDragStart', '_onDragEnd', '_onDragProgress', '_onDragOver', '_onDragEnter', '_onDragLeave', '_onDrop'].forEach(eventHandler => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         this[eventHandler] = this[eventHandler].bind(this);
       });
@@ -14462,7 +14502,9 @@
       functor(canvasElement, "".concat(eventTypePrefix, "enter"), this._onMouseEnter);
       functor(canvasElement, 'wheel', this._onMouseWheel);
       functor(canvasElement, 'contextmenu', this._onContextMenu);
-      functor(canvasElement, 'dblclick', this._onDoubleClick);
+      functor(canvasElement, 'click', this._onClick);
+      // decide if to remove in fabric 7.0
+      functor(canvasElement, 'dblclick', this._onClick);
       functor(canvasElement, 'dragstart', this._onDragStart);
       functor(canvasElement, 'dragend', this._onDragEnd);
       functor(canvasElement, 'dragover', this._onDragOver);
@@ -14486,7 +14528,7 @@
     }
 
     /**
-     * Removes all event listeners
+     * Removes all event listeners, used when disposing the instance
      */
     removeListeners() {
       this.addOrRemove(removeListener, 'remove');
@@ -14497,6 +14539,7 @@
       removeListener(doc, 'touchend', this._onTouchEnd, addEventOptions);
       removeListener(doc, "".concat(eventTypePrefix, "move"), this._onMouseMove, addEventOptions);
       removeListener(doc, 'touchmove', this._onMouseMove, addEventOptions);
+      clearTimeout(this._willAddMouseDown);
     }
 
     /**
@@ -14810,9 +14853,12 @@
      * @private
      * @param {Event} e Event object fired on mousedown
      */
-    _onDoubleClick(e) {
+    _onClick(e) {
+      const clicks = e.detail;
+      if (clicks > 3 || clicks < 2) return;
       this._cacheTransformEventData(e);
-      this._handleEvent(e, 'dblclick');
+      clicks == 2 && e.type === 'dblclick' && this._handleEvent(e, 'dblclick');
+      clicks == 3 && this._handleEvent(e, 'tripleclick');
       this._resetTransformEventData();
     }
 
@@ -14859,17 +14905,28 @@
      * @param {Event} e Event object fired on mousedown
      */
     _onTouchStart(e) {
-      e.preventDefault();
+      // we will prevent scrolling if allowTouchScrolling is not enabled and
+      let shouldPreventScrolling = !this.allowTouchScrolling;
+      const currentActiveObject = this._activeObject;
       if (this.mainTouchId === undefined) {
         this.mainTouchId = this.getPointerId(e);
       }
       this.__onMouseDown(e);
+      // after executing fabric logic for mouse down let's see
+      // if we didn't change target or if we are drawing
+      // we want to prevent scrolling anyway
+      if (this.isDrawingMode || currentActiveObject && this._target === currentActiveObject) {
+        shouldPreventScrolling = true;
+      }
+      // prevent default, will block scrolling from start
+      shouldPreventScrolling && e.preventDefault();
       this._resetTransformEventData();
       const canvasElement = this.upperCanvasEl,
         eventTypePrefix = this._getEventPrefix();
       const doc = getDocumentFromElement(canvasElement);
       addListener(doc, 'touchend', this._onTouchEnd, addEventOptions);
-      addListener(doc, 'touchmove', this._onMouseMove, addEventOptions);
+      // if we scroll don't register the touch move event
+      shouldPreventScrolling && addListener(doc, 'touchmove', this._onMouseMove, addEventOptions);
       // Unbind mousedown to prevent double triggers from touch devices
       removeListener(canvasElement, "".concat(eventTypePrefix, "down"), this._onMouseDown);
     }
@@ -15070,10 +15127,10 @@
      * @param {TPointerEvent} e event from mouse
      * @param {TPointerEventNames} eventType
      */
-    _handleEvent(e, eventType) {
+    _handleEvent(e, eventType, extraData) {
       const target = this._target,
         targets = this.targets || [],
-        options = _objectSpread2(_objectSpread2({
+        options = _objectSpread2(_objectSpread2(_objectSpread2({
           e,
           target,
           subTargets: targets
@@ -15084,7 +15141,7 @@
           currentTarget: this.findTarget(e),
           // set by the preceding `findTarget` call
           currentSubTargets: this.targets
-        } : {});
+        } : {}), eventType === 'down:before' || eventType === 'down' ? extraData : {});
       this.fire("mouse:".concat(eventType), options);
       // this may be a little be more complicated of what we want to handle
       target && target.fire("mouse".concat(eventType), options);
@@ -15109,7 +15166,9 @@
         e,
         pointer
       });
-      this._handleEvent(e, 'down');
+      this._handleEvent(e, 'down', {
+        alreadySelected: false
+      });
     }
 
     /**
@@ -15160,13 +15219,15 @@
       this._cacheTransformEventData(e);
       this._handleEvent(e, 'down:before');
       let target = this._target;
-
+      let alreadySelected = !!target && target === this._activeObject;
       // if right/middle click just fire events
       const {
         button
       } = e;
       if (button) {
-        (this.fireMiddleClick && button === 1 || this.fireRightClick && button === 2) && this._handleEvent(e, 'down');
+        (this.fireMiddleClick && button === 1 || this.fireRightClick && button === 2) && this._handleEvent(e, 'down', {
+          alreadySelected
+        });
         this._resetTransformEventData();
         return;
       }
@@ -15207,8 +15268,10 @@
           deltaX: 0
         };
       }
+
+      // check again because things could have changed
+      alreadySelected = !!target && target === this._activeObject;
       if (target) {
-        const alreadySelected = target === this._activeObject;
         if (target.selectable && target.activeOn === 'down') {
           this.setActiveObject(target, e);
         }
@@ -15224,7 +15287,9 @@
       //  we clear `_objectsToRender` in case of a change in order to repopulate it at rendering
       //  run before firing the `down` event to give the dev a chance to populate it themselves
       shouldRender && (this._objectsToRender = undefined);
-      this._handleEvent(e, 'down');
+      this._handleEvent(e, 'down', {
+        alreadySelected: alreadySelected
+      });
       // we must renderAll so that we update the visuals
       shouldRender && this.requestRenderAll();
     }
@@ -15234,9 +15299,7 @@
      * @private
      */
     _resetTransformEventData() {
-      this._target = undefined;
-      this._pointer = undefined;
-      this._absolutePointer = undefined;
+      this._target = this._pointer = this._absolutePointer = undefined;
     }
 
     /**
@@ -15539,7 +15602,7 @@
           }
           this._fireSelectionEvents(prevActiveObjects, e);
         } else {
-          activeObject.exitEditing && activeObject.exitEditing();
+          activeObject.isEditing && activeObject.exitEditing();
           // add the active object and the target to the active selection and set it as the active object
           const klass = classRegistry.getClass('ActiveSelection');
           const newActiveSelection = new klass([], {
@@ -18440,8 +18503,6 @@
      * has no other properties, then it is also deleted.  Finally,
      * if the line containing that character has no other characters
      * then it also is deleted.
-     *
-     * @param {string} property The property to compare between characters and text.
      */
     cleanStyle(property) {
       if (!this.styles) {
@@ -18487,7 +18548,6 @@
         graphemeCount += this._textLines[i].length;
       }
       if (allStyleObjectPropertiesMatch && stylesCount === graphemeCount) {
-        // @ts-expect-error conspiracy theory of TS
         this[property] = stylePropertyValue;
         this.removeStyle(property);
       }
@@ -18665,11 +18725,20 @@
       return this._wrapSVGTextAndBg(textAndBg);
     }
     toSVG(reviver) {
-      return this._createBaseSVGMarkup(this._toSVG(), {
-        reviver,
-        noStyle: true,
-        withShadow: true
-      });
+      const textSvg = this._createBaseSVGMarkup(this._toSVG(), {
+          reviver,
+          noStyle: true,
+          withShadow: true
+        }),
+        path = this.path;
+      if (path) {
+        return textSvg + path._createBaseSVGMarkup(path._toSVG(), {
+          reviver,
+          withShadow: true,
+          additionalTransform: matrixToSVG(this.calcOwnMatrix())
+        });
+      }
+      return textSvg;
     }
     _getSVGLeftTopOffsets() {
       return {
@@ -18720,12 +18789,32 @@
         textBgRects
       };
     }
-    _createTextCharSpan(char, styleDecl, left, top) {
+    _createTextCharSpan(char, styleDecl, left, top, charBox) {
+      const numFractionDigit = config.NUM_FRACTION_DIGITS;
       const styleProps = this.getSvgSpanStyles(styleDecl, char !== char.trim() || !!char.match(multipleSpacesRegex)),
         fillStyles = styleProps ? "style=\"".concat(styleProps, "\"") : '',
         dy = styleDecl.deltaY,
-        dySpan = dy ? " dy=\"".concat(toFixed(dy, config.NUM_FRACTION_DIGITS), "\" ") : '';
-      return "<tspan x=\"".concat(toFixed(left, config.NUM_FRACTION_DIGITS), "\" y=\"").concat(toFixed(top, config.NUM_FRACTION_DIGITS), "\" ").concat(dySpan).concat(fillStyles, ">").concat(escapeXml(char), "</tspan>");
+        dySpan = dy ? " dy=\"".concat(toFixed(dy, numFractionDigit), "\" ") : '',
+        {
+          angle,
+          renderLeft,
+          renderTop,
+          width
+        } = charBox;
+      let angleAttr = '';
+      if (renderLeft !== undefined) {
+        const wBy2 = width / 2;
+        angle && (angleAttr = " rotate=\"".concat(toFixed(radiansToDegrees(angle), numFractionDigit), "\""));
+        const m = createRotateMatrix({
+          angle: radiansToDegrees(angle)
+        });
+        m[4] = renderLeft;
+        m[5] = renderTop;
+        const renderPoint = new Point(-wBy2, 0).transform(m);
+        left = renderPoint.x;
+        top = renderPoint.y;
+      }
+      return "<tspan x=\"".concat(toFixed(left, numFractionDigit), "\" y=\"").concat(toFixed(top, numFractionDigit), "\" ").concat(dySpan).concat(angleAttr).concat(fillStyles, ">").concat(escapeXml(char), "</tspan>");
     }
     _setSVGTextLineText(textSpans, lineIndex, textLeftOffset, textTopOffset) {
       const lineHeight = this.getHeightOfLine(lineIndex),
@@ -18740,7 +18829,7 @@
         timeToRender;
       textTopOffset += lineHeight * (1 - this._fontSizeFraction) / this.lineHeight;
       for (let i = 0, len = line.length - 1; i <= len; i++) {
-        timeToRender = i === len || this.charSpacing;
+        timeToRender = i === len || this.charSpacing || this.path;
         charsToRender += line[i];
         charBox = this.__charBounds[lineIndex][i];
         if (boxWidth === 0) {
@@ -18755,14 +18844,14 @@
           }
         }
         if (!timeToRender) {
-          // if we have charSpacing, we render char by char
+          // if we have charSpacing or a path, we render char by char
           actualStyle = actualStyle || this.getCompleteStyleDeclaration(lineIndex, i);
           nextStyle = this.getCompleteStyleDeclaration(lineIndex, i + 1);
           timeToRender = hasStyleChanged(actualStyle, nextStyle, true);
         }
         if (timeToRender) {
           style = this._getStyleDeclaration(lineIndex, i);
-          textSpans.push(this._createTextCharSpan(charsToRender, style, textLeftOffset, textTopOffset));
+          textSpans.push(this._createTextCharSpan(charsToRender, style, textLeftOffset, textTopOffset, charBox));
           charsToRender = '';
           actualStyle = nextStyle;
           if (this.direction === 'rtl') {
@@ -18865,8 +18954,10 @@
    */
   function getMeasuringContext() {
     if (!measuringContext) {
-      const canvas = createCanvasElement();
-      canvas.width = canvas.height = 0;
+      const canvas = createCanvasElementFor({
+        width: 0,
+        height: 0
+      });
       measuringContext = canvas.getContext('2d');
     }
     return measuringContext;
@@ -19599,10 +19690,13 @@
      * @return {CanvasPattern} a pattern to use as fill/stroke style
      */
     _applyPatternGradientTransformText(filler) {
-      const pCanvas = createCanvasElement(),
-        // TODO: verify compatibility with strokeUniform
-        width = this.width + this.strokeWidth,
+      // TODO: verify compatibility with strokeUniform
+      const width = this.width + this.strokeWidth,
         height = this.height + this.strokeWidth,
+        pCanvas = createCanvasElementFor({
+          width,
+          height
+        }),
         pCtx = pCanvas.getContext('2d');
       pCanvas.width = width;
       pCanvas.height = height;
@@ -20503,6 +20597,10 @@
       _defineProperty(this, "_currentCursorOpacity", 1);
     }
     /**
+     * Keeps track if the IText object was selected before the actual click.
+     * This because we want to delay enter editing by a click.
+     */
+    /**
      * Initializes all the interactive behavior of IText
      */
     initBehavior() {
@@ -20616,6 +20714,14 @@
     }
 
     /**
+     * Selects entire text and updates the visual state
+     */
+    cmdAll() {
+      this.selectAll();
+      this.renderCursorOrSelection();
+    }
+
+    /**
      * Returns selected text
      * @return {String}
      */
@@ -20722,12 +20828,12 @@
     }
 
     /**
-     * TODO fix: selectionStart set as 0 will be ignored?
-     * Selects a word based on the index
+     * Selects the word that contains the char at index selectionStart
      * @param {Number} selectionStart Index of a character
      */
     selectWord(selectionStart) {
-      selectionStart = selectionStart || this.selectionStart;
+      var _selectionStart;
+      selectionStart = (_selectionStart = selectionStart) !== null && _selectionStart !== void 0 ? _selectionStart : this.selectionStart;
       // search backwards
       const newSelectionStart = this.searchWordBoundary(selectionStart, -1),
         // search forward
@@ -20736,23 +20842,23 @@
       this.selectionEnd = newSelectionEnd;
       this._fireSelectionChanged();
       this._updateTextarea();
+      // remove next major, for now it renders twice :(
       this.renderCursorOrSelection();
     }
 
     /**
-     * TODO fix: selectionStart set as 0 will be ignored?
-     * Selects a line based on the index
+     * Selects the line that contains selectionStart
      * @param {Number} selectionStart Index of a character
      */
     selectLine(selectionStart) {
-      selectionStart = selectionStart || this.selectionStart;
+      var _selectionStart2;
+      selectionStart = (_selectionStart2 = selectionStart) !== null && _selectionStart2 !== void 0 ? _selectionStart2 : this.selectionStart;
       const newSelectionStart = this.findLineBoundaryLeft(selectionStart),
         newSelectionEnd = this.findLineBoundaryRight(selectionStart);
       this.selectionStart = newSelectionStart;
       this.selectionEnd = newSelectionEnd;
       this._fireSelectionChanged();
       this._updateTextarea();
-      return this;
     }
 
     /**
@@ -20762,6 +20868,24 @@
       if (this.isEditing || !this.editable) {
         return;
       }
+      this.enterEditingImpl();
+      this.fire('editing:entered', e ? {
+        e
+      } : undefined);
+      this._fireSelectionChanged();
+      if (this.canvas) {
+        this.canvas.fire('text:editing:entered', {
+          target: this,
+          e
+        });
+        this.canvas.requestRenderAll();
+      }
+    }
+
+    /**
+     * runs the actual logic that enter from editing state, see {@link enterEditing}
+     */
+    enterEditingImpl() {
       if (this.canvas) {
         this.canvas.calcOffset();
         this.canvas.textEditingManager.exitTextEditing();
@@ -20775,17 +20899,6 @@
       this._setEditingProps();
       this._textBeforeEdit = this.text;
       this._tick();
-      this.fire('editing:entered', e ? {
-        e
-      } : undefined);
-      this._fireSelectionChanged();
-      if (this.canvas) {
-        this.canvas.fire('text:editing:entered', {
-          target: this,
-          e
-        });
-        this.canvas.requestRenderAll();
-      }
     }
 
     /**
@@ -21006,6 +21119,9 @@
 
     /**
      * runs the actual logic that exits from editing state, see {@link exitEditing}
+     * Please use exitEditingImpl, this function was kept to avoid breaking changes.
+     * Will be removed in fabric 7.0
+     * @deprecated use "exitEditingImpl"
      */
     _exitEditing() {
       const hiddenTextarea = this.hiddenTextarea;
@@ -21021,10 +21137,10 @@
     }
 
     /**
-     * Exits from editing state and fires relevant events
+     * runs the actual logic that exits from editing state, see {@link exitEditing}
+     * But it does not fire events
      */
-    exitEditing() {
-      const isTextChanged = this._textBeforeEdit !== this.text;
+    exitEditingImpl() {
       this._exitEditing();
       this.selectionEnd = this.selectionStart;
       this._restoreEditingProps();
@@ -21032,6 +21148,14 @@
         this.initDimensions();
         this.setCoords();
       }
+    }
+
+    /**
+     * Exits from editing state and fires relevant events
+     */
+    exitEditing() {
+      const isTextChanged = this._textBeforeEdit !== this.text;
+      this.exitEditingImpl();
       this.fire('editing:exited');
       isTextChanged && this.fire(MODIFIED);
       if (this.canvas) {
@@ -21457,10 +21581,8 @@
       }
       const keyMap = this.direction === 'rtl' ? this.keysMapRtl : this.keysMap;
       if (e.keyCode in keyMap) {
-        // @ts-expect-error legacy method calling pattern
         this[keyMap[e.keyCode]](e);
       } else if (e.keyCode in this.ctrlKeysMapDown && (e.ctrlKey || e.metaKey)) {
-        // @ts-expect-error legacy method calling pattern
         this[this.ctrlKeysMapDown[e.keyCode]](e);
       } else {
         return;
@@ -21489,7 +21611,6 @@
         return;
       }
       if (e.keyCode in this.ctrlKeysMapUp && (e.ctrlKey || e.metaKey)) {
-        // @ts-expect-error legacy method calling pattern
         this[this.ctrlKeysMapUp[e.keyCode]](e);
       } else {
         return;
@@ -21505,6 +21626,11 @@
      */
     onInput(e) {
       const fromPaste = this.fromPaste;
+      const {
+        value,
+        selectionStart,
+        selectionEnd
+      } = this.hiddenTextarea;
       this.fromPaste = false;
       e && e.stopPropagation();
       if (!this.isEditing) {
@@ -21526,27 +21652,27 @@
         return;
       }
       // decisions about style changes.
-      const nextText = this._splitTextIntoLines(this.hiddenTextarea.value).graphemeText,
+      const nextText = this._splitTextIntoLines(value).graphemeText,
         charCount = this._text.length,
         nextCharCount = nextText.length,
-        selectionStart = this.selectionStart,
-        selectionEnd = this.selectionEnd,
-        selection = selectionStart !== selectionEnd;
+        _selectionStart = this.selectionStart,
+        _selectionEnd = this.selectionEnd,
+        selection = _selectionStart !== _selectionEnd;
       let copiedStyle,
         removedText,
         charDiff = nextCharCount - charCount,
         removeFrom,
         removeTo;
-      const textareaSelection = this.fromStringToGraphemeSelection(this.hiddenTextarea.selectionStart, this.hiddenTextarea.selectionEnd, this.hiddenTextarea.value);
-      const backDelete = selectionStart > textareaSelection.selectionStart;
+      const textareaSelection = this.fromStringToGraphemeSelection(selectionStart, selectionEnd, value);
+      const backDelete = _selectionStart > textareaSelection.selectionStart;
       if (selection) {
-        removedText = this._text.slice(selectionStart, selectionEnd);
-        charDiff += selectionEnd - selectionStart;
+        removedText = this._text.slice(_selectionStart, _selectionEnd);
+        charDiff += _selectionEnd - _selectionStart;
       } else if (nextCharCount < charCount) {
         if (backDelete) {
-          removedText = this._text.slice(selectionEnd + charDiff, selectionEnd);
+          removedText = this._text.slice(_selectionEnd + charDiff, _selectionEnd);
         } else {
-          removedText = this._text.slice(selectionStart, selectionStart - charDiff);
+          removedText = this._text.slice(_selectionStart, _selectionStart - charDiff);
         }
       }
       const insertedText = nextText.slice(textareaSelection.selectionEnd - charDiff, textareaSelection.selectionEnd);
@@ -21555,7 +21681,7 @@
           // let's copy some style before deleting.
           // we want to copy the style before the cursor OR the style at the cursor if selection
           // is bigger than 0.
-          copiedStyle = this.getSelectionStyles(selectionStart, selectionStart + 1, false);
+          copiedStyle = this.getSelectionStyles(_selectionStart, _selectionStart + 1, false);
           // now duplicate the style one for each inserted text.
           copiedStyle = insertedText.map(() =>
           // this return an array of references, but that is fine since we are
@@ -21563,15 +21689,15 @@
           copiedStyle[0]);
         }
         if (selection) {
-          removeFrom = selectionStart;
-          removeTo = selectionEnd;
+          removeFrom = _selectionStart;
+          removeTo = _selectionEnd;
         } else if (backDelete) {
           // detect differences between forwardDelete and backDelete
-          removeFrom = selectionEnd - removedText.length;
-          removeTo = selectionEnd;
+          removeFrom = _selectionEnd - removedText.length;
+          removeTo = _selectionEnd;
         } else {
-          removeFrom = selectionEnd;
-          removeTo = selectionEnd + removedText.length;
+          removeFrom = _selectionEnd;
+          removeTo = _selectionEnd + removedText.length;
         }
         this.removeStyleFromTo(removeFrom, removeTo);
       }
@@ -21582,7 +21708,7 @@
         if (fromPaste && insertedText.join('') === copyPasteData.copiedText && !config.disableStyleCopyPaste) {
           copiedStyle = copyPasteData.copiedTextStyle;
         }
-        this.insertNewStyleBlock(insertedText, selectionStart, copiedStyle);
+        this.insertNewStyleBlock(insertedText, _selectionStart, copiedStyle);
       }
       updateAndFire();
     }
@@ -21969,19 +22095,9 @@
     initBehavior() {
       // Initializes event handlers related to cursor or selection
       this.on('mousedown', this._mouseDownHandler);
-      this.on('mousedown:before', this._mouseDownHandlerBefore);
       this.on('mouseup', this.mouseUpHandler);
       this.on('mousedblclick', this.doubleClickHandler);
-      this.on('tripleclick', this.tripleClickHandler);
-
-      // Initializes "dbclick" event handler
-      this.__lastClickTime = +new Date();
-      // for triple click
-      this.__lastLastClickTime = +new Date();
-      this.__lastPointer = {};
-      this.on('mousedown', this.onMouseDown);
-
-      // @ts-expect-error in reality it is an IText instance
+      this.on('mousetripleclick', this.tripleClickHandler);
       this.draggableTextDelegate = new DraggableTextDelegate(this);
       super.initBehavior();
     }
@@ -22015,29 +22131,6 @@
     }
 
     /**
-     * Default event handler to simulate triple click
-     * @private
-     */
-    onMouseDown(options) {
-      if (!this.canvas) {
-        return;
-      }
-      this.__newClickTime = +new Date();
-      const newPointer = options.pointer;
-      if (this.isTripleClick(newPointer)) {
-        this.fire('tripleclick', options);
-        stopEvent(options.e);
-      }
-      this.__lastLastClickTime = this.__lastClickTime;
-      this.__lastClickTime = this.__newClickTime;
-      this.__lastPointer = newPointer;
-      this.__lastSelected = this.selected && !this.getActiveControl();
-    }
-    isTripleClick(newPointer) {
-      return this.__newClickTime - this.__lastClickTime < 500 && this.__lastClickTime - this.__lastLastClickTime < 500 && this.__lastPointer.x === newPointer.x && this.__lastPointer.y === newPointer.y;
-    }
-
-    /**
      * Default handler for double click, select a word
      */
     doubleClickHandler(options) {
@@ -22045,6 +22138,7 @@
         return;
       }
       this.selectWord(this.getSelectionStartFromPointer(options.e));
+      this.renderCursorOrSelection();
     }
 
     /**
@@ -22055,6 +22149,7 @@
         return;
       }
       this.selectLine(this.getSelectionStartFromPointer(options.e));
+      this.renderCursorOrSelection();
     }
 
     /**
@@ -22067,7 +22162,8 @@
      */
     _mouseDownHandler(_ref) {
       let {
-        e
+        e,
+        alreadySelected
       } = _ref;
       if (!this.canvas || !this.editable || notALeftClick(e) || this.getActiveControl()) {
         return;
@@ -22076,7 +22172,7 @@
         return;
       }
       this.canvas.textEditingManager.register(this);
-      if (this.selected) {
+      if (alreadySelected) {
         this.inCompositionMode = false;
         this.setCursorByClick(e);
       }
@@ -22087,34 +22183,18 @@
         }
         this.renderCursorOrSelection();
       }
-    }
-
-    /**
-     * Default event handler for the basic functionalities needed on mousedown:before
-     * can be overridden to do something different.
-     * Scope of this implementation is: verify the object is already selected when mousing down
-     */
-    _mouseDownHandlerBefore(_ref2) {
-      let {
-        e
-      } = _ref2;
-      if (!this.canvas || !this.editable || notALeftClick(e)) {
-        return;
-      }
-      // we want to avoid that an object that was selected and then becomes unselectable,
-      // may trigger editing mode in some way.
-      this.selected = this === this.canvas._activeObject;
+      this.selected || (this.selected = alreadySelected || this.isEditing);
     }
 
     /**
      * standard handler for mouse up, overridable
      * @private
      */
-    mouseUpHandler(_ref3) {
+    mouseUpHandler(_ref2) {
       let {
         e,
         transform
-      } = _ref3;
+      } = _ref2;
       const didDrag = this.draggableTextDelegate.end(e);
       if (this.canvas) {
         this.canvas.textEditingManager.unregister(this);
@@ -22129,17 +22209,13 @@
       if (!this.editable || this.group && !this.group.interactive || transform && transform.actionPerformed || notALeftClick(e) || didDrag) {
         return;
       }
-      if (this.__lastSelected && !this.getActiveControl()) {
-        this.selected = false;
-        this.__lastSelected = false;
+      if (this.selected && !this.getActiveControl()) {
         this.enterEditing(e);
         if (this.selectionStart === this.selectionEnd) {
           this.initDelayedCursor(true);
         } else {
           this.renderCursorOrSelection();
         }
-      } else {
-        this.selected = true;
       }
     }
 
@@ -22256,7 +22332,22 @@
    * For functionalities on keyDown + ctrl || cmd
    */
   const ctrlKeysMapDown = {
-    65: 'selectAll'
+    65: 'cmdAll'
+  };
+
+  /**
+   * Set the transform of the passed context to the same of a specific Canvas or StaticCanvas.
+   * setTransform is used since this utility will RESET the ctx transform to the basic value
+   * of retina scaling and viewport transform
+   * It is not meant to be added to other transforms, it is used internally to preapre canvases to draw
+   * @param ctx
+   * @param canvas
+   */
+  const applyCanvasTransform = (ctx, canvas) => {
+    const scale = canvas.getRetinaScaling();
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    const v = canvas.viewportTransform;
+    ctx.transform(v[0], v[1], v[2], v[3], v[4], v[5]);
   };
 
   // Declare IText protected properties to workaround TS
@@ -22489,7 +22580,7 @@
      * it does on the contextTop. If contextTop is not available, do nothing.
      */
     renderCursorOrSelection() {
-      if (!this.isEditing) {
+      if (!this.isEditing || !this.canvas) {
         return;
       }
       const ctx = this.clearContextTop(true);
@@ -22497,13 +22588,69 @@
         return;
       }
       const boundaries = this._getCursorBoundaries();
-      if (this.selectionStart === this.selectionEnd) {
-        this.renderCursor(ctx, boundaries);
+      const ancestors = this.findAncestorsWithClipPath();
+      const hasAncestorsWithClipping = ancestors.length > 0;
+      let drawingCtx = ctx;
+      let drawingCanvas = undefined;
+      if (hasAncestorsWithClipping) {
+        // we have some clipPath, we need to draw the selection on an intermediate layer.
+        drawingCanvas = createCanvasElementFor(ctx.canvas);
+        drawingCtx = drawingCanvas.getContext('2d');
+        applyCanvasTransform(drawingCtx, this.canvas);
+        const m = this.calcTransformMatrix();
+        drawingCtx.transform(m[0], m[1], m[2], m[3], m[4], m[5]);
+      }
+      if (this.selectionStart === this.selectionEnd && !this.inCompositionMode) {
+        this.renderCursor(drawingCtx, boundaries);
       } else {
-        this.renderSelection(ctx, boundaries);
+        this.renderSelection(drawingCtx, boundaries);
+      }
+      if (hasAncestorsWithClipping) {
+        // we need a neutral context.
+        // this won't work for nested clippaths in which a clippath
+        // has its own clippath
+        for (const ancestor of ancestors) {
+          const clipPath = ancestor.clipPath;
+          const clippingCanvas = createCanvasElementFor(ctx.canvas);
+          const clippingCtx = clippingCanvas.getContext('2d');
+          applyCanvasTransform(clippingCtx, this.canvas);
+          // position the ctx in the center of the outer ancestor
+          if (!clipPath.absolutePositioned) {
+            const m = ancestor.calcTransformMatrix();
+            clippingCtx.transform(m[0], m[1], m[2], m[3], m[4], m[5]);
+          }
+          clipPath.transform(clippingCtx);
+          // we assign an empty drawing context, we don't plan to have this working for nested clippaths for now
+          clipPath.drawObject(clippingCtx, true, {});
+          this.drawClipPathOnCache(drawingCtx, clipPath, clippingCanvas);
+        }
+      }
+      if (hasAncestorsWithClipping) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(drawingCanvas, 0, 0);
       }
       this.canvas.contextTopDirty = true;
       ctx.restore();
+    }
+
+    /**
+     * Finds and returns an array of clip paths that are applied to the parent
+     * group(s) of the current FabricObject instance. The object's hierarchy is
+     * traversed upwards (from the current object towards the root of the canvas),
+     * checking each parent object for the presence of a `clipPath` that is not
+     * absolutely positioned.
+     */
+    findAncestorsWithClipPath() {
+      const clipPathAncestors = [];
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      let obj = this;
+      while (obj) {
+        if (obj.clipPath) {
+          clipPathAncestors.push(obj);
+        }
+        obj = obj.parent;
+      }
+      return clipPathAncestors;
     }
 
     /**
@@ -22587,8 +22734,7 @@
      * If contextTop is not available, do nothing.
      */
     renderCursorAt(selectionStart) {
-      const boundaries = this._getCursorBoundaries(selectionStart, true);
-      this._renderCursor(this.canvas.contextTop, boundaries, selectionStart);
+      this._renderCursor(this.canvas.contextTop, this._getCursorBoundaries(selectionStart, true), selectionStart);
     }
 
     /**
@@ -22599,7 +22745,16 @@
     renderCursor(ctx, boundaries) {
       this._renderCursor(ctx, boundaries, this.selectionStart);
     }
-    _renderCursor(ctx, boundaries, selectionStart) {
+
+    /**
+     * Return the data needed to render the cursor for given selection start
+     * The left,top are relative to the object, while width and height are prescaled
+     * to look think with canvas zoom and object scaling,
+     * so they depend on canvas and object scaling
+     */
+    getCursorRenderingData() {
+      let selectionStart = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.selectionStart;
+      let boundaries = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this._getCursorBoundaries(selectionStart);
       const cursorLocation = this.get2DCursorLocation(selectionStart),
         lineIndex = cursorLocation.lineIndex,
         charIndex = cursorLocation.charIndex > 0 ? cursorLocation.charIndex - 1 : 0,
@@ -22608,14 +22763,32 @@
         cursorWidth = this.cursorWidth / multiplier,
         dy = this.getValueOfPropertyAt(lineIndex, charIndex, 'deltaY'),
         topOffset = boundaries.topOffset + (1 - this._fontSizeFraction) * this.getHeightOfLine(lineIndex) / this.lineHeight - charHeight * (1 - this._fontSizeFraction);
-      if (this.inCompositionMode) {
-        // TODO: investigate why there isn't a return inside the if,
-        // and why can't happen at the top of the function
-        this.renderSelection(ctx, boundaries);
-      }
-      ctx.fillStyle = this.cursorColor || this.getValueOfPropertyAt(lineIndex, charIndex, FILL);
-      ctx.globalAlpha = this._currentCursorOpacity;
-      ctx.fillRect(boundaries.left + boundaries.leftOffset - cursorWidth / 2, topOffset + boundaries.top + dy, cursorWidth, charHeight);
+      return {
+        color: this.cursorColor || this.getValueOfPropertyAt(lineIndex, charIndex, 'fill'),
+        opacity: this._currentCursorOpacity,
+        left: boundaries.left + boundaries.leftOffset - cursorWidth / 2,
+        top: topOffset + boundaries.top + dy,
+        width: cursorWidth,
+        height: charHeight
+      };
+    }
+
+    /**
+     * Render the cursor at the given selectionStart.
+     * @param {CanvasRenderingContext2D} ctx transformed context to draw on
+     */
+    _renderCursor(ctx, boundaries, selectionStart) {
+      const {
+        color,
+        opacity,
+        left,
+        top,
+        width,
+        height
+      } = this.getCursorRenderingData(selectionStart, boundaries);
+      ctx.fillStyle = color;
+      ctx.globalAlpha = opacity;
+      ctx.fillRect(left, top, width, height);
     }
 
     /**
@@ -22746,7 +22919,7 @@
       };
     }
     dispose() {
-      this._exitEditing();
+      this.exitEditingImpl();
       this.draggableTextDelegate.dispose();
       super.dispose();
     }
@@ -23613,11 +23786,7 @@
     }
 
     /**
-     * Decide if the object should cache or not. Create its own cache level
-     * objectCaching is a global flag, wins over everything
-     * needsItsOwnCache should be used when the object drawing method requires
-     * a cache step. None of the fabric classes requires it.
-     * Generally you do not cache objects in groups because the group outside is cached.
+     * Decide if the object should cache or not. The Active selection never caches
      * @return {Boolean}
      */
     shouldCache() {
@@ -23751,9 +23920,10 @@
      * class properties to the GLFilterBackend class.
      */
     createWebGLCanvas(width, height) {
-      const canvas = createCanvasElement();
-      canvas.width = width;
-      canvas.height = height;
+      const canvas = createCanvasElementFor({
+        width,
+        height
+      });
       const glOptions = {
           alpha: true,
           premultipliedAlpha: false,
@@ -23794,12 +23964,8 @@
         cachedTexture = this.getCachedTexture(cacheKey, source);
       }
       const pipelineState = {
-        originalWidth: source.width ||
-        // @ts-expect-error is this a bug? should this be naturalWidth? or is this the pipeline state?
-        source.originalWidth || 0,
-        originalHeight: source.height ||
-        // @ts-expect-error is this a bug? should this be naturalHeight? or is this the pipeline state?
-        source.originalHeight || 0,
+        originalWidth: source.width || source.naturalWidth || 0,
+        originalHeight: source.height || source.naturalHeight || 0,
         sourceWidth: width,
         sourceHeight: height,
         destinationWidth: width,
@@ -24146,13 +24312,14 @@
      * @param {Partial<TSize>} [size] Options object
      */
     setElement(element) {
+      var _element$classList;
       let size = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       this.removeTexture(this.cacheKey);
       this.removeTexture("".concat(this.cacheKey, "_filtered"));
       this._element = element;
       this._originalElement = element;
       this._setWidthHeight(size);
-      element.classList.add(FabricImage.CSS_CANVAS);
+      (_element$classList = element.classList) === null || _element$classList === void 0 || _element$classList.add(FabricImage.CSS_CANVAS);
       if (this.filters.length !== 0) {
         this.applyFilters();
       }
@@ -24383,15 +24550,15 @@
         this._lastScaleY = scaleY;
         return;
       }
-      const canvasEl = createCanvasElement(),
-        sourceWidth = elementToFilter.width,
-        sourceHeight = elementToFilter.height;
-      canvasEl.width = sourceWidth;
-      canvasEl.height = sourceHeight;
+      const canvasEl = createCanvasElementFor(elementToFilter),
+        {
+          width,
+          height
+        } = elementToFilter;
       this._element = canvasEl;
       this._lastScaleX = filter.scaleX = scaleX;
       this._lastScaleY = filter.scaleY = scaleY;
-      getFilterBackend().applyFilters([filter], elementToFilter, sourceWidth, sourceHeight, this._element);
+      getFilterBackend().applyFilters([filter], elementToFilter, width, height, this._element);
       this._filterScalingX = canvasEl.width / this._originalElement.width;
       this._filterScalingY = canvasEl.height / this._originalElement.height;
     }
@@ -24423,9 +24590,10 @@
       if (this._element === this._originalElement) {
         // if the _element a reference to _originalElement
         // we need to create a new element to host the filtered pixels
-        const canvasEl = createCanvasElement();
-        canvasEl.width = sourceWidth;
-        canvasEl.height = sourceHeight;
+        const canvasEl = createCanvasElementFor({
+          width: sourceWidth,
+          height: sourceHeight
+        });
         this._element = canvasEl;
         this._filteredEl = canvasEl;
       } else if (this._filteredEl) {
@@ -24439,7 +24607,7 @@
         this._lastScaleX = 1;
         this._lastScaleY = 1;
       }
-      getFilterBackend().applyFilters(filters, this._originalElement, sourceWidth, sourceHeight, this._element);
+      getFilterBackend().applyFilters(filters, this._originalElement, sourceWidth, sourceHeight, this._element, this.cacheKey);
       if (this._originalElement.width !== this._element.width || this._originalElement.height !== this._element.height) {
         this._filterScalingX = this._element.width / this._originalElement.width;
         this._filterScalingY = this._element.height / this._originalElement.height;
@@ -24470,11 +24638,11 @@
     }
 
     /**
-     * Decide if the object should cache or not. Create its own cache level
+     * Decide if the FabricImage should cache or not. Create its own cache level
      * needsItsOwnCache should be used when the object drawing method requires
-     * a cache step. None of the fabric classes requires it.
+     * a cache step.
      * Generally you do not cache objects in groups because the group outside is cached.
-     * This is the special image version where we would like to avoid caching where possible.
+     * This is the special Image version where we would like to avoid caching where possible.
      * Essentially images do not benefit from caching. They may require caching, and in that
      * case we do it. Also caching an image usually ends in a loss of details.
      * A full performance audit should be done.
@@ -24618,7 +24786,9 @@
 
     /**
      * Default CSS class name for canvas
+     * Will be removed from fabric 7
      * @static
+     * @deprecated
      * @type String
      * @default
      */
@@ -24686,7 +24856,7 @@
       let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       let cssRules = arguments.length > 2 ? arguments[2] : undefined;
       const parsedAttributes = parseAttributes(element, this.ATTRIBUTE_NAMES, cssRules);
-      return this.fromURL(parsedAttributes['xlink:href'], options, parsedAttributes).catch(err => {
+      return this.fromURL(parsedAttributes['xlink:href'] || parsedAttributes['href'], options, parsedAttributes).catch(err => {
         log('log', 'Unable to parse Image', err);
         return null;
       });
@@ -24701,7 +24871,7 @@
    * @static
    * @see {@link http://www.w3.org/TR/SVG/struct.html#ImageElement}
    */
-  _defineProperty(FabricImage, "ATTRIBUTE_NAMES", [...SHARED_ATTRIBUTES, 'x', 'y', 'width', 'height', 'preserveAspectRatio', 'xlink:href', 'crossOrigin', 'image-rendering']);
+  _defineProperty(FabricImage, "ATTRIBUTE_NAMES", [...SHARED_ATTRIBUTES, 'x', 'y', 'width', 'height', 'preserveAspectRatio', 'xlink:href', 'href', 'crossOrigin', 'image-rendering']);
   classRegistry.setClass(FabricImage);
   classRegistry.setSVGClass(FabricImage);
 
@@ -25100,13 +25270,13 @@
 
     // TODO: resolveClipPath could be run once per clippath with minor work per object.
     // is a refactor that i m not sure is worth on this code
-    async resolveClipPath(obj, usingElement) {
+    async resolveClipPath(obj, usingElement, exactOwner) {
       const clipPathElements = this.extractPropertyDefinition(obj, 'clipPath', this.clipPaths);
       if (clipPathElements) {
         const objTransformInv = invertTransform(obj.calcTransformMatrix());
         const clipPathTag = clipPathElements[0].parentElement;
         let clipPathOwner = usingElement;
-        while (clipPathOwner.parentElement && clipPathOwner.getAttribute('clip-path') !== obj.clipPath) {
+        while (!exactOwner && clipPathOwner.parentElement && clipPathOwner.getAttribute('clip-path') !== obj.clipPath) {
           clipPathOwner = clipPathOwner.parentElement;
         }
         // move the clipPath tag as sibling to the real element that is using it
@@ -25129,7 +25299,11 @@
         const clipPath = container.length === 1 ? container[0] : new Group(container);
         const gTransform = multiplyTransformMatrices(objTransformInv, clipPath.calcTransformMatrix());
         if (clipPath.clipPath) {
-          await this.resolveClipPath(clipPath, clipPathOwner);
+          await this.resolveClipPath(clipPath, clipPathOwner,
+          // this is tricky.
+          // it tries to differentiate from when clipPaths are inherited by outside groups
+          // or when are really clipPaths referencing other clipPaths
+          clipPathTag.getAttribute('clip-path') ? clipPathOwner : undefined);
         }
         const {
           scaleX,
@@ -25543,7 +25717,10 @@
    * putImageData is faster than drawImage for that specific operation.
    */
   const isPutImageFaster = (width, height) => {
-    const targetCanvas = createCanvasElement();
+    const targetCanvas = createCanvasElementFor({
+      width,
+      height
+    });
     const sourceCanvas = createCanvasElement();
     const gl = sourceCanvas.getContext('webgl');
     // eslint-disable-next-line no-undef
@@ -25557,8 +25734,6 @@
       targetCanvas: targetCanvas
     };
     let startTime;
-    targetCanvas.width = width;
-    targetCanvas.height = height;
     startTime = getFabricWindow().performance.now();
     WebGLFilterBackend.prototype.copyGLTo2D.call(testContext, gl, testPipelineState);
     const drawImageTime = getFabricWindow().performance.now() - startTime;
@@ -25846,9 +26021,14 @@
      */
     createHelpLayer(options) {
       if (!options.helpLayer) {
-        const helpLayer = createCanvasElement();
-        helpLayer.width = options.sourceWidth;
-        helpLayer.height = options.sourceHeight;
+        const {
+          sourceWidth,
+          sourceHeight
+        } = options;
+        const helpLayer = createCanvasElementFor({
+          width: sourceWidth,
+          height: sourceHeight
+        });
         options.helpLayer = helpLayer;
       }
     }
@@ -25946,65 +26126,70 @@
         }
       } = _ref;
       const source = new Color(this.color).getSource();
-      const tr = source[0] * this.alpha;
-      const tg = source[1] * this.alpha;
-      const tb = source[2] * this.alpha;
-      const alpha1 = 1 - this.alpha;
+      const alpha = this.alpha;
+      const tr = source[0] * alpha;
+      const tg = source[1] * alpha;
+      const tb = source[2] * alpha;
+      const alpha1 = 1 - alpha;
       for (let i = 0; i < data.length; i += 4) {
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
+        let oR, oG, oB;
         switch (this.mode) {
           case 'multiply':
-            data[i] = r * tr / 255;
-            data[i + 1] = g * tg / 255;
-            data[i + 2] = b * tb / 255;
+            oR = r * tr / 255;
+            oG = g * tg / 255;
+            oB = b * tb / 255;
             break;
           case 'screen':
-            data[i] = 255 - (255 - r) * (255 - tr) / 255;
-            data[i + 1] = 255 - (255 - g) * (255 - tg) / 255;
-            data[i + 2] = 255 - (255 - b) * (255 - tb) / 255;
+            oR = 255 - (255 - r) * (255 - tr) / 255;
+            oG = 255 - (255 - g) * (255 - tg) / 255;
+            oB = 255 - (255 - b) * (255 - tb) / 255;
             break;
           case 'add':
-            data[i] = r + tr;
-            data[i + 1] = g + tg;
-            data[i + 2] = b + tb;
+            oR = r + tr;
+            oG = g + tg;
+            oB = b + tb;
             break;
           case 'difference':
-            data[i] = Math.abs(r - tr);
-            data[i + 1] = Math.abs(g - tg);
-            data[i + 2] = Math.abs(b - tb);
+            oR = Math.abs(r - tr);
+            oG = Math.abs(g - tg);
+            oB = Math.abs(b - tb);
             break;
           case 'subtract':
-            data[i] = r - tr;
-            data[i + 1] = g - tg;
-            data[i + 2] = b - tb;
+            oR = r - tr;
+            oG = g - tg;
+            oB = b - tb;
             break;
           case 'darken':
-            data[i] = Math.min(r, tr);
-            data[i + 1] = Math.min(g, tg);
-            data[i + 2] = Math.min(b, tb);
+            oR = Math.min(r, tr);
+            oG = Math.min(g, tg);
+            oB = Math.min(b, tb);
             break;
           case 'lighten':
-            data[i] = Math.max(r, tr);
-            data[i + 1] = Math.max(g, tg);
-            data[i + 2] = Math.max(b, tb);
+            oR = Math.max(r, tr);
+            oG = Math.max(g, tg);
+            oB = Math.max(b, tb);
             break;
           case 'overlay':
-            data[i] = tr < 128 ? 2 * r * tr / 255 : 255 - 2 * (255 - r) * (255 - tr) / 255;
-            data[i + 1] = tg < 128 ? 2 * g * tg / 255 : 255 - 2 * (255 - g) * (255 - tg) / 255;
-            data[i + 2] = tb < 128 ? 2 * b * tb / 255 : 255 - 2 * (255 - b) * (255 - tb) / 255;
+            oR = tr < 128 ? 2 * r * tr / 255 : 255 - 2 * (255 - r) * (255 - tr) / 255;
+            oG = tg < 128 ? 2 * g * tg / 255 : 255 - 2 * (255 - g) * (255 - tg) / 255;
+            oB = tb < 128 ? 2 * b * tb / 255 : 255 - 2 * (255 - b) * (255 - tb) / 255;
             break;
           case 'exclusion':
-            data[i] = tr + r - 2 * tr * r / 255;
-            data[i + 1] = tg + g - 2 * tg * g / 255;
-            data[i + 2] = tb + b - 2 * tb * b / 255;
+            oR = tr + r - 2 * tr * r / 255;
+            oG = tg + g - 2 * tg * g / 255;
+            oB = tb + b - 2 * tb * b / 255;
             break;
           case 'tint':
-            data[i] = tr + r * alpha1;
-            data[i + 1] = tg + g * alpha1;
-            data[i + 2] = tb + b * alpha1;
+            oR = tr + r * alpha1;
+            oG = tg + g * alpha1;
+            oB = tb + b * alpha1;
         }
+        data[i] = oR;
+        data[i + 1] = oG;
+        data[i + 2] = oB;
       }
     }
 
@@ -26413,9 +26598,9 @@
       } = _ref;
       const brightness = Math.round(this.brightness * 255);
       for (let i = 0; i < data.length; i += 4) {
-        data[i] = data[i] + brightness;
-        data[i + 1] = data[i + 1] + brightness;
-        data[i + 2] = data[i + 2] + brightness;
+        data[i] += brightness;
+        data[i + 1] += brightness;
+        data[i + 2] += brightness;
       }
     }
     isNeutralState() {
@@ -26487,15 +26672,14 @@
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
-        if (colorsOnly) {
-          data[i] = r * m[0] + g * m[1] + b * m[2] + m[4] * 255;
-          data[i + 1] = r * m[5] + g * m[6] + b * m[7] + m[9] * 255;
-          data[i + 2] = r * m[10] + g * m[11] + b * m[12] + m[14] * 255;
-        } else {
+        data[i] = r * m[0] + g * m[1] + b * m[2] + m[4] * 255;
+        data[i + 1] = r * m[5] + g * m[6] + b * m[7] + m[9] * 255;
+        data[i + 2] = r * m[10] + g * m[11] + b * m[12] + m[14] * 255;
+        if (!colorsOnly) {
           const a = data[i + 3];
-          data[i] = r * m[0] + g * m[1] + b * m[2] + a * m[3] + m[4] * 255;
-          data[i + 1] = r * m[5] + g * m[6] + b * m[7] + a * m[8] + m[9] * 255;
-          data[i + 2] = r * m[10] + g * m[11] + b * m[12] + a * m[13] + m[14] * 255;
+          data[i] += a * m[3];
+          data[i + 1] += a * m[8];
+          data[i + 2] += a * m[13];
           data[i + 3] = r * m[15] + g * m[16] + b * m[17] + a * m[18] + m[19] * 255;
         }
       }
@@ -26542,7 +26726,6 @@
   function createColorMatrixFilter(key, matrix) {
     var _Class;
     const newClass = (_Class = class newClass extends ColorMatrix {
-      //@ts-expect-error TS wants matrix to be exported.
       toObject() {
         return {
           type: this.type,
@@ -26593,7 +26776,6 @@
      * Serialize this filter into JSON.
      * @returns {Object} A JSON representation of this filter.
      */
-    //@ts-expect-error TS doesn't like this toObject
     toObject() {
       return {
         type: this.type,
@@ -26973,20 +27155,21 @@
         }
       } = _ref;
       for (let i = 0, value; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
         switch (this.mode) {
           case 'average':
-            value = (data[i] + data[i + 1] + data[i + 2]) / 3;
+            value = (r + g + b) / 3;
             break;
           case 'lightness':
-            value = (Math.min(data[i], data[i + 1], data[i + 2]) + Math.max(data[i], data[i + 1], data[i + 2])) / 2;
+            value = (Math.min(r, g, b) + Math.max(r, g, b)) / 2;
             break;
           case 'luminosity':
-            value = 0.21 * data[i] + 0.72 * data[i + 1] + 0.07 * data[i + 2];
+            value = 0.21 * r + 0.72 * g + 0.07 * b;
             break;
         }
-        data[i] = value;
-        data[i + 1] = value;
-        data[i + 2] = value;
+        data[i + 2] = data[i + 1] = data[i] = value;
       }
     }
     getCacheKey() {
@@ -27021,9 +27204,9 @@
   _defineProperty(Grayscale, "uniformLocations", ['uMode']);
   classRegistry.setClass(Grayscale);
 
-  const hueRotationDefaultValues = {
+  const hueRotationDefaultValues = _objectSpread2(_objectSpread2({}, colorMatrixDefaultValues), {}, {
     rotation: 0
-  };
+  });
 
   /**
    * HueRotation filter class
@@ -27042,16 +27225,7 @@
         aThird = 1 / 3,
         aThirdSqtSin = Math.sqrt(aThird) * sine,
         OneMinusCos = 1 - cosine;
-      this.matrix = [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0];
-      this.matrix[0] = cosine + OneMinusCos / 3;
-      this.matrix[1] = aThird * OneMinusCos - aThirdSqtSin;
-      this.matrix[2] = aThird * OneMinusCos + aThirdSqtSin;
-      this.matrix[5] = aThird * OneMinusCos + aThirdSqtSin;
-      this.matrix[6] = cosine + aThird * OneMinusCos;
-      this.matrix[7] = aThird * OneMinusCos - aThirdSqtSin;
-      this.matrix[10] = aThird * OneMinusCos - aThirdSqtSin;
-      this.matrix[11] = aThird * OneMinusCos + aThirdSqtSin;
-      this.matrix[12] = cosine + aThird * OneMinusCos;
+      this.matrix = [cosine + OneMinusCos / 3, aThird * OneMinusCos - aThirdSqtSin, aThird * OneMinusCos + aThirdSqtSin, 0, 0, aThird * OneMinusCos + aThirdSqtSin, cosine + aThird * OneMinusCos, aThird * OneMinusCos - aThirdSqtSin, 0, 0, aThird * OneMinusCos - aThirdSqtSin, aThird * OneMinusCos + aThirdSqtSin, cosine + aThird * OneMinusCos, 0, 0, 0, 0, 0, 1, 0];
     }
     isNeutralState() {
       return this.rotation === 0;
@@ -27060,8 +27234,6 @@
       this.calculateMatrix();
       super.applyTo(options);
     }
-
-    //@ts-expect-error TS and classes with different methods
     toObject() {
       return {
         type: this.type,
@@ -27831,10 +28003,13 @@
       } = _ref;
       const adjust = -this.saturation;
       for (let i = 0; i < data.length; i += 4) {
-        const max = Math.max(data[i], data[i + 1], data[i + 2]);
-        data[i] += max !== data[i] ? (max - data[i]) * adjust : 0;
-        data[i + 1] += max !== data[i + 1] ? (max - data[i + 1]) * adjust : 0;
-        data[i + 2] += max !== data[i + 2] ? (max - data[i + 2]) * adjust : 0;
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const max = Math.max(r, g, b);
+        data[i] += max !== r ? (max - r) * adjust : 0;
+        data[i + 1] += max !== g ? (max - g) * adjust : 0;
+        data[i + 2] += max !== b ? (max - b) * adjust : 0;
       }
     }
 
@@ -27898,12 +28073,15 @@
       } = _ref;
       const adjust = -this.vibrance;
       for (let i = 0; i < data.length; i += 4) {
-        const max = Math.max(data[i], data[i + 1], data[i + 2]);
-        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const max = Math.max(r, g, b);
+        const avg = (r + g + b) / 3;
         const amt = Math.abs(max - avg) * 2 / 255 * adjust;
-        data[i] += max !== data[i] ? (max - data[i]) * amt : 0;
-        data[i + 1] += max !== data[i + 1] ? (max - data[i + 1]) * amt : 0;
-        data[i + 2] += max !== data[i + 2] ? (max - data[i + 2]) * amt : 0;
+        data[i] += max !== r ? (max - r) * amt : 0;
+        data[i + 1] += max !== g ? (max - g) * amt : 0;
+        data[i + 2] += max !== b ? (max - b) * amt : 0;
       }
     }
 
