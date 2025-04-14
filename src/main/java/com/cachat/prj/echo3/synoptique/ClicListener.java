@@ -5,5 +5,5 @@ package com.cachat.prj.echo3.synoptique;
  * @author scachat
  */
 public interface ClicListener {
-    public void clic(SynObject source);    
+    public void clic(SynObject source, SynClicEvent sce);    
 }

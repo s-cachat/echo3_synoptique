@@ -9,10 +9,10 @@ import java.util.List;
  * @author scachat
  */
 public class SynObject {
-    
+
     public SynObject() {
     }
-    
+
     public SynObject(double left, double top, double width, double height, SynView view) {
         this.left = left;
         this.top = top;
@@ -44,6 +44,10 @@ public class SynObject {
      * angle
      */
     protected double angle;
+    /**
+     * z index (layer)
+     */
+    protected int ZIndex = 0;
     /**
      * visibilité
      */
@@ -80,94 +84,102 @@ public class SynObject {
      * notre synoptique
      */
     private Synoptique synoptique;
-    
+
     public double getLeft() {
         return left;
     }
-    
+
     public void setLeft(double left) {
         this.left = left;
     }
-    
+
     public double getTop() {
         return top;
     }
-    
+
     public void setTop(double top) {
         this.top = top;
     }
-    
+
     public double getWidth() {
         return width;
     }
-    
+
     public void setWidth(double width) {
         this.width = width;
     }
-    
+
     public double getHeight() {
         return height;
     }
-    
+
     public void setHeight(double height) {
         this.height = height;
     }
-    
+
     public double getAngle() {
         return angle;
     }
-    
+
     public void setAngle(double angle) {
         this.angle = angle;
     }
-    
+
+    public int getZIndex() {
+        return ZIndex;
+    }
+
+    public void setZIndex(int ZIndex) {
+        this.ZIndex = ZIndex;
+    }
+
     public boolean isVisible() {
         return visible;
     }
-    
+
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
-    
+
     public boolean isMovable() {
         return movable;
     }
-    
+
     public void setMovable(boolean movable) {
         this.movable = movable;
     }
-    
+
     public boolean isClickable() {
         return clickable;
     }
-    
+
     public void setClickable(boolean clickable) {
         this.clickable = clickable;
     }
-    
+
     public boolean isResizeable() {
         return resizeable;
     }
-    
+
     public void setResizeable(boolean resizeable) {
         this.resizeable = resizeable;
     }
-    
+
     public SynView getView() {
         return view;
     }
-    
+
     public void setView(SynView view) {
         this.view = view;
         if (synoptique != null) {
             synoptique.registerNewView(this, view);
         }
     }
-    
+
     public SynView getHoverView() {
         return hoverView;
     }
-    
+
     public void setHoverView(SynView hoverView) {
         this.hoverView = hoverView;
     }
@@ -221,11 +233,15 @@ public class SynObject {
     /*package protected */ void setSynoptique(Synoptique synoptique) {
         this.synoptique = synoptique;
     }
-    
+
+    public Synoptique getSynoptique() {
+        return synoptique;
+    }
+
     public String getUid() {
         return uid;
     }
-    
+
     public void setUid(String uid) {
         this.uid = uid;
     }
@@ -242,9 +258,9 @@ public class SynObject {
     /**
      * un clic a été reçu
      */
-    /*package protected*/ void clic() {
+    /*package protected*/ void clic(SynClicEvent sce) {
         if (clicListeners != null) {
-            clicListeners.forEach(l -> l.clic(this));
+            clicListeners.forEach(l -> l.clic(this, sce));
         }
     }
 
@@ -252,17 +268,22 @@ public class SynObject {
      * un edit a été reçu
      *
      * @param source l'objet (non modifié)
-     * @param x la nouvelle position x
-     * @param y la nouvelle position y
-     * @param width la nouvelle largeur
-     * @param height la nouvelle hauteur
-     * @param alpha le nouvel angle
-     * @return true si les modifications ne doivent pas être appliquée. Dans ce
-     * cas, elles sont soit ignorées, soit modifiées dans cette méthode.
+     * @param evt les modifications
      */
-    /*package protected*/ void edit(double x, double y, double width, double height, double alpha) {
+    /*package protected*/ void edit(SynModifiedEvent evt) {
         if (editListeners != null) {
-            editListeners.forEach(l -> l.edit(this, x, y, width, height, alpha));
+            editListeners.forEach(l -> l.edit(this, evt));
+        }
+        if (isMovable()) {
+            this.left = evt.left;
+            this.top = evt.top;
+            if (evt.angle != null) {
+                this.angle = evt.angle;
+            }
+        }
+        if (isResizeable()) {
+            this.width = evt.width;
+            this.height = evt.height;
         }
     }
 
@@ -274,5 +295,5 @@ public class SynObject {
     public boolean hasEditListener() {
         return editListeners != null && !editListeners.isEmpty();
     }
-    
+
 }

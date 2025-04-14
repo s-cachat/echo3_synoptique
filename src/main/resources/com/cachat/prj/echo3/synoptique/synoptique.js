@@ -16,7 +16,6 @@ Synoptique.SerialEvent = Core.extend(Echo.Serial.PropertyTranslator, {
         toProperty: function (client, pElement) {
             return {};
         },
-
         /** @see Echo.Serial.PropertyTranslator#toXml */
         toXml: function (client, propertyElement, propertyValue) {
             if (propertyValue.uid) {
@@ -39,7 +38,6 @@ Synoptique.SerialEvent = Core.extend(Echo.Serial.PropertyTranslator, {
             }
         }
     },
-
     $load: function () {
         Echo.Serial.addPropertyTranslator("SynModifiedEvent", this);
     }
@@ -215,6 +213,9 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 obj.top = action.top;
                 setCoord = true;
             }
+            if (action.ZIndex) {
+                obj.zIndex = action.ZIndex;
+            }
             if (action.left) {
                 obj.left = action.left;
                 setCoord = true;
@@ -265,7 +266,6 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             }
             var hasControl = undefined;
             var selectable = undefined;
-
             if (action.movable !== undefined) {
                 if (action.movable) {
                     console.log("object ", obj.uid, " is movable");
@@ -299,16 +299,18 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             obj.hasBorders = hasControl;
             obj.hasControls = hasControl;
             selectable = hasControl;
-
             if (hasControl !== undefined) {
                 if (hasControl) {
-                    console.log("object ", obj.uid, " has control");
-                    var handler = function (e) {
-                        _this._modifiedEvent(obj, e);
-                    };
-                    obj.modifiedHandler = handler;
-                    obj.on("modified", handler);
-
+                    if (obj.modifiedHandler) {
+                        console.log("object ", obj.uid, " already has control");
+                    } else {
+                        console.log("object ", obj.uid, " has control");
+                        var handler = function (e) {
+                            _this._modifiedEvent(obj, e);
+                        };
+                        obj.modifiedHandler = handler;
+                        obj.on("modified", handler);
+                    }
                 } else {
                     console.log("object ", obj.uid, " hasn't control : ", hasControl);
                     if (obj.modifiedHandler) {
@@ -320,13 +322,17 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             }
             if (action.clickable !== undefined) {
                 if (action.clickable) {
-                    console.log("object ", obj.uid, " is clickable");
-                    var handler = function (e) {
-                        _this._clicEvent(obj, e);
-                    };
-                    obj.clickHandler = handler;
-                    obj.on("mouseup", handler);
-                    selectable = true;
+                    if (obj.clickHandler) {
+                        console.log("object ", obj.uid, " is already clickable");
+                    } else {
+                        console.log("object ", obj.uid, " is clickable");
+                        var handler = function (e) {
+                            _this._clicEvent(obj, e);
+                        };
+                        obj.clickHandler = handler;
+                        obj.on("mouseup", handler);
+                        selectable = true;
+                    }
                 } else {
                     console.log("object ", obj.uid, " is not clickable ", action.clickable);
                     if (obj.clickHandler) {
@@ -381,7 +387,6 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             this._canvas.width = this._div.offsetWidth;
             this._canvas.height = this._div.offsetHeight;
             this._fabric = new fabric.Canvas(this._canvas);
-
             try {
                 this._fabric.on('mouse:wheel', function (opt) {
                     var delta = opt.e.deltaY;
@@ -436,6 +441,12 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                         }
                         if (obj !== undefined) {
                             console.log("object ", action.uid, " is ", action.view.subType, " = ", obj);
+                            obj.view = {
+                                uid: action.view.uid,
+                                height: action.height,
+                                width: action.width,
+                                zIndex: action.zIndex
+                            };
                             this._objectPostCreate(action, obj);
                         }
                         break;
@@ -458,31 +469,46 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                         var _renderId = this.component.renderId;
                         var url = "synView/" + this.component.renderId + "/" + action.view.uid + "/view.jpg";
                         console.log("create image view ", action.view.type, " url:", url, " action:", action, " fabric:", _this._fabric);
-
-                        fabric.Image.fromURL(url, {"left": action.left, "top": action.top,"height": action.height, "width": action.width})
+                        fabric.Image.fromURL(url, {"left": action.left, "top": action.top, "height": action.height, "width": action.width})
                                 .then(function (nobj) {
                                     nobj.view = {
                                         uid: action.view.uid,
                                         renderId: _renderId,
-                                        file: "view.jpg"
+                                        file: "view.jpg",
+                                        height: action.height,
+                                        width: action.width,
+                                        scaleX: action.width / (nobj.width),
+                                        scaleY: action.height / (nobj.height),
+                                        zIndex: action.zIndex
                                     };
                                     console.log("synViewJpg loaded, postcreating ", url);
                                     _this._objectPostCreate(action, nobj);
+                                    nobj.scaleX = nobj.view.scaleX;
+                                    nobj.scaleY = nobj.view.scaleY;
                                     _this._fabric.renderAll();
                                 });
                         break;
                     case "synViewPng":
                         var _renderId = this.component.renderId;
                         var url = "synView/" + this.component.renderId + "/" + action.view.uid + "/view.png";
-                        console.log("create image view with url ", action.view.type);
-                        fabric.Image.fromURL(url, {"left": action.left, "top": action.top,"height": action.height, "width": action.width})
+                        console.log("create image view with url ", action.view.type, " : ", url);
+                        fabric.Image.fromURL(url, {"left": action.left, "top": action.top, "height": action.height, "width": action.width})
                                 .then(function (nobj) {
+                                    console.log("png  ", action.view.uid, " : ", nobj);
                                     nobj.view = {
                                         uid: action.view.uid,
                                         renderId: _renderId,
-                                        file: "view.png"
+                                        file: "view.png",
+                                        height: action.height,
+                                        width: action.width,
+                                        scaleX: action.width / (nobj.width),
+                                        scaleY: action.height / (nobj.height),
+                                        zIndex: action.zIndex
                                     };
+                                    console.log("PNG ", nobj.view);
                                     _this._objectPostCreate(action, nobj);
+                                    nobj.scaleX = nobj.view.scaleX;
+                                    nobj.scaleY = nobj.view.scaleY;
                                     _this._fabric.renderAll();
                                 });
                         break;
@@ -502,6 +528,19 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             if (obj !== undefined) {
                 this._fabric.remove(obj);
                 this._content[action.uid] = undefined;
+            }
+        }
+        console.log(_this._fabric);
+        console.log(_this._fabric._objects);
+        _this._fabric._objects.sort(function (a, b) {
+            return b.zIndex - a.zIndex;
+        });
+        console.log(_this._fabric._objects);
+        for (const o of _this._fabric._objects) {
+            if (o.view) {
+                console.log(">>> ", o.view.uid, o.view.zIndex);
+            } else {
+                console.log(">>> *", o);
             }
         }
         _this._fabric.renderAll();

@@ -79,6 +79,24 @@ public class Synoptique extends Component implements Positionable, Sizeable {
     }
 
     /**
+     * ajoute un groupe d'objets au synoptique
+     *
+     * @param obj l'objet
+     */
+    public void add(SynGroupe obj) {
+        obj.addTo(this);
+    }
+
+    /**
+     * supprime un groupe d'objets au synoptique
+     *
+     * @param obj l'objet
+     */
+    public void remove(SynGroupe obj) {
+        obj.removeFrom(this);
+    }
+
+    /**
      * ajoute un objet au synoptique
      *
      * @param obj l'objet
@@ -157,7 +175,7 @@ public class Synoptique extends Component implements Positionable, Sizeable {
      *
      * @param obj l'objet
      */
-    public void del(SynObject obj) {
+    public void remove(SynObject obj) {
         actionLock.lock();
         try {
             objects.remove(obj.getUid());
@@ -402,13 +420,21 @@ public class Synoptique extends Component implements Positionable, Sizeable {
         super.processInput(inputName, inputValue);
         System.err.printf("EVENT %s => %s\r\n", inputName, inputValue);
         switch (inputName) {
-            case OBJECT_EDIT:
-                //TODO;
-                break;
-            case OBJECT_CLIC:
-                //TODO;
-                break;
-            default:
+            case OBJECT_EDIT -> {
+                SynModifiedEvent sme = (SynModifiedEvent) inputValue;
+                SynObject obj = objects.get(sme.getUid());
+                if (obj != null) {
+                    obj.edit(sme);
+                }
+            }
+            case OBJECT_CLIC -> {
+                SynClicEvent sce = (SynClicEvent) inputValue;
+                SynObject obj = objects.get(sce.getUid());
+                if (obj != null) {
+                    obj.clic(sce);
+                }
+            }
+            default ->
                 logger.severe("unhandled input value " + inputName + " = " + inputValue);
         }
     }
