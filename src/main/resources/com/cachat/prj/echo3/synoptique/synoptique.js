@@ -75,6 +75,9 @@ Synoptique.Action = Core.extend(Echo.Serial.PropertyTranslator, {
                         case "width":
                             action.width = parseFloat(eVal.textContent);
                             break;
+                        case "ZIndex":
+                            action.zIndex = parseFloat(eVal.textContent);
+                            break;
                         case "clickable":
                             action.clickable = "true" === eVal.textContent;
                             break;
@@ -213,7 +216,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 obj.top = action.top;
                 setCoord = true;
             }
-            if (action.ZIndex) {
+            if (action.zIndex) {
                 obj.zIndex = action.ZIndex;
             }
             if (action.left) {
