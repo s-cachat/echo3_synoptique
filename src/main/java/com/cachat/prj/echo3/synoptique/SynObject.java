@@ -275,8 +275,12 @@ public class SynObject {
             editListeners.forEach(l -> l.edit(this, evt));
         }
         if (isMovable()) {
-            this.left = evt.left;
-            this.top = evt.top;
+            if (evt.left != null) {
+                this.left = evt.left;
+            }
+            if (evt.top != null) {
+                this.top = evt.top;
+            }
             if (evt.angle != null) {
                 this.angle = evt.angle;
             }

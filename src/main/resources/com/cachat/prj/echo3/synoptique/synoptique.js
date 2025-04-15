@@ -381,12 +381,25 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 }
             }
         }
+    },    
+    _reorderObjects() {
+        this._fabric._objects.sort(function (a, b) {
+            return (b.view.zIndex < a.view.zIndex) ? 1 : ((b.view.zIndex > a.view.zIndex) ? -1 : 0);
+        });
+        console.log(this._fabric._objects);
+        for (const o of this._fabric._objects) {
+            if (o.view) {
+                console.log(">>> ", o.view.uid, o.view.zIndex);
+            } else {
+                console.log(">>> *", o);
+            }
+        }
+        this._fabric.renderAll();
     },
     renderDisplay: function () {
         console.log("render display action", this.component.get("action"));
         const _this = this;
         if (!this._fabric) {
-            console.log("Synoptique renderDisplay create this", this);
             this._canvas.width = this._div.offsetWidth;
             this._canvas.height = this._div.offsetHeight;
             this._fabric = new fabric.Canvas(this._canvas);
@@ -406,9 +419,6 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             } catch (e) {
                 console.log(e);
             }
-
-        } else {
-            console.log("Synoptique renderDisplay");
         }
         var actions = this.component.get("action");
         console.log("handle action ", actions);
@@ -533,20 +543,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 this._content[action.uid] = undefined;
             }
         }
-        console.log(_this._fabric);
-        console.log(_this._fabric._objects);
-        _this._fabric._objects.sort(function (a, b) {
-            return b.zIndex - a.zIndex;
-        });
-        console.log(_this._fabric._objects);
-        for (const o of _this._fabric._objects) {
-            if (o.view) {
-                console.log(">>> ", o.view.uid, o.view.zIndex);
-            } else {
-                console.log(">>> *", o);
-            }
-        }
-        _this._fabric.renderAll();
+        this._reorderObjects();
     },
     _objectPostCreate(action, obj) {
         console.log("postcreating uid:", action.uid, " action:", action, " obj:", obj, " fabric:", this._fabric);
@@ -554,6 +551,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         this._fabric.add(obj);
         this._content[obj.uid] = obj;
         this._updateObj(action, obj);
+        this._reorderObjects();
     },
     _modifiedEvent(source, event) {
         var mEvent = {
