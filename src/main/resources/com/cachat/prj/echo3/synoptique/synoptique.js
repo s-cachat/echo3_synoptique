@@ -236,11 +236,11 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 console.log("set radius of ", obj.uid, " to ", obj.radius);
             } else {
                 if (action.width) {
-                    obj.width = action.width;
+                    obj.set('width', action.width);
                     setCoord = true;
                 }
                 if (action.height) {
-                    obj.height = action.height;
+                    obj.set('height' , action.height);
                     setCoord = true;
                 }
                 console.log("set size of ", obj.uid, " to ", obj.width, "x", obj.height);
@@ -271,13 +271,11 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             var selectable = undefined;
             if (action.movable !== undefined) {
                 if (action.movable) {
-                    console.log("object ", obj.uid, " is movable");
                     obj.lockMovementX = false;
                     obj.lockMovementY = false;
                     obj.lockRotation = false;
                     hasControl = true;
                 } else {
-                    console.log("object ", obj.uid, " is not movable :", action.movable);
                     obj.lockMovementX = true;
                     obj.lockMovementY = true;
                     obj.lockRotation = true;
@@ -286,12 +284,10 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             }
             if (action.resizeable !== undefined) {
                 if (action.resizeable) {
-                    console.log("object ", obj.uid, " is resizeable");
                     obj.lockScalingX = false;
                     obj.lockScalingY = false;
                     hasControl = true;
                 } else {
-                    console.log("object ", obj.uid, " is not resizeable :", action.resizeable);
                     obj.lockScalingX = true;
                     obj.lockScalingY = true;
                     if (hasControl === undefined) {
@@ -305,9 +301,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             if (hasControl !== undefined) {
                 if (hasControl) {
                     if (obj.modifiedHandler) {
-                        console.log("object ", obj.uid, " already has control");
                     } else {
-                        console.log("object ", obj.uid, " has control");
                         var handler = function (e) {
                             _this._modifiedEvent(obj, e);
                         };
@@ -315,7 +309,6 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                         obj.on("modified", handler);
                     }
                 } else {
-                    console.log("object ", obj.uid, " hasn't control : ", hasControl);
                     if (obj.modifiedHandler) {
                         obj.off("modified", obj.modifiedHandler);
                         obj.modifiedHandler = undefined;
@@ -326,9 +319,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             if (action.clickable !== undefined) {
                 if (action.clickable) {
                     if (obj.clickHandler) {
-                        console.log("object ", obj.uid, " is already clickable");
                     } else {
-                        console.log("object ", obj.uid, " is clickable");
                         var handler = function (e) {
                             _this._clicEvent(obj, e);
                         };
@@ -337,7 +328,6 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                         selectable = true;
                     }
                 } else {
-                    console.log("object ", obj.uid, " is not clickable ", action.clickable);
                     if (obj.clickHandler) {
                         obj.off("mouseup", obj.clickHandler);
                         obj.clickHandler = undefined;
@@ -348,7 +338,6 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 }
             }
             if (selectable !== undefined) {
-                console.log("object ", obj.uid, " is ", (selectable ? "" : "not"), " selectable");
                 obj.set('selectable', selectable);
             }
             if (obj.isText) {
@@ -496,8 +485,8 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                                     };
                                     console.log("synViewJpg loaded, postcreating ", url);
                                     _this._objectPostCreate(action, nobj);
-                                    nobj.scaleX = nobj.view.scaleX;
-                                    nobj.scaleY = nobj.view.scaleY;
+                                    nobj.set('scaleX', nobj.view.scaleX);
+                                    nobj.set('scaleY', nobj.view.scaleY);
                                     _this._fabric.renderAll();
                                 });
                         break;
@@ -520,8 +509,8 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                                     };
                                     console.log("PNG ", nobj.view);
                                     _this._objectPostCreate(action, nobj);
-                                    nobj.scaleX = nobj.view.scaleX;
-                                    nobj.scaleY = nobj.view.scaleY;
+                                    nobj.set('scaleX', nobj.view.scaleX);
+                                    nobj.set('scaleY', nobj.view.scaleY);
                                     _this._fabric.renderAll();
                                 });
                         break;
