@@ -223,7 +223,6 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 obj.left = action.left;
                 setCoord = true;
             }
-            console.log("set position of ", obj.uid, " to ", obj.left, "x", obj.top);
             if (obj.hasRadius) {
                 if (action.width) {
                     obj.radius = action.width / 2;
@@ -235,15 +234,12 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 }
                 console.log("set radius of ", obj.uid, " to ", obj.radius);
             } else {
-                if (action.width) {
-                    obj.set('width', action.width);
+                if (action.width !== undefined || action.height !== undefined) {
                     setCoord = true;
+                    obj.scaleToFit();
+                } else {
+                    console.log("set and no scale size of ", obj.uid, " to ", obj.width, "x", obj.height, " view is ", obj.view, " obj", obj);
                 }
-                if (action.height) {
-                    obj.set('height' , action.height);
-                    setCoord = true;
-                }
-                console.log("set size of ", obj.uid, " to ", obj.width, "x", obj.height);
             }
             if (setCoord) {
                 console.log("setCoord for ", obj.uid);
@@ -370,7 +366,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 }
             }
         }
-    },    
+    },
     _reorderObjects() {
         this._fabric._objects.sort(function (a, b) {
             return (b.view.zIndex < a.view.zIndex) ? 1 : ((b.view.zIndex > a.view.zIndex) ? -1 : 0);
@@ -461,7 +457,19 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                                     nobj.view = {
                                         uid: action.view.uid,
                                         renderId: _renderId,
-                                        file: "view.svg"
+                                        file: "view.jpg",
+                                        height: action.height,
+                                        width: action.width,
+                                        zIndex: action.zIndex
+                                    };
+                                    nobj.scaleToFit = function () {
+                                        this.view.scaleX = this.view.width / this._originalElement.width;
+                                        this.view.scaleY = this.view.height / this._originalElement.height;
+                                        this.set('scaleX', this.view.scaleX);
+                                        this.set('scaleY', this.view.scaleY);
+                                        this.set('height', this.view.height);
+                                        this.set('width', this.view.width);
+                                        console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
                                     };
                                     _this._objectPostCreate(action, nobj);
                                     _this._fabric.renderAll();
@@ -479,14 +487,16 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                                         file: "view.jpg",
                                         height: action.height,
                                         width: action.width,
-                                        scaleX: action.width / (nobj.width),
-                                        scaleY: action.height / (nobj.height),
                                         zIndex: action.zIndex
                                     };
-                                    console.log("synViewJpg loaded, postcreating ", url);
+                                    nobj.scaleToFit = function () {
+                                        this.view.scaleX = this.view.width / this._originalElement.width;
+                                        this.view.scaleY = this.view.height / this._originalElement.height;
+                                        this.set('scaleX', this.view.scaleX);
+                                        this.set('scaleY', this.view.scaleY);
+                                        console.log(comment, " scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
+                                    };
                                     _this._objectPostCreate(action, nobj);
-                                    nobj.set('scaleX', nobj.view.scaleX);
-                                    nobj.set('scaleY', nobj.view.scaleY);
                                     _this._fabric.renderAll();
                                 });
                         break;
@@ -503,14 +513,16 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                                         file: "view.png",
                                         height: action.height,
                                         width: action.width,
-                                        scaleX: action.width / (nobj.width),
-                                        scaleY: action.height / (nobj.height),
                                         zIndex: action.zIndex
                                     };
-                                    console.log("PNG ", nobj.view);
+                                    nobj.scaleToFit = function () {
+                                        this.view.scaleX = this.view.width / this._originalElement.width;
+                                        this.view.scaleY = this.view.height / this._originalElement.height;
+                                        this.set('scaleX', this.view.scaleX);
+                                        this.set('scaleY', this.view.scaleY);
+                                        console.log( " scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
+                                    };
                                     _this._objectPostCreate(action, nobj);
-                                    nobj.set('scaleX', nobj.view.scaleX);
-                                    nobj.set('scaleY', nobj.view.scaleY);
                                     _this._fabric.renderAll();
                                 });
                         break;
