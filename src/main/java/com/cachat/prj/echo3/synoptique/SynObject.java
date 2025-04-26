@@ -47,7 +47,7 @@ public class SynObject {
     /**
      * z index (layer)
      */
-    protected int ZIndex = 0;
+    protected int ZIndex = 100;
     /**
      * visibilité
      */

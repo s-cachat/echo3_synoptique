@@ -29,7 +29,7 @@ public class SynoptiqueWithPopup extends ContainerEx {
     /**
      * les fournisseurs de popup (id vers supplyer)
      */
-    private Map<String, Supplier<ContainerEx>> popupSuppliers = new HashMap<>();
+    private Map<String, Supplier<Popup>> popupSuppliers = new HashMap<>();
 
     /**
      * Constructeur
@@ -67,7 +67,7 @@ public class SynoptiqueWithPopup extends ContainerEx {
         synoptique.add(obj);
     }
 
-    public void add(SynObject obj, Supplier<ContainerEx> supplier) {
+    public void add(SynObject obj, Supplier<Popup> supplier) {
         synoptique.add(obj);
         popupSuppliers.put(obj.getUid(), supplier);
         obj.addListener(this::addPopup);
@@ -77,10 +77,11 @@ public class SynoptiqueWithPopup extends ContainerEx {
         if (popup != null) {
             popupCe.remove(popup);
         }
-        Supplier<ContainerEx> sup = popupSuppliers.get(source.getUid());
+        Supplier<Popup> sup = popupSuppliers.get(source.getUid());
         if (sup != null) {
-            ContainerEx c = sup.get();
+            Popup c = sup.get();
             if (c != null) {
+                c.setSynoptique(this);
                 popup = c;
                 popupCe.add(c);
                 c.setLeft((int) source.getLeft());
