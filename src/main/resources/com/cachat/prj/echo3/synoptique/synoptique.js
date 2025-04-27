@@ -195,15 +195,20 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
     _content: {},
     renderAdd: function (update, parentElement) {
         console.log("render add update", update, ", action", this.component.get("action"));
-        console.log("Synoptique renderAdd");
-        this._div = document.createElement("div");
-        this._div.id = this.component.renderId;
-        Echo.Sync.renderComponentDefaults(this.component, this._div);
-        Extended.renderPositionnable(this.component, this._div);
-        parentElement.appendChild(this._div);
-        this._canvas = document.createElement("canvas");
-        this._canvas.id = this.component.renderId + "_canvas";
-        this._div.appendChild(this._canvas);
+        console.log("Synoptique renderAdd this is ", this);
+        console.log("Synoptique parentElement is", parentElement);
+        if (this._div === null) {
+            this._div = document.createElement("div");
+            this._div.id = this.component.renderId;
+            Echo.Sync.renderComponentDefaults(this.component, this._div);
+            Extended.renderPositionnable(this.component, this._div);
+            parentElement.appendChild(this._div);
+        }
+        if (this._canvas === null) {
+            this._canvas = document.createElement("canvas");
+            this._canvas.id = this.component.renderId + "_canvas";
+            this._div.appendChild(this._canvas);
+        }
     },
     _updateObj(action, obj) {
         if (obj !== undefined) {
@@ -384,7 +389,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
     renderDisplay: function () {
         console.log("render display action", this.component.get("action"));
         const _this = this;
-        if (!this._fabric) {
+        if (this._fabric===null) {
             this._canvas.width = this._div.offsetWidth;
             this._canvas.height = this._div.offsetHeight;
             this._fabric = new fabric.Canvas(this._canvas);
@@ -494,7 +499,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                                         this.view.scaleY = this.view.height / this._originalElement.height;
                                         this.set('scaleX', this.view.scaleX);
                                         this.set('scaleY', this.view.scaleY);
-                                        console.log(comment, " scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
+                                        console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
                                     };
                                     _this._objectPostCreate(action, nobj);
                                     _this._fabric.renderAll();
@@ -520,7 +525,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                                         this.view.scaleY = this.view.height / this._originalElement.height;
                                         this.set('scaleX', this.view.scaleX);
                                         this.set('scaleY', this.view.scaleY);
-                                        console.log( " scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
+                                        console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
                                     };
                                     _this._objectPostCreate(action, nobj);
                                     _this._fabric.renderAll();
@@ -590,7 +595,6 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
     },
     renderDispose: function (update) {
         console.log("Synoptique renderDispose " + update);
-        this._div = null;
     },
     renderUpdate: function (update) {
         console.log("Synoptique renderUpdate ", update, " action", this.component.get("action"));

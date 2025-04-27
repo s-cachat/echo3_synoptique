@@ -22,10 +22,7 @@ public class SynoptiqueWithPopup extends ContainerEx {
      * la couche synoptique
      */
     private Synoptique synoptique;
-    /**
-     * la couche pour les popups
-     */
-    private ContainerEx popupCe;
+
     /**
      * les fournisseurs de popup (id vers supplyer)
      */
@@ -50,9 +47,6 @@ public class SynoptiqueWithPopup extends ContainerEx {
         synoptique = new Synoptique();
         add(synoptique);
         synoptique.setBounds(0, 0, 0, 0, null, null);
-        popupCe = new ContainerEx(0, 0, 0, 0, null, null);
-        add(popupCe);
-        popupCe.setVisible(false);
     }
 
     public void add(SynGroupe obj) {
@@ -75,7 +69,7 @@ public class SynoptiqueWithPopup extends ContainerEx {
 
     private void addPopup(SynObject source, SynClicEvent sce) {
         if (popup != null) {
-            popupCe.remove(popup);
+            remove(popup);
         }
         Supplier<Popup> sup = popupSuppliers.get(source.getUid());
         if (sup != null) {
@@ -83,28 +77,25 @@ public class SynoptiqueWithPopup extends ContainerEx {
             if (c != null) {
                 c.setSynoptique(this);
                 popup = c;
-                popupCe.add(c);
+                add(c);
                 c.setLeft((int) source.getLeft());
                 c.setTop((int) source.getTop());
-                popupCe.setVisible(true);
             }
         }
     }
 
     public void closePopup() {
         if (popup != null) {
-            popupCe.remove(popup);
+            remove(popup);
             popup = null;
-            popupCe.setVisible(false);
         }
     }
 
     /*package protected*/ void closePopup(Popup popupToRemove) {
         if (popupToRemove != null) {
-            popupCe.remove(popupToRemove);
+            remove(popupToRemove);
             if (popup == popupToRemove) {
                 popup = null;
-                popupCe.setVisible(false);
             }
         }
     }
