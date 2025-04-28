@@ -34,7 +34,6 @@ public class Synoptique extends Component implements Positionable, Sizeable {
      */
     public static final String OBJECT_CLIC = "objectClic";
     /**
-    /**
      * evenement clic sur un objet
      */
     public static final String FULL_UPDATE = "fullUpdate";
@@ -50,15 +49,6 @@ public class Synoptique extends Component implements Positionable, Sizeable {
      * les objets de ce synoptique
      */
     private Map<String, SynObject> objects = new HashMap<>();
-
-    /**
-     * prochaines actions a envoyer
-     */
-    private SynAction action = null;
-    /**
-     * verrou pour l'accès à action
-     */
-    private ReentrantLock actionLock = new ReentrantLock();
     /**
      * map des uid vers les objets ayant un listener clic
      */
@@ -111,31 +101,22 @@ public class Synoptique extends Component implements Positionable, Sizeable {
      *
      * @param obj l'objet
      */
-    public void add(SynObject obj) {
-        actionLock.lock();
-        try {
-            objects.put(obj.getUid(), obj);
-            if (action == null) {
-                action = new SynAction();
+    @Override
+    public void add(Component obj) {
+        if (obj instanceof SynObject synobj) {
+            objects.put(synobj.getId(), synobj);
+            if (synobj.hasClicListener()) {
+                objectWithClicListener.put(synobj.getId(), synobj);
             }
-            action.getAdd().add(obj);
-            if (obj.hasClicListener()) {
-                objectWithClicListener.put(obj.getUid(), obj);
+            if (synobj.hasEditListener()) {
+                objectWithEditListener.put(synobj.getId(), synobj);
             }
-            if (obj.hasEditListener()) {
-                objectWithEditListener.put(obj.getUid(), obj);
-            }
-            SynView view = obj.getView();
+            SynView view = synobj.getView();
             if (view != null && !(view instanceof SynViewBasic)) {
-                logger.severe("Store view " + view.getClass().getSimpleName() + " " + view.getUid() + " for object " + obj.getUid());
+                logger.severe("Store view " + view.getClass().getSimpleName() + " " + view.getUid() + " for object " + synobj.getId());
                 views.put(view.getUid(), view);
             }
-            obj.setSynoptique(this);
-        } finally {
-            actionLock.unlock();
-        }
-        if (getApplicationInstance() != null) {
-            firePropertyChange(ACTION, null, action);
+            synobj.setSynoptique(this);
         }
     }
 
@@ -148,7 +129,7 @@ public class Synoptique extends Component implements Positionable, Sizeable {
      */
     public void registerNewView(SynObject obj, SynView view) {
         if (view != null && !(view instanceof SynViewBasic)) {
-            logger.severe("Store view " + view.getClass().getSimpleName() + " " + view.getUid() + " for object " + obj.getUid());
+            logger.severe("Store view " + view.getClass().getSimpleName() + " " + view.getUid() + " for object " + obj.getId());
             views.put(view.getUid(), view);
         }
     }
@@ -159,27 +140,13 @@ public class Synoptique extends Component implements Positionable, Sizeable {
      * @param obj l'objet
      */
     public void update(SynObject obj) {
-        actionLock.lock();
-        try {
-            if (action == null) {
-                action = new SynAction();
-                action.setFull(true);
-                action.getAdd().addAll(objects.values());
-            }
-            action.getUpdate().add(obj);
-            if (obj.hasClicListener()) {
-                objectWithClicListener.put(obj.getUid(), obj);
-            }
-            if (obj.hasEditListener()) {
-                objectWithEditListener.put(obj.getUid(), obj);
-            }
-            //TODO handle view delete/change
-        } finally {
-            actionLock.unlock();
+        if (obj.hasClicListener()) {
+            objectWithClicListener.put(obj.getId(), obj);
         }
-        if (getApplicationInstance() != null) {
-            firePropertyChange(ACTION, null, action);
+        if (obj.hasEditListener()) {
+            objectWithEditListener.put(obj.getId(), obj);
         }
+        //TODO handle view delete/change
     }
 
     /**
@@ -187,23 +154,13 @@ public class Synoptique extends Component implements Positionable, Sizeable {
      *
      * @param obj l'objet
      */
-    public void remove(SynObject obj) {
-        actionLock.lock();
-        try {
-            objects.remove(obj.getUid());
-            objectWithClicListener.remove(obj.getUid());
-            objectWithEditListener.remove(obj.getUid());
-            if (action == null) {
-                action = new SynAction();
-            }
-            //TODO handle view delete
-            action.getDel().add(obj.getUid());
-            obj.setSynoptique(null);
-        } finally {
-            actionLock.unlock();
-        }
-        if (getApplicationInstance() != null) {
-            firePropertyChange(ACTION, null, action);
+    @Override
+    public void remove(Component obj) {
+        if (obj instanceof SynObject synobj) {
+            objects.remove(synobj.getId());
+            objectWithClicListener.remove(synobj.getId());
+            objectWithEditListener.remove(synobj.getId());
+            synobj.setSynoptique(null);
         }
     }
 
@@ -218,74 +175,26 @@ public class Synoptique extends Component implements Positionable, Sizeable {
     }
 
     /**
-     * donne l'action en cours et la remet à zéro
-     *
-     * @return l'action
-     */
-    /*package protected */ SynAction getActionAndClear() {
-        actionLock.lock();
-        try {
-            if (action == null) {
-                logger.info("Send empty Action");
-                return new SynAction();
-            } else {
-                logger.info("Send and clear Action");
-                SynAction a = action;
-                action = null;
-                return a;
-            }
-
-        } finally {
-            actionLock.unlock();
-        }
-    }
-
-    /**
-     * donne l'action en cours
-     *
-     * @return
-     */
-    public SynAction getAction() {
-        return action;
-    }
-
-    public void setAction(SynAction action) {
-        this.action = action;
-    }
-
-    /**
-     * donne l'état en cours
-     *
-     * @return
-     */
-    public Collection<SynObject> getState() {
-        return objects.values();
-    }
-
-    public void setState(Collection<SynObject> state) {
-
-    }
-
-    /**
      * supprime tous les objets
      */
     @Override
+    public void removeAll() {
+        super.removeAll();
+        objectWithClicListener.clear();
+        objectWithEditListener.clear();
+    }
+
+    /**
+     * This sets all the positioning attributes (left,top,right,bottom,zIndex) to null
+     * or zero.
+     */
+    @Override
     public void clear() {
-        actionLock.lock();
-        try {
-            if (action == null) {
-                action = new SynAction();
-            }
-            objects.values().forEach(obj -> {
-                action.getDel().add(obj.getUid());
-            });
-            objects.clear();
-            objectWithClicListener.clear();
-            objectWithEditListener.clear();
-        } finally {
-            actionLock.unlock();
-        }
-        firePropertyChange(ACTION, action, null);
+        setLeft(null);
+        setTop(null);
+        setWidth(null);
+        setBottom(null);
+        setZIndex(0);
     }
 
     /**
@@ -456,16 +365,6 @@ public class Synoptique extends Component implements Positionable, Sizeable {
                 SynObject obj = objects.get(sce.getUid());
                 if (obj != null) {
                     obj.clic(sce);
-                }
-            }
-            case FULL_UPDATE -> {
-                if (actionLock.tryLock()) {
-                    try {
-                        action = new SynAction();
-
-                    } finally {
-                        actionLock.unlock();
-                    }
                 }
             }
             default ->

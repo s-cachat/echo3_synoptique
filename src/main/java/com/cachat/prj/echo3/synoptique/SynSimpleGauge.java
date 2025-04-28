@@ -120,9 +120,9 @@ public class SynSimpleGauge extends SynGroupe {
         gauge = new SynObject(left + border, topGauge, width - border * 2, heightGauge, new SynViewBasic(SynViewBasic.SubType.RECT, color));
 
         text = new SynText(border * 2, top + height / 2, width, height, label, 20);
-        text.setFill(0xff0000);
-        text.setStroke(0x00ff00);
-        text.setTextBackgroundColor(0x000000);
+//        text.setFill(0xff0000);
+//        text.setStroke(0x00ff00);
+//        text.setTextBackgroundColor(0x000000);
 
         add(back);
         add(gauge);

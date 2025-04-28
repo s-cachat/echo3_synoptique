@@ -5,59 +5,71 @@ package com.cachat.prj.echo3.synoptique;
  * @author scachat
  */
 public class SynText extends SynObject {
-    
-    private SynViewText textView;
-    
+
+    public static final String TEXT_PROPERTY = "text";
+    public static final String FONT_SIZE_PROPERTY = "fontSize";
+    public static final String FONT_STYLE_PROPERTY = "fontStyle";
+    public static final String FONT_FAMILY_PROPERTY = "fontFamily";
+    public static final String ALIGNMENT_PROPERTY = "alignment";
+    public static final String COLOR_PROPERTY = "color";
+
     public SynText(double left, double top, double width, double height, String text, double fontSize) {
         super(left, top, width, height, null);
-        this.textView = new SynViewText(text, fontSize);
-        setView(textView);
+        setText(text);
+        setFontSize(fontSize);
     }
 
     public void setText(String text) {
-        textView.setText(text);
+        set(TEXT_PROPERTY, text);
+    }
+
+    public String getText() {
+        return (String) get(TEXT_PROPERTY);
     }
 
     public void setFontSize(double fontSize) {
-        textView.setFontSize(fontSize);
+        set(FONT_SIZE_PROPERTY, (Double) fontSize);
     }
 
-    public void setUnderline(boolean underline) {
-        textView.setUnderline(underline);
-    }
-
-    public void setLinethrough(boolean linethrough) {
-        textView.setLinethrough(linethrough);
-    }
-
-    public void setOverline(boolean overline) {
-        textView.setOverline(overline);
+    public Double getFontSize() {
+        return (Double) get(FONT_SIZE_PROPERTY);
     }
 
     public void setFontStyle(String fontStyle) {
-        textView.setFontStyle(fontStyle);
+        set(FONT_STYLE_PROPERTY, fontStyle);
+    }
+
+    public String getFontStyle() {
+        return (String) get(FONT_STYLE_PROPERTY);
     }
 
     public void setFontFamily(String fontFamily) {
-        textView.setFontFamily(fontFamily);
+        set(FONT_FAMILY_PROPERTY, fontFamily);
     }
 
-    public void setTextAlign(SynViewText.TextAlign textAlign) {
-        textView.setTextAlign(textAlign);
+    public String getFontFamily() {
+        return (String) get(FONT_FAMILY_PROPERTY);
     }
 
-    public void setTextBackgroundColor(int textBackgroundColor) {
-        textView.setTextBackgroundColor(textBackgroundColor);
+    /**
+     * fixe l'alignement horizontal
+     *
+     * @param alignment une valeur de Alignment
+     */
+    public void setTextAlign(Integer alignment) {
+        set(ALIGNMENT_PROPERTY, alignment);
     }
 
-    public void setFill(int fill) {
-        textView.setFill(fill);
+    public Integer getTextAlign() {
+        return (Integer) get(ALIGNMENT_PROPERTY);
     }
 
-    public void setStroke(int stroke) {
-        textView.setStroke(stroke);
+    public void setColor(int color) {
+        set(COLOR_PROPERTY,color);
+    }
+    public int getColor(){
+        return (Integer) get(COLOR_PROPERTY);
     }
 
-    
-    
+
 }

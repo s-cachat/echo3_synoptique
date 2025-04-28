@@ -48,14 +48,14 @@ public class SynoptiquePeer extends AbstractComponentSynchronizePeer {
     public Object getOutputProperty(Context context, Component component,
             String propertyName, int propertyIndex) {
         switch (propertyName) {
-            case Synoptique.ACTION: {
-                Synoptique comp = (Synoptique) component;
-                return comp.getActionAndClear();
-            }
-            case Synoptique.STATE: {
-                Synoptique comp = (Synoptique) component;
-                return comp.getState();
-            }
+//            case Synoptique.ACTION: {
+//                Synoptique comp = (Synoptique) component;
+//                return comp.getActionAndClear();
+//            }
+//            case Synoptique.STATE: {
+//                Synoptique comp = (Synoptique) component;
+//                return comp.getState();
+//            }
             default:
                 return super.getOutputProperty(context, component, propertyName, propertyIndex);
         }

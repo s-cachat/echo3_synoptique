@@ -63,7 +63,7 @@ public class SynoptiqueWithPopup extends ContainerEx {
 
     public void add(SynObject obj, Supplier<Popup> supplier) {
         synoptique.add(obj);
-        popupSuppliers.put(obj.getUid(), supplier);
+        popupSuppliers.put(obj.getId(), supplier);
         obj.addListener(this::addPopup);
     }
 
@@ -71,15 +71,15 @@ public class SynoptiqueWithPopup extends ContainerEx {
         if (popup != null) {
             remove(popup);
         }
-        Supplier<Popup> sup = popupSuppliers.get(source.getUid());
+        Supplier<Popup> sup = popupSuppliers.get(source.getId());
         if (sup != null) {
             Popup c = sup.get();
             if (c != null) {
                 c.setSynoptique(this);
                 popup = c;
                 add(c);
-                c.setLeft((int) source.getLeft());
-                c.setTop((int) source.getTop());
+                c.setLeft( source.getLeft().intValue());
+                c.setTop( source.getTop().intValue());
             }
         }
     }
@@ -107,7 +107,7 @@ public class SynoptiqueWithPopup extends ContainerEx {
     public void remove(SynObject obj) {
         synoptique.remove(obj);
 
-        popupSuppliers.remove(obj.getUid());
+        popupSuppliers.remove(obj.getId());
     }
 
     public SynView getView(String uid) {

@@ -2,68 +2,60 @@ package com.cachat.prj.echo3.synoptique;
 
 import java.util.ArrayList;
 import java.util.List;
+import nextapp.echo.app.Component;
 
 /**
- * un objet sur le syoptique
+ * un objet sur le synoptique
  *
  * @author scachat
  */
-public class SynObject {
+public class SynObject extends Component {
 
     public SynObject() {
     }
 
     public SynObject(double left, double top, double width, double height, SynView view) {
-        this.left = left;
-        this.top = top;
-        this.width = width;
-        this.height = height;
-        this.view = view;
+        setLeft(left);
+        setTop(top);
+        setWidth(width);
+        setHeight(height);
     }
-    /**
-     * notre identifiant unique (pour le synoptique)
-     */
-    private String uid = SynManager.newUid();
     /**
      * position x
      */
-    protected double left;
+    public static String LEFT_PROPERTY = "left";
     /**
      * position y
      */
-    protected double top;
+    public static String TOP_PROPERTY = "top";
     /**
      * largeur
      */
-    protected double width;
+    public static String WIDTH_PROPERTY = "width";
     /**
      * hauteur
      */
-    protected double height;
+    public static String HEIGHT_PROPERTY = "height";
     /**
      * angle
      */
-    protected double angle;
+    public static String ANGLE_PROPERTY = "angle";
     /**
      * z index (layer)
      */
-    protected int ZIndex = 100;
-    /**
-     * visibilité
-     */
-    protected boolean visible;
+    public static String ZINDEX_PROPERTY = "zindex";
     /**
      * déplaçable (dnd)
      */
-    protected boolean movable = false;
+    public static String MOVABLE_PROPERTY = "movable";
     /**
      * redimensionnable
      */
-    protected boolean resizeable = false;
+    public static String RESIZEABLE_PROPERTY = "resizeable";
     /**
-     * clickable (génération de clicEvent
+     * clickable (génération de clicEvent)
      */
-    protected boolean clickable = true;
+    public static String CLICKABLE_PROPERTY = "clickable";
     /**
      * les listeners pour l'édition
      */
@@ -77,92 +69,80 @@ public class SynObject {
      */
     private SynView view;
     /**
-     * le visuel quand la souris passe sur l'objet
-     */
-    private SynView hoverView;
-    /**
      * notre synoptique
      */
     private Synoptique synoptique;
 
-    public double getLeft() {
-        return left;
+    public Double getLeft() {
+        return (Double) get(LEFT_PROPERTY);
     }
 
-    public void setLeft(double left) {
-        this.left = left;
+    public void setLeft(Double left) {
+        set(LEFT_PROPERTY, left);
     }
 
-    public double getTop() {
-        return top;
+    public Double getTop() {
+        return (Double) get(TOP_PROPERTY);
     }
 
-    public void setTop(double top) {
-        this.top = top;
+    public void setTop(Double top) {
+        set(TOP_PROPERTY, top);
     }
 
-    public double getWidth() {
-        return width;
+    public Double getWidth() {
+        return (Double) get(WIDTH_PROPERTY);
     }
 
-    public void setWidth(double width) {
-        this.width = width;
+    public void setWidth(Double width) {
+        set(WIDTH_PROPERTY, width);
     }
 
-    public double getHeight() {
-        return height;
+    public Double getHeight() {
+        return (Double) get(HEIGHT_PROPERTY);
     }
 
-    public void setHeight(double height) {
-        this.height = height;
+    public void setHeight(Double height) {
+        set(HEIGHT_PROPERTY, height);
     }
 
-    public double getAngle() {
-        return angle;
+    public Double getAngle() {
+        return (Double) get(ANGLE_PROPERTY);
     }
 
-    public void setAngle(double angle) {
-        this.angle = angle;
+    public void setAngle(Double angle) {
+        set(ANGLE_PROPERTY, angle);
     }
 
     public int getZIndex() {
-        return ZIndex;
+        return (Integer) get(ZINDEX_PROPERTY);
     }
 
     public void setZIndex(int ZIndex) {
-        this.ZIndex = ZIndex;
+        set(ZINDEX_PROPERTY, ZIndex);
     }
 
-    public boolean isVisible() {
-        return visible;
+    public Boolean isMovable() {
+        return (Boolean) get(MOVABLE_PROPERTY);
     }
 
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public void setMovable(Boolean movable) {
+        set(MOVABLE_PROPERTY, movable);
     }
 
-    public boolean isMovable() {
-        return movable;
+    public Boolean isClickable() {
+        return (Boolean) get(CLICKABLE_PROPERTY);
     }
 
-    public void setMovable(boolean movable) {
-        this.movable = movable;
+    public void setClickable(Boolean clickable) {
+        set(CLICKABLE_PROPERTY, clickable);
     }
 
-    public boolean isClickable() {
-        return clickable;
+    public Boolean isResizeable() {
+        return (Boolean) get(RESIZEABLE_PROPERTY);
     }
 
-    public void setClickable(boolean clickable) {
-        this.clickable = clickable;
-    }
-
-    public boolean isResizeable() {
-        return resizeable;
-    }
-
-    public void setResizeable(boolean resizeable) {
-        this.resizeable = resizeable;
+    public void setResizeable(Boolean resizeable) {
+        set(RESIZEABLE_PROPERTY, resizeable);
     }
 
     public SynView getView() {
@@ -174,14 +154,6 @@ public class SynObject {
         if (synoptique != null) {
             synoptique.registerNewView(this, view);
         }
-    }
-
-    public SynView getHoverView() {
-        return hoverView;
-    }
-
-    public void setHoverView(SynView hoverView) {
-        this.hoverView = hoverView;
     }
 
     /**
@@ -238,14 +210,6 @@ public class SynObject {
         return synoptique;
     }
 
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
     /**
      * a-t-on des listener pour les clic
      *
@@ -276,18 +240,18 @@ public class SynObject {
         }
         if (isMovable()) {
             if (evt.left != null) {
-                this.left = evt.left;
+                setLeft(evt.left);
             }
             if (evt.top != null) {
-                this.top = evt.top;
+                setTop(evt.top);
             }
             if (evt.angle != null) {
-                this.angle = evt.angle;
+                setAngle(evt.angle);
             }
         }
         if (isResizeable()) {
-            this.width = evt.width;
-            this.height = evt.height;
+            setWidth(evt.width);
+            setHeight(evt.height);
         }
     }
 
@@ -299,5 +263,4 @@ public class SynObject {
     public boolean hasEditListener() {
         return editListeners != null && !editListeners.isEmpty();
     }
-
 }
