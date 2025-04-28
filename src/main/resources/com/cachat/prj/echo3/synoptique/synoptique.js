@@ -192,10 +192,13 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
     _div: null,
     _canvas: null,
     _fabric: null,
+    _disposed: false,
     _content: {},
+    _content2: {},
     renderAdd: function (update, parentElement) {
         console.log("render add update", update, ", action", this.component.get("action"));
         console.log("Synoptique renderAdd this is ", this);
+        console.log("Synoptique renderAdd content is ", this._content);
         console.log("Synoptique parentElement is", parentElement);
         if (this._div === null) {
             this._div = document.createElement("div");
@@ -389,7 +392,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
     renderDisplay: function () {
         console.log("render display action", this.component.get("action"));
         const _this = this;
-        if (this._fabric===null) {
+        if (this._fabric === null) {
             this._canvas.width = this._div.offsetWidth;
             this._canvas.height = this._div.offsetHeight;
             this._fabric = new fabric.Canvas(this._canvas);
@@ -556,6 +559,8 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         obj.uid = action.uid;
         this._fabric.add(obj);
         this._content[obj.uid] = obj;
+        this._content2[obj.uid] = obj;this.lastObj=obj
+        console.log("CONTENT    ",this._content);
         this._updateObj(action, obj);
         this._reorderObjects();
     },
@@ -595,6 +600,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
     },
     renderDispose: function (update) {
         console.log("Synoptique renderDispose " + update);
+        this._disposed = true;
     },
     renderUpdate: function (update) {
         console.log("Synoptique renderUpdate ", update, " action", this.component.get("action"));

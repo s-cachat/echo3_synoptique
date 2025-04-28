@@ -10,6 +10,7 @@ import static com.cachat.prj.echo3.ng.able.Positionable.PROPERTY_TOP;
 import static com.cachat.prj.echo3.ng.able.Positionable.PROPERTY_Z_INDEX;
 import com.cachat.prj.echo3.ng.able.Sizeable;
 import static com.cachat.prj.echo3.ng.able.Widthable.PROPERTY_WIDTH;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
@@ -33,9 +34,18 @@ public class Synoptique extends Component implements Positionable, Sizeable {
      */
     public static final String OBJECT_CLIC = "objectClic";
     /**
-     * prorpiete mise à jour du synoptiquie
+    /**
+     * evenement clic sur un objet
+     */
+    public static final String FULL_UPDATE = "fullUpdate";
+    /**
+     * propriete mise à jour du synoptique
      */
     public static final String ACTION = "action";
+    /**
+     * propriete etat du synoptique
+     */
+    public static final String STATE = "state";
     /**
      * les objets de ce synoptique
      */
@@ -153,6 +163,8 @@ public class Synoptique extends Component implements Positionable, Sizeable {
         try {
             if (action == null) {
                 action = new SynAction();
+                action.setFull(true);
+                action.getAdd().addAll(objects.values());
             }
             action.getUpdate().add(obj);
             if (obj.hasClicListener()) {
@@ -242,6 +254,19 @@ public class Synoptique extends Component implements Positionable, Sizeable {
     }
 
     /**
+     * donne l'état en cours
+     *
+     * @return
+     */
+    public Collection<SynObject> getState() {
+        return objects.values();
+    }
+
+    public void setState(Collection<SynObject> state) {
+
+    }
+
+    /**
      * supprime tous les objets
      */
     @Override
@@ -252,7 +277,6 @@ public class Synoptique extends Component implements Positionable, Sizeable {
                 action = new SynAction();
             }
             objects.values().forEach(obj -> {
-
                 action.getDel().add(obj.getUid());
             });
             objects.clear();
@@ -432,6 +456,16 @@ public class Synoptique extends Component implements Positionable, Sizeable {
                 SynObject obj = objects.get(sce.getUid());
                 if (obj != null) {
                     obj.clic(sce);
+                }
+            }
+            case FULL_UPDATE -> {
+                if (actionLock.tryLock()) {
+                    try {
+                        action = new SynAction();
+
+                    } finally {
+                        actionLock.unlock();
+                    }
                 }
             }
             default ->

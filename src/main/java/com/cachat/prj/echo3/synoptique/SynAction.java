@@ -24,6 +24,10 @@ public class SynAction {
      * objet a supprimer
      */
     private List<String> del;
+    /**
+     * si true, cet objet contient l'ensemble des données
+     */
+    private Boolean full;
 
     public List<SynObject> getAdd() {
         if (add == null) {
@@ -57,6 +61,13 @@ public class SynAction {
     public void setDel(List<String> del) {
         this.del = del;
     }
-    
+
+    public Boolean getFull() {
+        return full;
+    }
+
+    public void setFull(Boolean full) {
+        this.full = full;
+    }
 
 }

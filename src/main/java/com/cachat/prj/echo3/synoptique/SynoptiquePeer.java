@@ -29,6 +29,7 @@ public class SynoptiquePeer extends AbstractComponentSynchronizePeer {
 
     public SynoptiquePeer() {
         addOutputProperty(Synoptique.ACTION);
+        addOutputProperty(Synoptique.STATE);
         addEvent(new AbstractComponentSynchronizePeer.EventPeer(Synoptique.OBJECT_CLIC, Synoptique.OBJECT_CLIC, SynClicEvent.class) {
             @Override
             public boolean hasListeners(Context context, Component c) {
@@ -51,6 +52,10 @@ public class SynoptiquePeer extends AbstractComponentSynchronizePeer {
                 Synoptique comp = (Synoptique) component;
                 return comp.getActionAndClear();
             }
+            case Synoptique.STATE: {
+                Synoptique comp = (Synoptique) component;
+                return comp.getState();
+            }
             default:
                 return super.getOutputProperty(context, component, propertyName, propertyIndex);
         }
@@ -72,12 +77,22 @@ public class SynoptiquePeer extends AbstractComponentSynchronizePeer {
     public void storeInputProperty(Context context, Component component,
             String propertyName, int propertyIndex, Object newValue) {
         switch (propertyName) {
-            case Synoptique.ACTION:
+            case Synoptique.ACTION: {
                 ClientUpdateManager clientUpdateManager = (ClientUpdateManager) context.get(ClientUpdateManager.class);
                 Gson gson = new Gson();
                 final String newJsonValue = gson.toJson(newValue);
                 Synoptique.logger.info("Sending update " + newJsonValue);
                 clientUpdateManager.setComponentProperty(component, propertyName, newJsonValue);
+                break;
+            }
+            case Synoptique.STATE: {
+                ClientUpdateManager clientUpdateManager = (ClientUpdateManager) context.get(ClientUpdateManager.class);
+                Gson gson = new Gson();
+                final String newJsonValue = gson.toJson(newValue);
+                Synoptique.logger.info("Sending state " + newJsonValue);
+                clientUpdateManager.setComponentProperty(component, propertyName, newJsonValue);
+                break;
+            }
         }
     }
 
