@@ -49,14 +49,6 @@ public class SynoptiqueWithPopup extends ContainerEx {
         synoptique.setBounds(0, 0, 0, 0, null, null);
     }
 
-    public void add(SynGroupe obj) {
-        synoptique.add(obj);
-    }
-
-    public void remove(SynGroupe obj) {
-        synoptique.remove(obj);
-    }
-
     public void add(SynObject obj) {
         synoptique.add(obj);
     }

@@ -413,154 +413,158 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 console.log(e);
             }
         }
-        var actions = this.component.get("action");
-        console.log("handle action ", actions);
-        for (const action of actions.add) {
-            var obj;
-            if (action.view) {
-                switch (action.view.type) {
-                    case "synViewText":
-                    case "synViewBasic":
-                        switch (action.view.subType) {
-                            case "CIRCLE":
-                                obj = new fabric.Circle({radius: 100, width: 200, height: 200});
-                                obj.hasRadius = true;
-                                break;
-                            case "ELLIPSE":
-                                obj = new fabric.Ellipse();
-                                break;
-                            case "POLYGON":
-                                obj = new fabric.Polygon();
-                                break;
-                            case "POLYLINE":
-                                obj = new fabric.Polyline();
-                                break;
-                            case "RECT":
-                                obj = new fabric.Rect();
-                                break;
-                            case "TEXT":
-                                obj = new fabric.Text("TEST", {fontSize: 10});
-                                obj.isText = true;
-                                break;
-                            default:
-                                console.log("unsupported view synViewBasic subtype ", action.view.type);
-                        }
-                        if (obj !== undefined) {
-                            console.log("object ", action.uid, " is ", action.view.subType, " = ", obj);
-                            obj.view = {
-                                uid: action.view.uid,
-                                height: action.height,
-                                width: action.width,
-                                zIndex: action.zIndex
-                            };
-                            this._objectPostCreate(action, obj);
-                        }
-                        break;
-                    case "synViewSvg":
-                        var _renderId = this.component.renderId;
-                        var url = "synView/" + _renderId + "/" + action.view.uid + "/view.svg";
-                        console.log("create image view ", action.view.type, " url:", url, " action:", action, " fabric:", _this._fabric);
-                        fabric.Image.fromURL(url, {"left": action.left, "top": action.top, "height": action.height, "width": action.width})
-                                .then(function (nobj) {
-                                    nobj.view = {
-                                        uid: action.view.uid,
-                                        renderId: _renderId,
-                                        file: "view.jpg",
-                                        height: action.height,
-                                        width: action.width,
-                                        zIndex: action.zIndex
-                                    };
-                                    nobj.scaleToFit = function () {
-                                        this.view.scaleX = this.view.width / this._originalElement.width;
-                                        this.view.scaleY = this.view.height / this._originalElement.height;
-                                        this.set('scaleX', this.view.scaleX);
-                                        this.set('scaleY', this.view.scaleY);
-                                        this.set('height', this.view.height);
-                                        this.set('width', this.view.width);
-                                        console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
-                                    };
-                                    _this._objectPostCreate(action, nobj);
-                                    _this._fabric.renderAll();
-                                });
-                        break;
-                    case "synViewJpg":
-                        var _renderId = this.component.renderId;
-                        var url = "synView/" + this.component.renderId + "/" + action.view.uid + "/view.jpg";
-                        console.log("create image view ", action.view.type, " url:", url, " action:", action, " fabric:", _this._fabric);
-                        fabric.Image.fromURL(url, {"left": action.left, "top": action.top, "height": action.height, "width": action.width})
-                                .then(function (nobj) {
-                                    nobj.view = {
-                                        uid: action.view.uid,
-                                        renderId: _renderId,
-                                        file: "view.jpg",
-                                        height: action.height,
-                                        width: action.width,
-                                        zIndex: action.zIndex
-                                    };
-                                    nobj.scaleToFit = function () {
-                                        this.view.scaleX = this.view.width / this._originalElement.width;
-                                        this.view.scaleY = this.view.height / this._originalElement.height;
-                                        this.set('scaleX', this.view.scaleX);
-                                        this.set('scaleY', this.view.scaleY);
-                                        console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
-                                    };
-                                    _this._objectPostCreate(action, nobj);
-                                    _this._fabric.renderAll();
-                                });
-                        break;
-                    case "synViewPng":
-                        var _renderId = this.component.renderId;
-                        var url = "synView/" + this.component.renderId + "/" + action.view.uid + "/view.png";
-                        console.log("create image view with url ", action.view.type, " : ", url);
-                        fabric.Image.fromURL(url, {"left": action.left, "top": action.top, "height": action.height, "width": action.width})
-                                .then(function (nobj) {
-                                    console.log("png  ", action.view.uid, " : ", nobj);
-                                    nobj.view = {
-                                        uid: action.view.uid,
-                                        renderId: _renderId,
-                                        file: "view.png",
-                                        height: action.height,
-                                        width: action.width,
-                                        zIndex: action.zIndex
-                                    };
-                                    nobj.scaleToFit = function () {
-                                        this.view.scaleX = this.view.width / this._originalElement.width;
-                                        this.view.scaleY = this.view.height / this._originalElement.height;
-                                        this.set('scaleX', this.view.scaleX);
-                                        this.set('scaleY', this.view.scaleY);
-                                        console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
-                                    };
-                                    _this._objectPostCreate(action, nobj);
-                                    _this._fabric.renderAll();
-                                });
-                        break;
-                    default:
-                        console.log("unsupported view type ", action.view.type);
-                }
-            }
-        }
-        for (const action of actions.update) {
-            var obj = this._content[action.uid];
-            if (obj !== undefined) {
-                this._updateObj(action, obj);
-            }
-        }
-        for (const action of actions.del) {
-            var obj = this._content[action.uid];
-            if (obj !== undefined) {
-                this._fabric.remove(obj);
-                this._content[action.uid] = undefined;
-            }
-        }
-        this._reorderObjects();
+        /*
+         var actions = this.component.get("action");
+         console.log("handle action ", actions);
+         for (const action of actions.add) {
+         var obj;
+         if (action.view) {
+         switch (action.view.type) {
+         case "synViewText":
+         case "synViewBasic":
+         switch (action.view.subType) {
+         case "CIRCLE":
+         obj = new fabric.Circle({radius: 100, width: 200, height: 200});
+         obj.hasRadius = true;
+         break;
+         case "ELLIPSE":
+         obj = new fabric.Ellipse();
+         break;
+         case "POLYGON":
+         obj = new fabric.Polygon();
+         break;
+         case "POLYLINE":
+         obj = new fabric.Polyline();
+         break;
+         case "RECT":
+         obj = new fabric.Rect();
+         break;
+         case "TEXT":
+         obj = new fabric.Text("TEST", {fontSize: 10});
+         obj.isText = true;
+         break;
+         default:
+         console.log("unsupported view synViewBasic subtype ", action.view.type);
+         }
+         if (obj !== undefined) {
+         console.log("object ", action.uid, " is ", action.view.subType, " = ", obj);
+         obj.view = {
+         uid: action.view.uid,
+         height: action.height,
+         width: action.width,
+         zIndex: action.zIndex
+         };
+         this._objectPostCreate(action, obj);
+         }
+         break;
+         case "synViewSvg":
+         var _renderId = this.component.renderId;
+         var url = "synView/" + _renderId + "/" + action.view.uid + "/view.svg";
+         console.log("create image view ", action.view.type, " url:", url, " action:", action, " fabric:", _this._fabric);
+         fabric.Image.fromURL(url, {"left": action.left, "top": action.top, "height": action.height, "width": action.width})
+         .then(function (nobj) {
+         nobj.view = {
+         uid: action.view.uid,
+         renderId: _renderId,
+         file: "view.jpg",
+         height: action.height,
+         width: action.width,
+         zIndex: action.zIndex
+         };
+         nobj.scaleToFit = function () {
+         this.view.scaleX = this.view.width / this._originalElement.width;
+         this.view.scaleY = this.view.height / this._originalElement.height;
+         this.set('scaleX', this.view.scaleX);
+         this.set('scaleY', this.view.scaleY);
+         this.set('height', this.view.height);
+         this.set('width', this.view.width);
+         console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
+         };
+         _this._objectPostCreate(action, nobj);
+         _this._fabric.renderAll();
+         });
+         break;
+         case "synViewJpg":
+         var _renderId = this.component.renderId;
+         var url = "synView/" + this.component.renderId + "/" + action.view.uid + "/view.jpg";
+         console.log("create image view ", action.view.type, " url:", url, " action:", action, " fabric:", _this._fabric);
+         fabric.Image.fromURL(url, {"left": action.left, "top": action.top, "height": action.height, "width": action.width})
+         .then(function (nobj) {
+         nobj.view = {
+         uid: action.view.uid,
+         renderId: _renderId,
+         file: "view.jpg",
+         height: action.height,
+         width: action.width,
+         zIndex: action.zIndex
+         };
+         nobj.scaleToFit = function () {
+         this.view.scaleX = this.view.width / this._originalElement.width;
+         this.view.scaleY = this.view.height / this._originalElement.height;
+         this.set('scaleX', this.view.scaleX);
+         this.set('scaleY', this.view.scaleY);
+         console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
+         };
+         _this._objectPostCreate(action, nobj);
+         _this._fabric.renderAll();
+         });
+         break;
+         case "synViewPng":
+         var _renderId = this.component.renderId;
+         var url = "synView/" + this.component.renderId + "/" + action.view.uid + "/view.png";
+         console.log("create image view with url ", action.view.type, " : ", url);
+         fabric.Image.fromURL(url, {"left": action.left, "top": action.top, "height": action.height, "width": action.width})
+         .then(function (nobj) {
+         console.log("png  ", action.view.uid, " : ", nobj);
+         nobj.view = {
+         uid: action.view.uid,
+         renderId: _renderId,
+         file: "view.png",
+         height: action.height,
+         width: action.width,
+         zIndex: action.zIndex
+         };
+         nobj.scaleToFit = function () {
+         this.view.scaleX = this.view.width / this._originalElement.width;
+         this.view.scaleY = this.view.height / this._originalElement.height;
+         this.set('scaleX', this.view.scaleX);
+         this.set('scaleY', this.view.scaleY);
+         console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
+         };
+         _this._objectPostCreate(action, nobj);
+         _this._fabric.renderAll();
+         });
+         break;
+         default:
+         console.log("unsupported view type ", action.view.type);
+         }
+         }
+         }
+         for (const action of actions.update) {
+         var obj = this._content[action.uid];
+         if (obj !== undefined) {
+         this._updateObj(action, obj);
+         }
+         }
+         for (const action of actions.del) {
+         var obj = this._content[action.uid];
+         if (obj !== undefined) {
+         this._fabric.remove(obj);
+         this._content[action.uid] = undefined;
+         }
+         }
+         this._reorderObjects();
+         
+         */
     },
     _objectPostCreate(action, obj) {
         console.log("postcreating uid:", action.uid, " action:", action, " obj:", obj, " fabric:", this._fabric);
         obj.uid = action.uid;
         this._fabric.add(obj);
         this._content[obj.uid] = obj;
-        this._content2[obj.uid] = obj;this.lastObj=obj
-        console.log("CONTENT    ",this._content);
+        this._content2[obj.uid] = obj;
+        this.lastObj = obj
+        console.log("CONTENT    ", this._content);
         this._updateObj(action, obj);
         this._reorderObjects();
     },
@@ -615,3 +619,132 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
     }
 }
 );
+
+
+SynObject = {};
+SynObject = Core.extend(Echo.Component, {
+    $load: function () {
+        Echo.ComponentFactory.registerType("SynObject", this);
+    },
+    componentType: "SynObject"
+});
+
+SynObject.Sync = Core.extend(Echo.Render.ComponentSync, {
+    $load: function () {
+        Echo.Render.registerPeer("SynObject", this);
+        componentType : "SynObject";
+    },
+    _parent: null,
+    _left: null,
+    _top: null,
+    _angle: null,
+    _width: null,
+    _height: null,
+    _zIndex: null,
+    _clickable: null,
+    _movable: null,
+    _resizeable: null,
+    _id: null,
+    renderAdd: function (update, parentElement) {
+        this._parent = parentElement;
+        this._id = this.component.renderId;
+        this._left = this.component.render("left");
+        this._top = this.component.render("top");
+        this._angle = this.component.render("angle");
+        this._width = this.component.render("width");
+        this._height = this.component.render("height");
+        this._zIndex = this.component.render("zIndex");
+        this._clickable = this.component.render("clickable");
+        this._movable = this.component.render("movable");
+        this._resizeable = this.component.render("resizeable");
+        console.log("SynObject " + this._id + " renderAdd ", update, " => ", this);
+
+    },
+    renderDispose: function (update) {
+        console.log("SynObject " + this._id + " renderDispose ", this);
+        try {
+            this._parent.removeSynObject(this._layer);
+        } catch (e) {
+            //nop
+        }
+        this._layer = null;
+    },
+    renderUpdate: function (update) {
+        console.log("SynObject " + this._id + " renderUpdate ", update, " => ", this);
+
+
+        return true;
+    }
+});
+SynText = {};
+SynText = Core.extend(SynObject, {
+    $load: function () {
+        Echo.ComponentFactory.registerType("SynText", this);
+    },
+    componentType: "SynText"
+});
+
+SynText.Sync = Core.extend(SynObject.Sync, {
+    $load: function () {
+        Echo.Render.registerPeer("SynText", this);
+        componentType : "SynText";
+    },
+    _text: null,
+    _fontSize: null,
+    renderAdd: function (update, parentElement) {
+        this._text = this.component.render("text");
+        this._fontSize = this.component.render("fontSize");
+        console.log("SynText " + this._id + " renderAdd ", update, " => ", this);
+    },
+    renderDispose: function (update) {
+        console.log("SynText " + this._id + " renderDispose ", this);
+        try {
+            this._parent.removeSynText(this._layer);
+        } catch (e) {
+            //nop
+        }
+        this._layer = null;
+    },
+    renderUpdate: function (update) {
+        console.log("SynText " + this._id + " renderUpdate ", update, " => ", this);
+
+
+        return true;
+    }
+});
+SynImage = {};
+SynImage = Core.extend(SynObject, {
+    $load: function () {
+        Echo.ComponentFactory.registerType("SynImage", this);
+    },
+    componentType: "SynImage"
+});
+
+SynImage.Sync = Core.extend(SynObject.Sync, {
+    $load: function () {
+        Echo.Render.registerPeer("SynImage", this);
+        componentType : "SynImage";
+    },
+    _contentType: null,
+    _url: null,
+    renderAdd: function (update, parentElement) {
+        this._contentType = this.component.render("contentType");
+        this._url = this.component.render("url");
+        console.log("SynImage " + this._id + " renderAdd ", update, " => ", this);
+    },
+    renderDispose: function (update) {
+        console.log("SynImage " + this._id + " renderDispose ", this);
+        try {
+            this._parent.removeSynImage(this._layer);
+        } catch (e) {
+            //nop
+        }
+        this._layer = null;
+    },
+    renderUpdate: function (update) {
+        console.log("SynImage " + this._id + " renderUpdate ", update, " => ", this);
+
+
+        return true;
+    }
+});

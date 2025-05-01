@@ -79,24 +79,6 @@ public class Synoptique extends Component implements Positionable, Sizeable {
     }
 
     /**
-     * ajoute un groupe d'objets au synoptique
-     *
-     * @param obj l'objet
-     */
-    public void add(SynGroupe obj) {
-        obj.addTo(this);
-    }
-
-    /**
-     * supprime un groupe d'objets au synoptique
-     *
-     * @param obj l'objet
-     */
-    public void remove(SynGroupe obj) {
-        obj.removeFrom(this);
-    }
-
-    /**
      * ajoute un objet au synoptique
      *
      * @param obj l'objet
@@ -104,6 +86,7 @@ public class Synoptique extends Component implements Positionable, Sizeable {
     @Override
     public void add(Component obj) {
         if (obj instanceof SynObject synobj) {
+            super.add(obj);
             objects.put(synobj.getId(), synobj);
             if (synobj.hasClicListener()) {
                 objectWithClicListener.put(synobj.getId(), synobj);
