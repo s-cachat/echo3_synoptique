@@ -13,6 +13,20 @@ public class SynImage extends SynObject {
      * le content type
      */
     protected String contentType;
+    /**
+     * La vue
+     */
+    private SynView view;
+
+    public SynImage() {
+    }
+
+    public SynImage(double left, double top, double width, double height, SynView view) {
+        super(left, top, width, height);
+        this.view = view;
+    }
+    
+    
     public static final String VIEW_ID_PROPERTY="viewId";
     public static final String CONTENT_TYPE_PROPERTY="contentType";
     

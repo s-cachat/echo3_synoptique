@@ -116,8 +116,8 @@ public class SynSimpleGauge extends SynGroupe {
         this.border = border;
         this.value = value;
         calcHeight();
-        back = new SynObject(left, top, width, height, new SynViewBasic(SynViewBasic.SubType.RECT, 0x000000));
-        gauge = new SynObject(left + border, topGauge, width - border * 2, heightGauge, new SynViewBasic(SynViewBasic.SubType.RECT, color));
+        back = new SynShape(SynShapeType.RECT, 0x000000, 0x000000, left, top, width, height);
+        gauge = new SynShape(SynShapeType.RECT, color, color, left + border, topGauge, width - border * 2, heightGauge);
 
         text = new SynText(border * 2, top + height / 2, width, height, label, 20);
 //        text.setFill(0xff0000);
@@ -149,5 +149,5 @@ public class SynSimpleGauge extends SynGroupe {
         topGauge = top + border + height - heightGauge;
         label = String.format(format, y * 100, value);
     }
-    
+
 }

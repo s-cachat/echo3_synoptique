@@ -195,24 +195,6 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
     _disposed: false,
     _content: {},
     _content2: {},
-    renderAdd: function (update, parentElement) {
-        console.log("render add update", update, ", action", this.component.get("action"));
-        console.log("Synoptique renderAdd this is ", this);
-        console.log("Synoptique renderAdd content is ", this._content);
-        console.log("Synoptique parentElement is", parentElement);
-        if (this._div === null) {
-            this._div = document.createElement("div");
-            this._div.id = this.component.renderId;
-            Echo.Sync.renderComponentDefaults(this.component, this._div);
-            Extended.renderPositionnable(this.component, this._div);
-            parentElement.appendChild(this._div);
-        }
-        if (this._canvas === null) {
-            this._canvas = document.createElement("canvas");
-            this._canvas.id = this.component.renderId + "_canvas";
-            this._div.appendChild(this._canvas);
-        }
-    },
     _updateObj(action, obj) {
         if (obj !== undefined) {
             var setCoord = false;
@@ -602,6 +584,33 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             data: cEvent
         });
     },
+    renderAdd: function (update, parentElement) {
+        console.log("render add update", update, ", action", this.component.get("action"));
+        console.log("Synoptique renderAdd this is ", this);
+        console.log("Synoptique renderAdd content is ", this._content);
+        console.log("Synoptique parentElement is", parentElement);
+        if (this._div === null) {
+            this._div = document.createElement("div");
+            this._div.id = this.component.renderId;
+            Echo.Sync.renderComponentDefaults(this.component, this._div);
+            Extended.renderPositionnable(this.component, this._div);
+            parentElement.appendChild(this._div);
+        }
+        if (this._canvas === null) {
+            this._canvas = document.createElement("canvas");
+            this._canvas.id = this.component.renderId + "_canvas";
+            this._div.appendChild(this._canvas);
+        }
+        var addedChildren = update.getAddedChildren();
+        if (addedChildren) {
+            for (i = 0; i < addedChildren.length; ++i) {
+                if (addedChildren[i].parent.renderId === this.component.renderId) {
+                    console.log("Synoptique render add child ", addedChildren[i]);
+                    update.renderAddSyn(this._fabric);
+                }
+            }
+        }
+    },
     renderDispose: function (update) {
         console.log("Synoptique renderDispose " + update);
         this._disposed = true;
@@ -609,6 +618,29 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
     renderUpdate: function (update) {
         console.log("Synoptique renderUpdate ", update, " action", this.component.get("action"));
         console.log(update);
+        var addedChildren = update.getAddedChildren();
+        if (addedChildren) {
+            for (i = 0; i < addedChildren.length; ++i) {
+                if (addedChildren[i].parent.renderId === this.component.renderId) {
+                    console.log("Synoptique render add child ", addedChildren[i]);
+                    update.renderAddSyn(this._fabric);
+                }
+            }
+        }
+        var removedChildren = update.getRemovedChildren();
+        if (removedChildren) {
+            for (i = 0; i < removedChildren.length; ++i) {
+                console.log("Synoptique render remove child ", removedChildren[i]);
+                //this._renderRemoveChild(update, removedChildren[i]);
+            }
+        }
+        var updatedChildren = update.getChildrenUpdate();
+        if (updatedChildren) {
+            for (i = 0; i < updatedChildren.length; ++i) {
+                console.log("Synoptique render update child ", updatedChildren[i]);
+                //this._renderRemoveChild(update, updatedChildren[i]);
+            }
+        }
         var pu = update._propertyUpdates;
         if (pu) {
             console.log("pu", pu);
@@ -746,5 +778,45 @@ SynImage.Sync = Core.extend(SynObject.Sync, {
 
 
         return true;
+    },
+    renderAddSyn: function (update) {
+        console.log("SynImage renderAddSyn");
+    }
+});
+SynShape = {};
+SynShape = Core.extend(SynObject, {
+    $load: function () {
+        Echo.ComponentFactory.registerType("SynShape", this);
+    },
+    componentType: "SynShape"
+});
+
+SynShape.Sync = Core.extend(SynObject.Sync, {
+    $load: function () {
+        Echo.Render.registerPeer("SynShape", this);
+        componentType : "SynShape";
+    },
+    _contentType: null,
+    _url: null,
+    renderAdd: function (update, parentElement) {
+        this._contentType = this.component.render("contentType");
+        this._url = this.component.render("url");
+        console.log("SynShape " + this._id + " renderAdd ", update, " => ", this);
+    },
+    renderDispose: function (update) {
+        console.log("SynShape " + this._id + " renderDispose ", this);
+        try {
+            this._parent.removeSynShape(this._layer);
+        } catch (e) {
+            //nop
+        }
+        this._layer = null;
+    },
+    renderUpdate: function (update) {
+        console.log("SynShape " + this._id + " renderUpdate ", update, " => ", this);
+        return true;
+    },
+    renderAddSyn: function (update) {
+        console.log("SynShape renderAddSyn");
     }
 });

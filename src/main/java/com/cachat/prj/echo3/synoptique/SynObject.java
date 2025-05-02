@@ -14,7 +14,7 @@ public class SynObject extends Component {
     public SynObject() {
     }
 
-    public SynObject(double left, double top, double width, double height, SynView view) {
+    public SynObject(double left, double top, double width, double height) {
         setLeft(left);
         setTop(top);
         setWidth(width);

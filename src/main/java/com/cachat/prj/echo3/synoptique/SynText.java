@@ -14,7 +14,7 @@ public class SynText extends SynObject {
     public static final String COLOR_PROPERTY = "color";
 
     public SynText(double left, double top, double width, double height, String text, double fontSize) {
-        super(left, top, width, height, null);
+        super(left, top, width, height);
         setText(text);
         setFontSize(fontSize);
     }
