@@ -587,7 +587,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
     renderAdd: function (update, parentElement) {
         console.log("render add update", update, ", action", this.component.get("action"));
         console.log("Synoptique renderAdd this is ", this);
-        console.log("Synoptique renderAdd content is ", this._content);
+        console.log("Synoptique ID ==========================> ", this.component.renderId);
         console.log("Synoptique parentElement is", parentElement);
         if (this._div === null) {
             this._div = document.createElement("div");
@@ -601,19 +601,33 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             this._canvas.id = this.component.renderId + "_canvas";
             this._div.appendChild(this._canvas);
         }
-        var addedChildren = update.getAddedChildren();
-        if (addedChildren) {
-            for (i = 0; i < addedChildren.length; ++i) {
-                if (addedChildren[i].parent.renderId === this.component.renderId) {
-                    console.log("Synoptique render add child ", addedChildren[i]);
-                    update.renderAddSyn(this._fabric);
-                }
-            }
-        }
+        this.renderUpdate(update);
     },
     renderDispose: function (update) {
         console.log("Synoptique renderDispose " + update);
         this._disposed = true;
+    },
+    scan: function (item) {
+        var res = item.renderId;
+        var first = true;
+        if (item.children) {
+            for (i = 0; i < item.children.length; i++) {
+                if (first) {
+                    res = res + "(";
+                    first = false;
+                } else {
+                    res = res + ", ";
+                }
+                res = res + this.scan(item.children[i])
+            }
+        } else {
+            console.log("no child", item);
+            res = res + "*";
+        }
+        if (!first) {
+            res = res + ")";
+        }
+        return res;
     },
     renderUpdate: function (update) {
         console.log("Synoptique renderUpdate ", update, " action", this.component.get("action"));
@@ -621,23 +635,50 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         var addedChildren = update.getAddedChildren();
         if (addedChildren) {
             for (i = 0; i < addedChildren.length; ++i) {
+                var x = addedChildren[i];
+                if (x.componentType) {
+                    switch (x.componentType) {
+                        case "SynChape":
+                            {
+                                switch (x._localStyle.type) {
+                                    case "RECT":
+                                        {
+                                            var obj = new fabric.Rect();
+                                            this._objectPostCreate(x._localStyle, obj);
+                                        }
+                                        break;
+                                    default:
+                                        {
+                                            console.log("unsupported shape ", x._localStyle.type);
+                                        }
+                                        break;
+                                }
+                            }
+                            break;
+                        default:
+                            {
+                                console.log("unsupported child \"", x.componentType,"\"");
+                            }
+                            break;
+                    }
+                }
                 if (addedChildren[i].parent.renderId === this.component.renderId) {
-                    console.log("Synoptique render add child ", addedChildren[i]);
-                    update.renderAddSyn(this._fabric);
+                    console.log("Synoptique render add child to ", addedChildren[i].parent.renderId, "=> ", " TREE ", this.scan(addedChildren[i]));
+                    //update.renderAddSyn(this._fabric);
                 }
             }
         }
         var removedChildren = update.getRemovedChildren();
         if (removedChildren) {
             for (i = 0; i < removedChildren.length; ++i) {
-                console.log("Synoptique render remove child ", removedChildren[i]);
+                console.log("Synoptique render remove child => ", " TREE ", this.scan(removedChildren[i]));
                 //this._renderRemoveChild(update, removedChildren[i]);
             }
         }
-        var updatedChildren = update.getChildrenUpdate();
+        var updatedChildren = update.getUpdatedLayoutDataChildren();
         if (updatedChildren) {
             for (i = 0; i < updatedChildren.length; ++i) {
-                console.log("Synoptique render update child ", updatedChildren[i]);
+                console.log("Synoptique render update child => ", updatedChildren[i], " TREE ", this.scan(updatedChildren[i]));
                 //this._renderRemoveChild(update, updatedChildren[i]);
             }
         }
