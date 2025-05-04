@@ -64,14 +64,11 @@ public class SynObject extends Component {
      * les listeners pour les clics
      */
     private List<ClicListener> clicListeners;
-    /**
-     * le visuel par défaut
-     */
-    private SynView view;
+ 
     /**
      * notre synoptique
      */
-    private Synoptique synoptique;
+    protected Synoptique synoptique;
 
     public Double getLeft() {
         return (Double) get(LEFT_PROPERTY);
@@ -145,17 +142,6 @@ public class SynObject extends Component {
 
     public void setResizeable(Boolean resizeable) {
         set(RESIZEABLE_PROPERTY, resizeable);
-    }
-
-    public SynView getView() {
-        return view;
-    }
-
-    public void setView(SynView view) {
-        this.view = view;
-        if (synoptique != null) {
-            synoptique.registerNewView(this, view);
-        }
     }
 
     /**

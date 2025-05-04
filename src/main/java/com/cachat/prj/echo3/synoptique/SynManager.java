@@ -84,7 +84,7 @@ public class SynManager {
             synoptiques = new HashMap<>();
             s.setAttribute("synoptiques_fabric", synoptiques);
         }
-        synoptiques.put("C."+synoptique.getRenderId(), synoptique);
+        synoptiques.put("C." + synoptique.getRenderId(), synoptique);
 
     }
 
@@ -116,8 +116,8 @@ public class SynManager {
         Synoptique synoptique = getSynoptique(synoptiqueUid);
         if (synoptique != null) {
             SynObject object = synoptique.getObject(objectUid);
-            if (object != null) {
-                SynView view = object.getView();
+            if (object != null && object instanceof SynImage synimg) {
+                SynView view = synimg.getView();
                 if (view != null) {
                     return view.getContent();
                 }

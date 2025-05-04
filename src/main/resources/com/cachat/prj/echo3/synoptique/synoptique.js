@@ -425,11 +425,46 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                     break;
 
                 case "SynText":
-                {
-                    console.log("add text", x);
-                    obj = new fabric.Text("TEST", {fontSize: 10});
-                    obj._updateObj = this.updateText;
-                }
+                    {
+                        obj = new fabric.Text("TEST", {fontSize: 10});
+                        obj._updateObj = this.updateText;
+                    }
+                    break;
+                case "SynImage":
+                    {
+                        console.log("add image", x);
+                        /*
+                         var _renderId = this.component.renderId;
+                         var url = "synView/" + _renderId + "/" + action.view.uid + "/view.svg";
+                         console.log("create image view ", action.view.type, " url:", url, " action:", action, " fabric:", _this._fabric);
+                         fabric.Image.fromURL(url, {"left": action.left, "top": action.top, "height": action.height, "width": action.width})
+                         .then(function (nobj) {
+                         nobj.view = {
+                         uid: action.view.uid,
+                         renderId: _renderId,
+                         file: "view.jpg",
+                         height: action.height,
+                         width: action.width,
+                         zIndex: action.zIndex
+                         };
+                         nobj.scaleToFit = function () {
+                         this.view.scaleX = this.view.width / this._originalElement.width;
+                         this.view.scaleY = this.view.height / this._originalElement.height;
+                         this.set('scaleX', this.view.scaleX);
+                         this.set('scaleY', this.view.scaleY);
+                         this.set('height', this.view.height);
+                         this.set('width', this.view.width);
+                         console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
+                         };
+                         _this._objectPostCreate(action, nobj);
+                         _this._fabric.renderAll();
+                         });
+                         */
+
+
+
+                    }
+                    break;
                 default:
                     {
                         console.log("unsupported child \"", x.componentType, "\"");

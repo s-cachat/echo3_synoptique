@@ -95,12 +95,13 @@ public class Synoptique extends Component implements Positionable, Sizeable {
             if (synobj.hasEditListener()) {
                 objectWithEditListener.put(renderId, synobj);
             }
-            SynView view = synobj.getView();
-            if (view != null && !(view instanceof SynViewBasic)) {
-                logger.severe("Store view " + view.getClass().getSimpleName() + " " + view.getUid() + " for object " + synobj.getId());
-                views.put(view.getUid(), view);
-            }
+        
             synobj.setSynoptique(this);
+            if (obj instanceof SynImage synimage) {
+                SynView view = synimage.getView();
+                logger.severe("Store view " + view.getClass().getSimpleName() + " " + view.getUid() + " for object " + synobj.getId());
+                registerNewView(synimage, synimage.getView());
+            }
         }
     }
 
