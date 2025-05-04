@@ -87,12 +87,13 @@ public class Synoptique extends Component implements Positionable, Sizeable {
     public void add(Component obj) {
         if (obj instanceof SynObject synobj) {
             super.add(obj);
-            objects.put(synobj.getId(), synobj);
+            final String renderId = "C." + synobj.getRenderId();
+            objects.put(renderId, synobj);
             if (synobj.hasClicListener()) {
-                objectWithClicListener.put(synobj.getId(), synobj);
+                objectWithClicListener.put(renderId, synobj);
             }
             if (synobj.hasEditListener()) {
-                objectWithEditListener.put(synobj.getId(), synobj);
+                objectWithEditListener.put(renderId, synobj);
             }
             SynView view = synobj.getView();
             if (view != null && !(view instanceof SynViewBasic)) {
@@ -168,8 +169,8 @@ public class Synoptique extends Component implements Positionable, Sizeable {
     }
 
     /**
-     * This sets all the positioning attributes (left,top,right,bottom,zIndex) to null
-     * or zero.
+     * This sets all the positioning attributes (left,top,right,bottom,zIndex)
+     * to null or zero.
      */
     @Override
     public void clear() {

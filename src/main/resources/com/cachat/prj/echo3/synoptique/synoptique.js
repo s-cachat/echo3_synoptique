@@ -1,3 +1,4 @@
+/* fuck  */
 Synoptique = {};
 Synoptique = Core.extend(Echo.Component, {
     $load: function () {
@@ -18,23 +19,12 @@ Synoptique.SerialEvent = Core.extend(Echo.Serial.PropertyTranslator, {
         },
         /** @see Echo.Serial.PropertyTranslator#toXml */
         toXml: function (client, propertyElement, propertyValue) {
-            if (propertyValue.uid) {
-                propertyElement.setAttribute("uid", propertyValue.uid);
-            }
-            if (propertyValue.left) {
-                propertyElement.setAttribute("left", propertyValue.left);
-            }
-            if (propertyValue.top) {
-                propertyElement.setAttribute("top", propertyValue.top);
-            }
-            if (propertyValue.width) {
-                propertyElement.setAttribute("width", propertyValue.width);
-            }
-            if (propertyValue.height) {
-                propertyElement.setAttribute("height", propertyValue.height);
-            }
-            if (propertyValue.angle) {
-                propertyElement.setAttribute("angle", propertyValue.angle);
+            for (const property in propertyValue) {
+                var value = propertyValue[property];
+                if (value) {
+                    console.log("Event  ", property, " => ", value);
+                    propertyElement.setAttribute(property, value);
+                }
             }
         }
     },
@@ -42,148 +32,7 @@ Synoptique.SerialEvent = Core.extend(Echo.Serial.PropertyTranslator, {
         Echo.Serial.addPropertyTranslator("SynModifiedEvent", this);
     }
 });
-/**
- * Date Property Translator Singleton.
- */
-Synoptique.Action = Core.extend(Echo.Serial.PropertyTranslator, {
 
-    $static: {
-        /** @see Echo.Serial.PropertyTranslator#toProperty */
-        toProperty: function (client, pElement) {
-            var actions = {
-                add: [],
-                del: [],
-                update: []
-            };
-            console.log(pElement);
-            for (var eAction of pElement.childNodes[0].childNodes) {
-                var action = {};
-                for (const eVal of eAction.childNodes) {
-                    switch (eVal.nodeName) {
-                        case "angle":
-                            action.angle = parseFloat(eVal.textContent);
-                            break;
-                        case "height":
-                            action.height = parseFloat(eVal.textContent);
-                            break;
-                        case "left":
-                            action.left = parseFloat(eVal.textContent);
-                            break;
-                        case "top":
-                            action.top = parseFloat(eVal.textContent);
-                            break;
-                        case "width":
-                            action.width = parseFloat(eVal.textContent);
-                            break;
-                        case "ZIndex":
-                            action.zIndex = parseFloat(eVal.textContent);
-                            break;
-                        case "clickable":
-                            action.clickable = "true" === eVal.textContent;
-                            break;
-                        case "movable":
-                            action.movable = "true" === eVal.textContent;
-                            break;
-                        case "resizeable":
-                            action.resizeable = "true" === eVal.textContent;
-                            break;
-                        case "visible":
-                            action.visible = "true" === eVal.textContent;
-                            break;
-                        case "uid":
-                            action.uid = eVal.textContent;
-                            break;
-                        case "view":
-                            action.view = {};
-                            action.view.type = eVal.getAttribute("xsi:type");
-                            for (const eView of eVal.childNodes) {
-                                switch (eView.nodeName) {
-                                    case "fill":
-                                        action.view.fill = parseInt(eView.textContent);
-                                        break;
-                                    case "opacity":
-                                        action.view.opacity = parseInt(eView.textContent);
-                                        break;
-                                    case "stroke":
-                                        action.view.stroke = parseInt(eView.textContent);
-                                        break;
-                                    case "strokeWidth":
-                                        action.view.strokeWidth = parseFloat(eView.textContent);
-                                        break;
-                                    case "uid":
-                                        action.view.uid = eView.textContent;
-                                        break;
-                                    case "contentType":
-                                        action.view.contentType = eView.textContent;
-                                        break;
-                                    case "subType":
-                                        action.view.subType = eView.textContent;
-                                        break;
-                                    case "src":
-                                        action.view.src = eView.textContent;
-                                        break;
-                                    case "text":
-                                        action.view.text = eView.textContent;
-                                        break;
-                                    case "fontSize":
-                                        action.fontSize = parseFloat(eVal.textContent);
-                                        break;
-                                    case "underline":
-                                        action.underline = "true" === eVal.textContent;
-                                        break;
-                                    case "linethrough":
-                                        action.linethrough = "true" === eVal.textContent;
-                                        break;
-                                    case "overline":
-                                        action.overline = "true" === eVal.textContent;
-                                        break;
-                                    case "fontStyle":
-                                        action.view.fontStyle = eView.textContent;
-                                        break;
-                                    case "fontFamily":
-                                        action.view.fontFamily = eView.textContent;
-                                        break;
-                                    case "textAlign":
-                                        action.view.textAlign = eView.textContent;
-                                        break;
-                                    case "textBackgroundColor":
-                                        action.view.textBackgroundColor = parseInt(eView.textContent);
-                                        break;
-                                    default:
-                                        console.log("unknown view property\"" + eView.nodeName + "\"");
-                                }
-                            }
-                            break;
-                        default:
-                            console.log("unknown action property\"" + eVal.nodeName + "\"");
-                    }
-                }
-                switch (eAction.nodeName) {
-                    case "add":
-                        actions.add.push(action);
-                        break;
-                    case "del":
-                        actions.del.push(action);
-                        break;
-                    case "update":
-                        actions.update.push(action);
-                        break;
-                    default:
-                        console.log("unknown action \"" + eAction.nodeName + "\"");
-                }
-            }
-            console.log("parsed actions", actions);
-            return actions;
-        },
-        /** @see Echo.Serial.PropertyTranslator#toXml */
-        toXml: function (client, propertyElement, propertyValue) {
-
-        }
-    },
-    $load: function () {
-        Echo.Serial.addPropertyTranslator("SynAction", this);
-    }
-});
 Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
     $load: function () {
         Echo.Render.registerPeer("Synoptique", this);
@@ -195,167 +44,203 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
     _disposed: false,
     _content: {},
     _content2: {},
-    _updateObj(action, obj) {
-        if (obj !== undefined) {
-            var setCoord = false;
-            if (action.angle) {
-                obj.angle = action.angle;
-                setCoord = true;
-            }
-            if (action.top) {
-                obj.top = action.top;
-                setCoord = true;
-            }
-            if (action.zIndex) {
-                obj.zIndex = action.ZIndex;
-            }
-            if (action.left) {
-                obj.left = action.left;
-                setCoord = true;
-            }
-            if (obj.hasRadius) {
-                if (action.width) {
-                    obj.radius = action.width / 2;
-                    setCoord = true;
-                }
-                if (action.height && (action.width === undefined || action.height < action.width)) {
-                    obj.radius = action.height / 2;
-                    setCoord = true;
-                }
-                console.log("set radius of ", obj.uid, " to ", obj.radius);
+    /**
+     * met à jour les proprietes generiques d'un objet
+     * @param {type} action les proprietes
+     * @return true si setCoord doit être appelé
+     */
+    updateObj(action) {
+        console.log("updateObj", this, action);
+        var setCoord = false;
+        if (action.angle && this.angle !== action.angle) {
+            this.angle = action.angle;
+            setCoord = true;
+        }
+        if (action.top && this.top !== action.top) {
+            this.top = action.top;
+            setCoord = true;
+        }
+        if (action.zindex) {
+            this.zIndex = action.zindex;
+        }
+        if (action.left && this.left !== action.left) {
+            this.left = action.left;
+            setCoord = true;
+        }
+        var hasControl = undefined;
+        var selectable = undefined;
+        if (action.movable !== undefined) {
+            if (action.movable) {
+                this.lockMovementX = false;
+                this.lockMovementY = false;
+                this.lockRotation = false;
+                hasControl = true;
             } else {
-                if (action.width !== undefined || action.height !== undefined) {
-                    setCoord = true;
-                    obj.scaleToFit();
-                } else {
-                    console.log("set and no scale size of ", obj.uid, " to ", obj.width, "x", obj.height, " view is ", obj.view, " obj", obj);
-                }
+                this.lockMovementX = true;
+                this.lockMovementY = true;
+                this.lockRotation = true;
+                hasControl = false;
             }
-            if (setCoord) {
-                console.log("setCoord for ", obj.uid);
-                obj.setCoords();
-            }
-            if (action.view.fill) {
-                obj.fill = "#" + action.view.fill.toString(16).padStart(6, '0');
-            }
-            if (action.view.stroke) {
-                obj.stroke = "#" + action.view.stroke.toString(16).padStart(6, '0');
-            }
-            if (action.view.strokeWidth) {
-                obj.strokeWidth = action.view.strokeWidth;
-            }
-            const _this = this;
-            if (action.view.uid !== undefined && obj.view !== undefined && obj.view.uid !== undefined && action.view.uid !== obj.view.uid) {
-                var url = "synView/" + obj.view.renderId + "/" + action.view.uid + "/" + obj.view.file;
-                obj.setSrc(url).then(function (img) {
-                    console.log("post update image ", obj.uid, " with view " + action.view.uid, " _this is ", _this, " fab is ", _this._fabric);
-                    obj.setCoords();
-                    _this._fabric.renderAll();
-                });
-            }
-            var hasControl = undefined;
-            var selectable = undefined;
-            if (action.movable !== undefined) {
-                if (action.movable) {
-                    obj.lockMovementX = false;
-                    obj.lockMovementY = false;
-                    obj.lockRotation = false;
-                    hasControl = true;
-                } else {
-                    obj.lockMovementX = true;
-                    obj.lockMovementY = true;
-                    obj.lockRotation = true;
+        }
+        if (action.resizeable !== undefined) {
+            if (action.resizeable) {
+                this.lockScalingX = false;
+                this.lockScalingY = false;
+                hasControl = true;
+            } else {
+                this.lockScalingX = true;
+                this.lockScalingY = true;
+                if (hasControl === undefined) {
                     hasControl = false;
                 }
             }
-            if (action.resizeable !== undefined) {
-                if (action.resizeable) {
-                    obj.lockScalingX = false;
-                    obj.lockScalingY = false;
-                    hasControl = true;
+        }
+        this.hasBorders = hasControl;
+        this.hasControls = hasControl;
+        selectable = hasControl;
+        var _obj = this;
+        if (hasControl !== undefined) {
+            if (hasControl) {
+                if (this.modifiedHandler) {
                 } else {
-                    obj.lockScalingX = true;
-                    obj.lockScalingY = true;
-                    if (hasControl === undefined) {
-                        hasControl = false;
-                    }
+                    var handler = function (e) {
+                        _obj.syn._modifiedEvent(_obj, e);
+                    };
+                    this.modifiedHandler = handler;
+                    this.on("modified", handler);
                 }
-            }
-            obj.hasBorders = hasControl;
-            obj.hasControls = hasControl;
-            selectable = hasControl;
-            if (hasControl !== undefined) {
-                if (hasControl) {
-                    if (obj.modifiedHandler) {
-                    } else {
-                        var handler = function (e) {
-                            _this._modifiedEvent(obj, e);
-                        };
-                        obj.modifiedHandler = handler;
-                        obj.on("modified", handler);
-                    }
-                } else {
-                    if (obj.modifiedHandler) {
-                        obj.off("modified", obj.modifiedHandler);
-                        obj.modifiedHandler = undefined;
-                    }
+            } else {
+                if (this.modifiedHandler) {
+                    this.off("modified", this.modifiedHandler);
+                    this.modifiedHandler = undefined;
+                }
 
-                }
             }
-            if (action.clickable !== undefined) {
-                if (action.clickable) {
-                    if (obj.clickHandler) {
-                    } else {
-                        var handler = function (e) {
-                            _this._clicEvent(obj, e);
-                        };
-                        obj.clickHandler = handler;
-                        obj.on("mouseup", handler);
-                        selectable = true;
-                    }
+        }
+        if (action.clickable !== undefined) {
+            if (action.clickable) {
+                if (this.clickHandler) {
                 } else {
-                    if (obj.clickHandler) {
-                        obj.off("mouseup", obj.clickHandler);
-                        obj.clickHandler = undefined;
-                    }
-                    if (selectable === undefined) {
-                        selectable = false;
-                    }
+                    var handler = function (e) {
+                        _obj.syn._clicEvent(_obj, e);
+                    };
+                    this.clickHandler = handler;
+                    this.on("mouseup", handler);
+                    selectable = true;
                 }
-            }
-            if (selectable !== undefined) {
-                obj.set('selectable', selectable);
-            }
-            if (obj.isText) {
-                if (action.view.text) {
-                    obj.set('text', action.view.text);
+            } else {
+                if (this.clickHandler) {
+                    this.off("mouseup", this.clickHandler);
+                    this.clickHandler = undefined;
                 }
-                if (action.view.fontSize) {
-                    obj.set('fontSize', action.view.fontSize);
-                }
-                if (action.view.underline) {
-                    obj.set('underline', action.view.underline);
-                }
-                if (action.view.linethrough) {
-                    obj.set('linethrough', action.view.linethrough);
-                }
-                if (action.view.overline) {
-                    obj.set('overline', action.view.overline);
-                }
-                if (action.view.fontStyle) {
-                    obj.set('fontStyle', action.view.fontStyle);
-                }
-                if (action.view.fontFamily) {
-                    obj.set('fontFamily', action.view.fontFamily);
-                }
-                if (action.view.textAlign) {
-                    obj.set('textAlign', action.view.textAlign);
-                }
-                if (action.view.textBackgroundColor) {
-                    obj.set('textBackgroundColor', "#" + action.view.textBackgroundColor.toString(16).padStart(6, '0'));
+                if (selectable === undefined) {
+                    selectable = false;
                 }
             }
         }
+        if (selectable !== undefined) {
+            this.set('selectable', selectable);
+        }
+
+
+        return setCoord;
+    },
+    /**
+     * met à jour les proprietes d'une forme
+     * @param {type} action les proprietes
+     */
+    updateShape(action) {
+        if (action.coord) {
+            try {
+                action._coord = JSON.parse(action.coord).values;
+            } catch (e) {
+                action._coord = [];
+                console.log("Can't parse ", action.coord);
+            }
+        }
+        var setCoord = this.updateObj(action);
+        if (setCoord) {
+            console.log("setCoord for ", this.renderId);
+            this.setCoords();
+        }
+        if (action.fillColor) {
+            this.fill = "#" + action.fillColor.toString(16).padStart(6, '0');
+        }
+        if (action.stroke) {
+            this.stroke = "#" + action.stroke.toString(16).padStart(6, '0');
+        }
+        if (action.strokeWidth) {
+            this.strokeWidth = action.strokeWidth;
+        }
+    },
+    /**
+     * met à jour les proprietes d'un rectangle
+     * @param {type} action les proprietes
+     */
+    updateRect(action) {
+        this.updateShape(action);
+        if (action._coord.length >= 2) {
+            this.width = action._coord[0];
+            this.height = action._coord[1];
+            console.log("updateCircle width", this.width, " height", this.height);
+            this.setCoords();
+        }
+    },
+    /**
+     * met à jour les proprietes d'un rectangle
+     * @param {type} action les proprietes
+     */
+    updateCircle(action) {
+        this.updateShape(action);
+
+        if (action._coord.length >= 1) {
+            this.radius = action._coord[1];
+            if (action._coord.length >= 3) {
+                this.startAngle = action._coord[1];
+                this.endAngle = action._coord[2];
+            }
+            console.log("updateCircle radius", this.radius, " startAngle", this.startAngle, " endAngle", this.endAngle);
+            this.setCoords();
+        }
+    },
+    /**
+     * met à jour les proprietes d'un texte
+     * @param {type} action les proprietes
+     */
+    updateText(action) {
+        var setCoord = this.updateObj(action);
+        if (setCoord) {
+            console.log("setCoord for ", this.renderId);
+            this.setCoords();
+        }
+        if (action.text) {
+            this.set('text', action.text);
+        }
+        if (action.fontSize) {
+            this.set('fontSize', action.fontSize);
+        }
+        if (action.underline) {
+            this.set('underline', action.underline);
+        }
+        if (action.linethrough) {
+            this.set('linethrough', action.linethrough);
+        }
+        if (action.overline) {
+            this.set('overline', action.overline);
+        }
+        if (action.fontStyle) {
+            this.set('fontStyle', action.fontStyle);
+        }
+        if (action.fontFamily) {
+            this.set('fontFamily', action.fontFamily);
+        }
+        if (action.textAlign) {
+            this.set('textAlign', action.textAlign);
+        }
+        if (action.textBackgroundColor) {
+            this.set('textBackgroundColor', "#" + action.textBackgroundColor.toString(16).padStart(6, '0'));
+        }
+
     },
     _reorderObjects() {
         this._fabric._objects.sort(function (a, b) {
@@ -364,7 +249,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         console.log(this._fabric._objects);
         for (const o of this._fabric._objects) {
             if (o.view) {
-                console.log(">>> ", o.view.uid, o.view.zIndex);
+                console.log(">>> ", o.renderId, o.zIndex);
             } else {
                 console.log(">>> *", o);
             }
@@ -372,7 +257,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         this._fabric.renderAll();
     },
     renderDisplay: function () {
-        console.log("render display action", this.component.get("action"));
+        console.log("renderDisplay *************");
         const _this = this;
         if (this._fabric === null) {
             this._canvas.width = this._div.offsetWidth;
@@ -391,163 +276,24 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                     opt.e.preventDefault();
                     opt.e.stopPropagation();
                 });
+
             } catch (e) {
                 console.log(e);
             }
+            for (var i = 0; i < this.futureAdd.length; i++) {
+                this._renderAddChild(this.futureAdd[i]);
+            }
         }
-        /*
-         var actions = this.component.get("action");
-         console.log("handle action ", actions);
-         for (const action of actions.add) {
-         var obj;
-         if (action.view) {
-         switch (action.view.type) {
-         case "synViewText":
-         case "synViewBasic":
-         switch (action.view.subType) {
-         case "CIRCLE":
-         obj = new fabric.Circle({radius: 100, width: 200, height: 200});
-         obj.hasRadius = true;
-         break;
-         case "ELLIPSE":
-         obj = new fabric.Ellipse();
-         break;
-         case "POLYGON":
-         obj = new fabric.Polygon();
-         break;
-         case "POLYLINE":
-         obj = new fabric.Polyline();
-         break;
-         case "RECT":
-         obj = new fabric.Rect();
-         break;
-         case "TEXT":
-         obj = new fabric.Text("TEST", {fontSize: 10});
-         obj.isText = true;
-         break;
-         default:
-         console.log("unsupported view synViewBasic subtype ", action.view.type);
-         }
-         if (obj !== undefined) {
-         console.log("object ", action.uid, " is ", action.view.subType, " = ", obj);
-         obj.view = {
-         uid: action.view.uid,
-         height: action.height,
-         width: action.width,
-         zIndex: action.zIndex
-         };
-         this._objectPostCreate(action, obj);
-         }
-         break;
-         case "synViewSvg":
-         var _renderId = this.component.renderId;
-         var url = "synView/" + _renderId + "/" + action.view.uid + "/view.svg";
-         console.log("create image view ", action.view.type, " url:", url, " action:", action, " fabric:", _this._fabric);
-         fabric.Image.fromURL(url, {"left": action.left, "top": action.top, "height": action.height, "width": action.width})
-         .then(function (nobj) {
-         nobj.view = {
-         uid: action.view.uid,
-         renderId: _renderId,
-         file: "view.jpg",
-         height: action.height,
-         width: action.width,
-         zIndex: action.zIndex
-         };
-         nobj.scaleToFit = function () {
-         this.view.scaleX = this.view.width / this._originalElement.width;
-         this.view.scaleY = this.view.height / this._originalElement.height;
-         this.set('scaleX', this.view.scaleX);
-         this.set('scaleY', this.view.scaleY);
-         this.set('height', this.view.height);
-         this.set('width', this.view.width);
-         console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
-         };
-         _this._objectPostCreate(action, nobj);
-         _this._fabric.renderAll();
-         });
-         break;
-         case "synViewJpg":
-         var _renderId = this.component.renderId;
-         var url = "synView/" + this.component.renderId + "/" + action.view.uid + "/view.jpg";
-         console.log("create image view ", action.view.type, " url:", url, " action:", action, " fabric:", _this._fabric);
-         fabric.Image.fromURL(url, {"left": action.left, "top": action.top, "height": action.height, "width": action.width})
-         .then(function (nobj) {
-         nobj.view = {
-         uid: action.view.uid,
-         renderId: _renderId,
-         file: "view.jpg",
-         height: action.height,
-         width: action.width,
-         zIndex: action.zIndex
-         };
-         nobj.scaleToFit = function () {
-         this.view.scaleX = this.view.width / this._originalElement.width;
-         this.view.scaleY = this.view.height / this._originalElement.height;
-         this.set('scaleX', this.view.scaleX);
-         this.set('scaleY', this.view.scaleY);
-         console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
-         };
-         _this._objectPostCreate(action, nobj);
-         _this._fabric.renderAll();
-         });
-         break;
-         case "synViewPng":
-         var _renderId = this.component.renderId;
-         var url = "synView/" + this.component.renderId + "/" + action.view.uid + "/view.png";
-         console.log("create image view with url ", action.view.type, " : ", url);
-         fabric.Image.fromURL(url, {"left": action.left, "top": action.top, "height": action.height, "width": action.width})
-         .then(function (nobj) {
-         console.log("png  ", action.view.uid, " : ", nobj);
-         nobj.view = {
-         uid: action.view.uid,
-         renderId: _renderId,
-         file: "view.png",
-         height: action.height,
-         width: action.width,
-         zIndex: action.zIndex
-         };
-         nobj.scaleToFit = function () {
-         this.view.scaleX = this.view.width / this._originalElement.width;
-         this.view.scaleY = this.view.height / this._originalElement.height;
-         this.set('scaleX', this.view.scaleX);
-         this.set('scaleY', this.view.scaleY);
-         console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
-         };
-         _this._objectPostCreate(action, nobj);
-         _this._fabric.renderAll();
-         });
-         break;
-         default:
-         console.log("unsupported view type ", action.view.type);
-         }
-         }
-         }
-         for (const action of actions.update) {
-         var obj = this._content[action.uid];
-         if (obj !== undefined) {
-         this._updateObj(action, obj);
-         }
-         }
-         for (const action of actions.del) {
-         var obj = this._content[action.uid];
-         if (obj !== undefined) {
-         this._fabric.remove(obj);
-         this._content[action.uid] = undefined;
-         }
-         }
-         this._reorderObjects();
-         
-         */
     },
     _objectPostCreate(action, obj) {
         console.log("postcreating uid:", action.uid, " action:", action, " obj:", obj, " fabric:", this._fabric);
-        obj.uid = action.uid;
         this._fabric.add(obj);
-        this._content[obj.uid] = obj;
-        this._content2[obj.uid] = obj;
+        this._content[obj.renderId] = obj;
+        this._content2[obj.renderId] = obj;
         this.lastObj = obj
         console.log("CONTENT    ", this._content);
-        this._updateObj(action, obj);
+        console.log("OBJ    ", obj);
+        obj._updateObj(action);
         this._reorderObjects();
     },
     _modifiedEvent(source, event) {
@@ -558,9 +304,9 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             width: source.width,
             height: source.height,
             angle: source.angle,
-            uid: source.uid
+            uid: source.renderId
         };
-        console.log("modified source", source, " mEvent", mEvent, " event ", event);
+        console.log("modified source", source, " mEvent", mEvent, " event ", event, "component", this.component);
         this.component.fireEvent({
             type: 'objectEdit',
             source: this.component,
@@ -575,9 +321,13 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             width: source.width,
             height: source.height,
             angle: source.angle,
-            uid: source.uid
+            uid: source.renderId,
+            mouseX: event.pointer.x,
+            mouseY: event.pointer.y,
+            screenX: event.screenX,
+            screenY: event.screenY
         };
-        console.log("click source", source, " mEvent", cEvent, " event ", event);
+        console.log("click source", source, " mEvent", cEvent, " event ", event, "component", this.component);
         this.component.fireEvent({
             type: 'objectClic',
             source: this.component,
@@ -588,7 +338,6 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         console.log("render add update", update, ", action", this.component.get("action"));
         console.log("Synoptique renderAdd this is ", this);
         console.log("Synoptique ID ==========================> ", this.component.renderId);
-        console.log("Synoptique parentElement is", parentElement);
         if (this._div === null) {
             this._div = document.createElement("div");
             this._div.id = this.component.renderId;
@@ -601,7 +350,13 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             this._canvas.id = this.component.renderId + "_canvas";
             this._div.appendChild(this._canvas);
         }
-        this.renderUpdate(update);
+
+        var componentCount = this.component.getComponentCount();
+        this.futureAdd = [];
+        for (var i = 0; i < componentCount; i++) {
+            var child = this.component.getComponent(i);
+            this.futureAdd[i] = child;
+        }
     },
     renderDispose: function (update) {
         console.log("Synoptique renderDispose " + update);
@@ -629,43 +384,76 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         }
         return res;
     },
+    _renderAddChild: function (x) {
+        var obj = undefined;
+        if (x.componentType) {
+            switch (x.componentType) {
+                case "SynShape":
+                    {
+                        var coord;
+                        if (x._localStyle.coord) {
+                            coord = JSON.parse(x._localStyle.coord).values;
+                        } else {
+                            coord = [];
+                        }
+                        switch (x._localStyle.type) {
+                            case "RECT":
+                                {
+                                    obj = new fabric.Rect({width: coord[0], height: coord[1]});
+                                    obj._updateObj = this.updateRect;
+                                }
+                                break;
+                            case "CIRCLE":
+                                {
+                                    var param = {
+                                        radius: coord[0]
+                                    };
+                                    obj = new fabric.Circle(param);
+                                    obj._updateObj = this.updateCircle;
+                                }
+                                break;
+                            default:
+                                {
+                                    console.log("unsupported shape ", x._localStyle.type);
+                                }
+                                break;
+                        }
+                        if (obj !== undefined) {
+                            obj.updateShape = this.updateShape;
+                        }
+                    }
+                    break;
+
+                case "SynText":
+                {
+                    console.log("add text", x);
+                    obj = new fabric.Text("TEST", {fontSize: 10});
+                    obj._updateObj = this.updateText;
+                }
+                default:
+                    {
+                        console.log("unsupported child \"", x.componentType, "\"");
+                    }
+                    break;
+            }
+            if (obj !== undefined) {
+                obj.updateObj = this.updateObj;
+                obj.view = x._localStyle;
+                obj.renderId = x.renderId;
+                this._objectPostCreate(x._localStyle, obj);
+            }
+        }
+        if (obj !== undefined) {
+            obj.syn = this;
+        }
+    },
     renderUpdate: function (update) {
         console.log("Synoptique renderUpdate ", update, " action", this.component.get("action"));
         console.log(update);
         var addedChildren = update.getAddedChildren();
         if (addedChildren) {
             for (i = 0; i < addedChildren.length; ++i) {
-                var x = addedChildren[i];
-                if (x.componentType) {
-                    switch (x.componentType) {
-                        case "SynChape":
-                            {
-                                switch (x._localStyle.type) {
-                                    case "RECT":
-                                        {
-                                            var obj = new fabric.Rect();
-                                            this._objectPostCreate(x._localStyle, obj);
-                                        }
-                                        break;
-                                    default:
-                                        {
-                                            console.log("unsupported shape ", x._localStyle.type);
-                                        }
-                                        break;
-                                }
-                            }
-                            break;
-                        default:
-                            {
-                                console.log("unsupported child \"", x.componentType,"\"");
-                            }
-                            break;
-                    }
-                }
-                if (addedChildren[i].parent.renderId === this.component.renderId) {
-                    console.log("Synoptique render add child to ", addedChildren[i].parent.renderId, "=> ", " TREE ", this.scan(addedChildren[i]));
-                    //update.renderAddSyn(this._fabric);
-                }
+                this._renderAddChild(addedChildren[i]);
             }
         }
         var removedChildren = update.getRemovedChildren();

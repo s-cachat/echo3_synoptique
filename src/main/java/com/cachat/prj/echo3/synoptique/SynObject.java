@@ -130,7 +130,8 @@ public class SynObject extends Component {
     }
 
     public Boolean isClickable() {
-        return (Boolean) get(CLICKABLE_PROPERTY);
+        Boolean b = (Boolean) get(CLICKABLE_PROPERTY);
+        return b != null && b;
     }
 
     public void setClickable(Boolean clickable) {
@@ -138,7 +139,8 @@ public class SynObject extends Component {
     }
 
     public Boolean isResizeable() {
-        return (Boolean) get(RESIZEABLE_PROPERTY);
+        Boolean b = (Boolean) get(RESIZEABLE_PROPERTY);
+        return b != null && b;
     }
 
     public void setResizeable(Boolean resizeable) {

@@ -1,5 +1,7 @@
 package com.cachat.prj.echo3.synoptique;
 
+import com.google.gson.Gson;
+
 /**
  * une forme
  *
@@ -11,6 +13,7 @@ public class SynShape extends SynObject {
     public static final String COORD_PROPERTY = "coord";
     public static final String FILL_COLOR_PROPERTY = "fillColor";
     public static final String STROKE_COLOR_PROPERTY = "strokeColor";
+    public static final String STROKE_WIDTH_PROPERTY = "strokeWidth";
 
     public SynShape() {
     }
@@ -33,12 +36,20 @@ public class SynShape extends SynObject {
         return SynShapeType.valueOf((String) get(TYPE_PROPERTY));
     }
 
-    public void setStrokeColor(int fillColor) {
-        set(FILL_COLOR_PROPERTY, fillColor);
+    public void setStrokeColor(int strokeColor) {
+        set(STROKE_COLOR_PROPERTY, strokeColor);
     }
 
     public int getStrokeColor() {
-        return (Integer) get(FILL_COLOR_PROPERTY);
+        return (Integer) get(STROKE_COLOR_PROPERTY);
+    }
+
+    public void setStrokeWidth(int strokeWidth) {
+        set(STROKE_WIDTH_PROPERTY, strokeWidth);
+    }
+
+    public int getStrokeWidth() {
+        return (Integer) get(STROKE_WIDTH_PROPERTY);
     }
 
     public void setFillColor(int fillColor) {
@@ -50,7 +61,8 @@ public class SynShape extends SynObject {
     }
 
     public void setCoord(double coords[]) {
-        set(COORD_PROPERTY, coords);
+        Gson g = new Gson();
+        set(COORD_PROPERTY, g.toJson(new Coord(coords)));
         SynShapeType type = getType();
         if (type != null) {
             switch (type) {
@@ -67,6 +79,26 @@ public class SynShape extends SynObject {
     }
 
     public double[] getCoord() {
-        return (double[]) get(COORD_PROPERTY);
+        Gson g = new Gson();
+        return g.fromJson((String) get(COORD_PROPERTY), Coord.class).getValues();
     }
+
+    public static class Coord {
+
+        private double values[];
+
+        public Coord(double[] values) {
+            this.values = values;
+        }
+
+        public double[] getValues() {
+            return values;
+        }
+
+        public void setValues(double[] values) {
+            this.values = values;
+        }
+
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.cachat.prj.echo3.synoptique;
 
+import java.util.Iterator;
 import nextapp.echo.app.Component;
 import nextapp.echo.app.util.Context;
 
@@ -13,7 +14,7 @@ public class SynShapePeer extends SynObjectPeer {
         addOutputProperty(SynShape.COORD_PROPERTY);
         addOutputProperty(SynShape.FILL_COLOR_PROPERTY);
         addOutputProperty(SynShape.STROKE_COLOR_PROPERTY);
-        addOutputProperty(SynShape.STROKE_COLOR_PROPERTY);
+        addOutputProperty(SynShape.STROKE_WIDTH_PROPERTY);
     }
 
     @Override
@@ -30,6 +31,4 @@ public class SynShapePeer extends SynObjectPeer {
     public void init(Context context, Component component) {
         super.init(context, component);
     }
-    
-    
 }

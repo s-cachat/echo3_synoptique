@@ -1,6 +1,7 @@
 package com.cachat.prj.echo3.synoptique;
 
 import com.cachat.prj.echo3.ng.peers.Extended;
+import java.util.Iterator;
 import nextapp.echo.app.Component;
 import nextapp.echo.app.util.Context;
 import nextapp.echo.webcontainer.AbstractComponentSynchronizePeer;
@@ -42,5 +43,14 @@ public class SynObjectPeer extends AbstractComponentSynchronizePeer {
     @Override
     public void init(Context context, Component component) {
         super.init(context, component);
+    }
+    
+    @Override
+    public Iterator getOutputPropertyNames(Context context, Component component) {
+        StringBuilder sb=new StringBuilder();
+        for (Iterator it=super.getOutputPropertyNames(context, component);it.hasNext();){
+            sb.append(" ").append(it.next());
+        }
+        return super.getOutputPropertyNames(context, component);
     }
 }
