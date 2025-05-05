@@ -108,9 +108,10 @@ public class SynoptiqueWithPopup extends ContainerEx {
 
     /*package protected*/ void closePopup(Popup popupToRemove) {
         if (popupToRemove != null) {
-            remove(popupToRemove);
+            popupC.remove(popupToRemove);
             if (popup == popupToRemove) {
                 popup = null;
+                popupC.setVisible(false);
             }
         }
     }

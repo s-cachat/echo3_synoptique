@@ -331,19 +331,22 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         console.log("render add update", update, ", action", this.component.get("action"));
         console.log("Synoptique renderAdd this is ", this);
         console.log("Synoptique ID ==========================> ", this.component.renderId);
-        if (this._div === null) {
-            this._div = document.createElement("div");
-            this._div.id = this.component.renderId;
-            Echo.Sync.renderComponentDefaults(this.component, this._div);
-            Extended.renderPositionnable(this.component, this._div);
-            parentElement.appendChild(this._div);
+        if (this._div !== null) {
+            var xdiv = document.getElementById(this.component.renderId);
+            if (xdiv) {
+                xdiv.parentElement.removeChild(xdiv);
+            }
         }
-        if (this._canvas === null) {
-            this._canvas = document.createElement("canvas");
-            this._canvas.id = this.component.renderId + "_canvas";
-            this._div.appendChild(this._canvas);
-        }
+        this._div = document.createElement("div");
+        this._div.id = this.component.renderId;
+        Echo.Sync.renderComponentDefaults(this.component, this._div);
+        Extended.renderPositionnable(this.component, this._div);
+        parentElement.appendChild(this._div);
 
+        this._canvas = document.createElement("canvas");
+        this._canvas.id = this.component.renderId + "_canvas";
+        this._div.appendChild(this._canvas);
+        this._fabric=null;
         var componentCount = this.component.getComponentCount();
         this.futureAdd = [];
         for (var i = 0; i < componentCount; i++) {
