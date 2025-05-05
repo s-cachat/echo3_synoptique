@@ -138,6 +138,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 }
             }
         }
+        console.log("selectable ", selectable, this);
         if (selectable !== undefined) {
             this.set('selectable', selectable);
         }
@@ -246,14 +247,6 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         this._fabric._objects.sort(function (a, b) {
             return (b.zIndex < a.zIndex) ? 1 : ((b.zIndex > a.zIndex) ? -1 : 0);
         });
-        console.log(this._fabric._objects);
-        for (const o of this._fabric._objects) {
-            if (o.view) {
-                console.log(">>> ", o.renderId, o.zIndex);
-            } else {
-                console.log(">>> *", o);
-            }
-        }
         this._fabric.renderAll();
     },
     renderDisplay: function () {
@@ -287,7 +280,6 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         }
     },
     _objectPostCreate(action, obj) {
-        console.log("postcreating uid:", action.uid, " action:", action, " obj:", obj, " fabric:", this._fabric);
         this._fabric.add(obj);
         this._content[obj.renderId] = obj;
         this._content2[obj.renderId] = obj;
@@ -305,7 +297,6 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             angle: source.angle,
             uid: source.renderId
         };
-        console.log("modified source", source, " mEvent", mEvent, " event ", event, "component", this.component);
         this.component.fireEvent({
             type: 'objectEdit',
             source: this.component,
@@ -390,8 +381,8 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             },
             fireEvent: function (e) {
                 if (x.obj) {
-                    x.obj.set(e.propertyName, e.newValue);
-                    x.obj.syn._fabric.renderAll();
+                    x.obj.updateProperty(e.propertyName, e.newValue);
+
                 }
             }
         };
@@ -449,7 +440,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                         console.log("create image view ", " url:", url, " action:", x.localStyle);
                         fabric.Image.fromURL(url, {"left": x._localStyle.left, "top": x._localStyle.top, "height": x._localStyle.height, "width": x._localStyle.width})
                                 .then(function (nobj) {
-                                    console.log("image style",x._localStyle);
+                                    console.log("image style", x._localStyle);
                                     nobj.view = {
                                         uid: x._localStyle.viewId,
                                         renderId: _renderId,
@@ -457,15 +448,13 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                                         height: x._localStyle.height,
                                         width: x._localStyle.width
                                     };
-                                    nobj.zIndex = x._localStyle.zindex===undefined?100:x._localStyle.zindex;
+                                    nobj.zIndex = x._localStyle.zindex === undefined ? 100 : x._localStyle.zindex;
 
                                     nobj.scaleToFit = function () {
                                         this.view.scaleX = this.view.width / this._originalElement.width;
                                         this.view.scaleY = this.view.height / this._originalElement.height;
                                         this.set('scaleX', this.view.scaleX);
                                         this.set('scaleY', this.view.scaleY);
-                                        this.set('height', this.view.height);
-                                        this.set('width', this.view.width);
                                         console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
                                     };
                                     nobj.syn = _syn;
@@ -473,8 +462,24 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                                     nobj.view = x._localStyle;
                                     nobj.renderId = x.renderId;
                                     _syn._objectPostCreate(x._localStyle, nobj);
-                                    _syn._fabric.renderAll();
                                     x.obj = nobj;
+                                    x.obj.scaleToFit();
+                                    _syn._fabric.renderAll();
+                                    x.obj.updateProperty = function (k, v) {
+                                        if (k === "viewId") {
+                                            var url = "synView/" + _renderId + "/" + v + "/view.svg";
+                                            x.obj.setSrc(url).then(function (img) {
+                                                x.obj.setCoords();
+                                                x.obj.syn._fabric.renderAll();
+                                            });
+                                            console.log("*update url of ", x.obj.renderId, " to ", url);
+                                        } else {
+                                            console.log("*update property ", k, " of ", x.obj.renderId, " to ", v);
+                                        }
+                                        x.obj.set(k, v);
+                                        x.obj.scaleToFit();
+                                        x.obj.syn._fabric.renderAll();
+                                    };
                                 });
                     }
                     break;
@@ -488,6 +493,11 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 obj.updateObj = this.updateObj;
                 obj.view = x._localStyle;
                 obj.renderId = x.renderId;
+                obj.updateProperty = function (k, v) {
+                    console.log("update property ", k, " of ", obj.renderId, " to ", v);
+                    obj.set(k, v);
+                    obj.syn._fabric.renderAll();
+                };
                 this._objectPostCreate(x._localStyle, obj);
             }
         }

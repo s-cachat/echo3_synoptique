@@ -53,8 +53,16 @@ public class SynoptiqueWithPopup extends ContainerEx {
         synoptique.add(obj);
     }
 
+    /**
+     * ajoute un objet avec un popup. L'objet est automatiquement rendu
+     * clickable.
+     *
+     * @param obj l'objet
+     * @param supplier le fournisseur de popup.
+     */
     public void add(SynObject obj, Supplier<Popup> supplier) {
         synoptique.add(obj);
+        obj.setClickable(true);
         popupSuppliers.put(obj.getId(), supplier);
         obj.addListener(this::addPopup);
     }
@@ -70,8 +78,8 @@ public class SynoptiqueWithPopup extends ContainerEx {
                 c.setSynoptique(this);
                 popup = c;
                 add(c);
-                c.setLeft( source.getLeft().intValue());
-                c.setTop( source.getTop().intValue());
+                c.setLeft(source.getLeft().intValue());
+                c.setTop(source.getTop().intValue());
             }
         }
     }

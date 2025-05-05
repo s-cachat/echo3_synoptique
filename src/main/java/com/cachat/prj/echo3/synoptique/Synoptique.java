@@ -87,15 +87,9 @@ public class Synoptique extends Component implements Positionable, Sizeable {
     public void add(Component obj) {
         if (obj instanceof SynObject synobj) {
             super.add(obj);
-            final String renderId = "C." + synobj.getRenderId();
-            objects.put(renderId, synobj);
-            if (synobj.hasClicListener()) {
-                objectWithClicListener.put(renderId, synobj);
+            if (synobj.getRenderId() != null) {
+                this.register(synobj);
             }
-            if (synobj.hasEditListener()) {
-                objectWithEditListener.put(renderId, synobj);
-            }
-        
             synobj.setSynoptique(this);
             if (obj instanceof SynImage synimage) {
                 SynView view = synimage.getView();
@@ -365,4 +359,18 @@ public class Synoptique extends Component implements Positionable, Sizeable {
         return !objectWithEditListener.isEmpty();
     }
 
+    public void register(SynObject synobj) {
+        if (synobj.getRenderId() != null) {
+            final String renderId = "C." + synobj.getRenderId();
+            if (!objects.containsKey(renderId)) {
+                objects.put(renderId, synobj);
+                if (synobj.hasClicListener()) {
+                    objectWithClicListener.put(renderId, synobj);
+                }
+                if (synobj.hasEditListener()) {
+                    objectWithEditListener.put(renderId, synobj);
+                }
+            }
+        }
+    }
 }

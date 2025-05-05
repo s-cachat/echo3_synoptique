@@ -19,6 +19,9 @@ public class SynObject extends Component {
         setTop(top);
         setWidth(width);
         setHeight(height);
+        setMovable(false);
+        setResizeable(false);
+        setClickable(true);
     }
     /**
      * position x
@@ -64,7 +67,7 @@ public class SynObject extends Component {
      * les listeners pour les clics
      */
     private List<ClicListener> clicListeners;
- 
+
     /**
      * notre synoptique
      */
@@ -243,6 +246,14 @@ public class SynObject extends Component {
         }
     }
 
+    @Override
+    public void init() {
+        super.init();
+        if (synoptique != null) {
+            synoptique.register(this);
+        }
+    }
+
     /**
      * a-t-on des listener pour les edit
      *
@@ -251,4 +262,5 @@ public class SynObject extends Component {
     public boolean hasEditListener() {
         return editListeners != null && !editListeners.isEmpty();
     }
+
 }
