@@ -69,6 +69,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         }
         var hasControl = undefined;
         var selectable = undefined;
+        var clickable = undefined;
         if (action.movable !== undefined) {
             if (action.movable) {
                 this.lockMovementX = false;
@@ -127,6 +128,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                     this.clickHandler = handler;
                     this.on("mouseup", handler);
                     selectable = true;
+                    clickable = true;
                 }
             } else {
                 if (this.clickHandler) {
@@ -135,10 +137,11 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 }
                 if (selectable === undefined) {
                     selectable = false;
+                    clickable = false;
                 }
             }
         }
-        console.log("selectable ", selectable, this);
+        console.log("selectable ", selectable, "clickable", clickable, this);
         if (selectable !== undefined) {
             this.set('selectable', selectable);
         }

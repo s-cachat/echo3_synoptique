@@ -19,9 +19,17 @@ public class SynoptiqueWithPopup extends ContainerEx {
      */
     private ContainerEx popup = null;
     /**
+     * le container a popup
+     */
+    private ContainerEx popupC = null;
+    /**
      * la couche synoptique
      */
     private Synoptique synoptique;
+    /**
+     * le container a synoptique
+     */
+    private ContainerEx synopC = null;
 
     /**
      * les fournisseurs de popup (id vers supplyer)
@@ -45,8 +53,11 @@ public class SynoptiqueWithPopup extends ContainerEx {
      */
     private void initSyn() {
         synoptique = new Synoptique();
-        add(synoptique);
         synoptique.setBounds(0, 0, 0, 0, null, null);
+        add(synopC = new ContainerEx(0, 0, 0, 0, synoptique));
+        popupC = new ContainerEx(0, 0, 0, 0, null, null);
+        add(popupC);
+        popupC.setVisible(false);
     }
 
     public void add(SynObject obj) {
@@ -61,15 +72,17 @@ public class SynoptiqueWithPopup extends ContainerEx {
      * @param supplier le fournisseur de popup.
      */
     public void add(SynObject obj, Supplier<Popup> supplier) {
-        synoptique.add(obj);
+
         obj.setClickable(true);
-        popupSuppliers.put(obj.getId(), supplier);
         obj.addListener(this::addPopup);
+        synoptique.add(obj);
+        popupSuppliers.put(obj.getId(), supplier);
+
     }
 
     private void addPopup(SynObject source, SynClicEvent sce) {
         if (popup != null) {
-            remove(popup);
+            popupC.remove(popup);
         }
         Supplier<Popup> sup = popupSuppliers.get(source.getId());
         if (sup != null) {
@@ -77,7 +90,8 @@ public class SynoptiqueWithPopup extends ContainerEx {
             if (c != null) {
                 c.setSynoptique(this);
                 popup = c;
-                add(c);
+                popupC.add(c);
+                popupC.setVisible(true);
                 c.setLeft(source.getLeft().intValue());
                 c.setTop(source.getTop().intValue());
             }
@@ -86,7 +100,8 @@ public class SynoptiqueWithPopup extends ContainerEx {
 
     public void closePopup() {
         if (popup != null) {
-            remove(popup);
+            popupC.remove(popup);
+            popupC.setVisible(false);
             popup = null;
         }
     }
