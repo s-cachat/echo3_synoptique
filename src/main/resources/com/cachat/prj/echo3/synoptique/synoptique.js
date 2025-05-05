@@ -244,7 +244,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
     },
     _reorderObjects() {
         this._fabric._objects.sort(function (a, b) {
-            return (b.view.zIndex < a.view.zIndex) ? 1 : ((b.view.zIndex > a.view.zIndex) ? -1 : 0);
+            return (b.zIndex < a.zIndex) ? 1 : ((b.zIndex > a.zIndex) ? -1 : 0);
         });
         console.log(this._fabric._objects);
         for (const o of this._fabric._objects) {
@@ -283,6 +283,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             for (var i = 0; i < this.futureAdd.length; i++) {
                 this._renderAddChild(this.futureAdd[i]);
             }
+            this.futureAdd = [];
         }
     },
     _objectPostCreate(action, obj) {
@@ -290,9 +291,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         this._fabric.add(obj);
         this._content[obj.renderId] = obj;
         this._content2[obj.renderId] = obj;
-        this.lastObj = obj
-        console.log("CONTENT    ", this._content);
-        console.log("OBJ    ", obj);
+        this.lastObj = obj;
         obj._updateObj(action);
         this._reorderObjects();
     },
@@ -356,10 +355,10 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         for (var i = 0; i < componentCount; i++) {
             var child = this.component.getComponent(i);
             this.futureAdd[i] = child;
+            child.futureAdd = "futureAdd";
         }
     },
     renderDispose: function (update) {
-        console.log("Synoptique renderDispose " + update);
         this._disposed = true;
     },
     scan: function (item) {
@@ -385,6 +384,17 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         return res;
     },
     _renderAddChild: function (x) {
+        x._listenerList = {
+            hasListeners: function (type) {
+                return "property" === type;
+            },
+            fireEvent: function (e) {
+                if (x.obj) {
+                    x.obj.set(e.propertyName, e.newValue);
+                    x.obj.syn._fabric.renderAll();
+                }
+            }
+        };
         var obj = undefined;
         if (x.componentType) {
             switch (x.componentType) {
@@ -433,36 +443,39 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                 case "SynImage":
                     {
                         console.log("add image", x);
-                        /*
-                         var _renderId = this.component.renderId;
-                         var url = "synView/" + _renderId + "/" + action.view.uid + "/view.svg";
-                         console.log("create image view ", action.view.type, " url:", url, " action:", action, " fabric:", _this._fabric);
-                         fabric.Image.fromURL(url, {"left": action.left, "top": action.top, "height": action.height, "width": action.width})
-                         .then(function (nobj) {
-                         nobj.view = {
-                         uid: action.view.uid,
-                         renderId: _renderId,
-                         file: "view.jpg",
-                         height: action.height,
-                         width: action.width,
-                         zIndex: action.zIndex
-                         };
-                         nobj.scaleToFit = function () {
-                         this.view.scaleX = this.view.width / this._originalElement.width;
-                         this.view.scaleY = this.view.height / this._originalElement.height;
-                         this.set('scaleX', this.view.scaleX);
-                         this.set('scaleY', this.view.scaleY);
-                         this.set('height', this.view.height);
-                         this.set('width', this.view.width);
-                         console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
-                         };
-                         _this._objectPostCreate(action, nobj);
-                         _this._fabric.renderAll();
-                         });
-                         */
+                        var _syn = this;
+                        var _renderId = this.component.renderId;
+                        var url = "synView/" + _renderId + "/" + x._localStyle.viewId + "/view.svg";
+                        console.log("create image view ", " url:", url, " action:", x.localStyle);
+                        fabric.Image.fromURL(url, {"left": x._localStyle.left, "top": x._localStyle.top, "height": x._localStyle.height, "width": x._localStyle.width})
+                                .then(function (nobj) {
+                                    console.log("image style",x._localStyle);
+                                    nobj.view = {
+                                        uid: x._localStyle.viewId,
+                                        renderId: _renderId,
+                                        file: "view.jpg",
+                                        height: x._localStyle.height,
+                                        width: x._localStyle.width
+                                    };
+                                    nobj.zIndex = x._localStyle.zindex===undefined?100:x._localStyle.zindex;
 
-
-
+                                    nobj.scaleToFit = function () {
+                                        this.view.scaleX = this.view.width / this._originalElement.width;
+                                        this.view.scaleY = this.view.height / this._originalElement.height;
+                                        this.set('scaleX', this.view.scaleX);
+                                        this.set('scaleY', this.view.scaleY);
+                                        this.set('height', this.view.height);
+                                        this.set('width', this.view.width);
+                                        console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
+                                    };
+                                    nobj.syn = _syn;
+                                    nobj._updateObj = _syn.updateObj;
+                                    nobj.view = x._localStyle;
+                                    nobj.renderId = x.renderId;
+                                    _syn._objectPostCreate(x._localStyle, nobj);
+                                    _syn._fabric.renderAll();
+                                    x.obj = nobj;
+                                });
                     }
                     break;
                 default:
@@ -480,6 +493,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         }
         if (obj !== undefined) {
             obj.syn = this;
+            x.obj = obj;
         }
     },
     renderUpdate: function (update) {
@@ -521,8 +535,7 @@ SynObject = {};
 SynObject = Core.extend(Echo.Component, {
     $load: function () {
         Echo.ComponentFactory.registerType("SynObject", this);
-    },
-    componentType: "SynObject"
+    }
 });
 
 SynObject.Sync = Core.extend(Echo.Render.ComponentSync, {
@@ -603,8 +616,6 @@ SynText.Sync = Core.extend(SynObject.Sync, {
     },
     renderUpdate: function (update) {
         console.log("SynText " + this._id + " renderUpdate ", update, " => ", this);
-
-
         return true;
     }
 });

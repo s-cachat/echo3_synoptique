@@ -11,7 +11,7 @@ import jakarta.xml.bind.annotation.XmlTransient;
  *
  * @author scachat
  */
-@XmlSeeAlso({SynViewJpg.class, SynViewPng.class, SynViewSvg.class, SynViewBasic.class})
+@XmlSeeAlso({SynViewJpg.class, SynViewPng.class, SynViewSvg.class})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SynView {
 

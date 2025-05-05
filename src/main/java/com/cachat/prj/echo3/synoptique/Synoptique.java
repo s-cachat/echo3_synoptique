@@ -113,7 +113,7 @@ public class Synoptique extends Component implements Positionable, Sizeable {
      * @param view la nouvelle vue
      */
     public void registerNewView(SynObject obj, SynView view) {
-        if (view != null && !(view instanceof SynViewBasic)) {
+        if (view != null) {
             logger.severe("Store view " + view.getClass().getSimpleName() + " " + view.getUid() + " for object " + obj.getId());
             views.put(view.getUid(), view);
         }
