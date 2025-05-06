@@ -1,4 +1,4 @@
-package com.cachat.prj.echo3.synoptique;
+package com.cachat.prj.echo3.synoptique.popup;
 
 import com.cachat.prj.echo3.ng.ContainerEx;
 import nextapp.echo.app.Component;

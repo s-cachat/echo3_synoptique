@@ -1,6 +1,11 @@
-package com.cachat.prj.echo3.synoptique;
+package com.cachat.prj.echo3.synoptique.popup;
 
+import com.cachat.prj.echo3.synoptique.popup.Popup;
 import com.cachat.prj.echo3.ng.ContainerEx;
+import com.cachat.prj.echo3.synoptique.SynClicEvent;
+import com.cachat.prj.echo3.synoptique.SynObject;
+import com.cachat.prj.echo3.synoptique.SynView;
+import com.cachat.prj.echo3.synoptique.Synoptique;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
