@@ -22,7 +22,7 @@ Synoptique.SerialEvent = Core.extend(Echo.Serial.PropertyTranslator, {
             for (const property in propertyValue) {
                 var value = propertyValue[property];
                 if (value) {
-                    console.log("Event  ", property, " => ", value);
+                    //console.log("Event  ", property, " => ", value);
                     propertyElement.setAttribute(property, value);
                 }
             }
@@ -446,7 +446,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                         console.log("create image view ", " url:", url, " action:", x.localStyle);
                         fabric.Image.fromURL(url, {"left": x._localStyle.left, "top": x._localStyle.top, "height": x._localStyle.height, "width": x._localStyle.width})
                                 .then(function (nobj) {
-                                    console.log("image style", x._localStyle);
+                                    //console.log("image style", x._localStyle);
                                     nobj.view = {
                                         uid: x._localStyle.viewId,
                                         renderId: _renderId,
@@ -461,6 +461,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
                                         this.view.scaleY = this.view.height / this._originalElement.height;
                                         this.set('scaleX', this.view.scaleX);
                                         this.set('scaleY', this.view.scaleY);
+                                        this.setCoords();
                                         console.log(" scaling image from", this._originalElement.width, "x", this._originalElement.height, " to ", this.view.width, "x", this.view.height, " : ", this);
                                     };
                                     nobj.syn = _syn;
