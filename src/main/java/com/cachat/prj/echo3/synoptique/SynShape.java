@@ -11,8 +11,8 @@ public class SynShape extends SynObject {
 
     public static final String TYPE_PROPERTY = "type";
     public static final String COORD_PROPERTY = "coord";
-    public static final String FILL_COLOR_PROPERTY = "fillColor";
-    public static final String STROKE_COLOR_PROPERTY = "strokeColor";
+    public static final String FILL_COLOR_PROPERTY = "fill";
+    public static final String STROKE_COLOR_PROPERTY = "stroke";
     public static final String STROKE_WIDTH_PROPERTY = "strokeWidth";
 
     public SynShape() {

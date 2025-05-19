@@ -167,9 +167,9 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             console.log("setCoord for ", this.renderId);
             this.setCoords();
         }
-        if (action.fillColor) {
-            this.set("fill", action.fillColor);
-            console.log("set fill ", action.fillColor);
+        if (action.fill) {
+            this.set("fill", action.fill);
+            console.log("set fill ", action.fill);
         }
         if (action.stroke) {
             this.set("stroke",  action.stroke);
