@@ -18,7 +18,7 @@ public class SynShape extends SynObject {
     public SynShape() {
     }
 
-    public SynShape(SynShapeType type, int fillColor, int strokeColor, double left, double top, double... coords) {
+    public SynShape(SynShapeType type, String fillColor, String strokeColor, double left, double top, double... coords) {
         super();
         setLeft(left);
         setTop(top);
@@ -36,12 +36,12 @@ public class SynShape extends SynObject {
         return SynShapeType.valueOf((String) get(TYPE_PROPERTY));
     }
 
-    public void setStrokeColor(int strokeColor) {
+    public void setStrokeColor(String strokeColor) {
         set(STROKE_COLOR_PROPERTY, strokeColor);
     }
 
-    public int getStrokeColor() {
-        return (Integer) get(STROKE_COLOR_PROPERTY);
+    public String getStrokeColor() {
+        return (String) get(STROKE_COLOR_PROPERTY);
     }
 
     public void setStrokeWidth(int strokeWidth) {
@@ -52,12 +52,12 @@ public class SynShape extends SynObject {
         return (Integer) get(STROKE_WIDTH_PROPERTY);
     }
 
-    public void setFillColor(int fillColor) {
+    public void setFillColor(String fillColor) {
         set(FILL_COLOR_PROPERTY, fillColor);
     }
 
-    public int getFillColor() {
-        return (Integer) get(FILL_COLOR_PROPERTY);
+    public String getFillColor() {
+        return (String) get(FILL_COLOR_PROPERTY);
     }
 
     public void setCoord(double coords[]) {

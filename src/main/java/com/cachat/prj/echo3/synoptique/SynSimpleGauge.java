@@ -108,7 +108,7 @@ public class SynSimpleGauge extends SynGroupe {
         this.format = format;
     }
 
-    public SynSimpleGauge(int left, int top, int width, int height, int border, int color, double value, double min, double max) {
+    public SynSimpleGauge(int left, int top, int width, int height, int border, String color, double value, double min, double max) {
         this.min = min;
         this.max = max;
         this.top = top;
@@ -116,7 +116,7 @@ public class SynSimpleGauge extends SynGroupe {
         this.border = border;
         this.value = value;
         calcHeight();
-        back = new SynShape(SynShapeType.RECT, 0x000000, 0x000000, left, top, width, height);
+        back = new SynShape(SynShapeType.RECT, "0x000000", "0x000000", left, top, width, height);
         gauge = new SynShape(SynShapeType.RECT, color, color, left + border, topGauge, width - border * 2, heightGauge);
 
         text = new SynText(border * 2, top + height / 2, width, height, label, 20);
