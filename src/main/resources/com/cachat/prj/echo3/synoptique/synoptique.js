@@ -168,11 +168,11 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             this.setCoords();
         }
         if (action.fillColor) {
-            this.set("fill", "#" + action.fillColor.toString(16).padStart(6, '0'));
+            this.set("fill", action.fillColor);
             console.log("set fill ", action.fillColor);
         }
         if (action.stroke) {
-            this.set("stroke", "#" + action.stroke.toString(16).padStart(6, '0'));
+            this.set("stroke",  action.stroke);
         }
         if (action.strokeWidth) {
             this.set("strokeWidth", action.strokeWidth);
