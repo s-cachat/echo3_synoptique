@@ -1,6 +1,5 @@
 package com.cachat.prj.echo3.synoptique;
 
-import java.util.Iterator;
 import nextapp.echo.app.Component;
 import nextapp.echo.app.util.Context;
 
@@ -11,6 +10,7 @@ import nextapp.echo.app.util.Context;
 public class SynShapePeer extends SynObjectPeer {
 
     public SynShapePeer() {
+        super();
         addOutputProperty(SynShape.COORD_PROPERTY);
         addOutputProperty(SynShape.FILL_COLOR_PROPERTY);
         addOutputProperty(SynShape.STROKE_COLOR_PROPERTY);

@@ -168,13 +168,14 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
             this.setCoords();
         }
         if (action.fillColor) {
-            this.fill = "#" + action.fillColor.toString(16).padStart(6, '0');
+            this.set("fill", "#" + action.fillColor.toString(16).padStart(6, '0'));
+            console.log("set fill ", action.fillColor);
         }
         if (action.stroke) {
-            this.stroke = "#" + action.stroke.toString(16).padStart(6, '0');
+            this.set("stroke", "#" + action.stroke.toString(16).padStart(6, '0'));
         }
         if (action.strokeWidth) {
-            this.strokeWidth = action.strokeWidth;
+            this.set("strokeWidth", action.strokeWidth);
         }
     },
     /**
@@ -346,7 +347,7 @@ Synoptique.Sync = Core.extend(Echo.Render.ComponentSync, {
         this._canvas = document.createElement("canvas");
         this._canvas.id = this.component.renderId + "_canvas";
         this._div.appendChild(this._canvas);
-        this._fabric=null;
+        this._fabric = null;
         var componentCount = this.component.getComponentCount();
         this.futureAdd = [];
         for (var i = 0; i < componentCount; i++) {
