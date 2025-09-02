@@ -1,6 +1,7 @@
 package com.cachat.prj.echo3.synoptique;
 
 import static com.cachat.prj.echo3.ng.able.Heightable.PROPERTY_HEIGHT;
+import nextapp.echo.app.Position;
 import com.cachat.prj.echo3.ng.able.Positionable;
 import static com.cachat.prj.echo3.ng.able.Positionable.PROPERTY_BOTTOM;
 import static com.cachat.prj.echo3.ng.able.Positionable.PROPERTY_LEFT;
@@ -10,10 +11,9 @@ import static com.cachat.prj.echo3.ng.able.Positionable.PROPERTY_TOP;
 import static com.cachat.prj.echo3.ng.able.Positionable.PROPERTY_Z_INDEX;
 import com.cachat.prj.echo3.ng.able.Sizeable;
 import static com.cachat.prj.echo3.ng.able.Widthable.PROPERTY_WIDTH;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import nextapp.echo.app.Component;
 import nextapp.echo.app.Extent;
@@ -48,20 +48,20 @@ public class Synoptique extends Component implements Positionable, Sizeable {
     /**
      * les objets de ce synoptique
      */
-    private Map<String, SynObject> objects = new HashMap<>();
+    private final Map<String, SynObject> objects = new HashMap<>();
     /**
      * map des uid vers les objets ayant un listener clic
      */
-    private Map<String, SynObject> objectWithClicListener = new HashMap<>();
+    private final Map<String, SynObject> objectWithClicListener = new HashMap<>();
     /**
      * map des uid vers les objets ayant un listener modification
      */
-    private Map<String, SynObject> objectWithEditListener = new HashMap<>();
+    private final Map<String, SynObject> objectWithEditListener = new HashMap<>();
 
     /**
      * les vues utilisées par ce synoptique
      */
-    private Map<String, SynView> views = new HashMap<>();
+    private final Map<String, SynView> views = new HashMap<>();
 
     public Synoptique() {
     }
@@ -93,7 +93,7 @@ public class Synoptique extends Component implements Positionable, Sizeable {
             synobj.setSynoptique(this);
             if (obj instanceof SynImage synimage) {
                 SynView view = synimage.getView();
-                logger.severe("Store view " + view.getClass().getSimpleName() + " " + view.getUid() + " for object " + synobj.getId());
+                logger.log(Level.SEVERE, "Store view {0} {1} for object {2}", new Object[]{view.getClass().getSimpleName(), view.getUid(), synobj.getId()});
                 registerNewView(synimage, synimage.getView());
             }
         }
@@ -108,7 +108,7 @@ public class Synoptique extends Component implements Positionable, Sizeable {
      */
     public void registerNewView(SynObject obj, SynView view) {
         if (view != null) {
-            logger.severe("Store view " + view.getClass().getSimpleName() + " " + view.getUid() + " for object " + obj.getId());
+            logger.log(Level.SEVERE, "Store view {0} {1} for object {2}", new Object[]{view.getClass().getSimpleName(), view.getUid(), obj.getId()});
             views.put(view.getUid(), view);
         }
     }
@@ -197,7 +197,7 @@ public class Synoptique extends Component implements Positionable, Sizeable {
      * @param height extent en pixel, ou null si indéfini
      */
     public void setBounds(Integer left, Integer top, Integer right, Integer bottom, Integer width, Integer height) {
-        setPosition(Positionable.ABSOLUTE);
+        setPosition(Position.ABSOLUTE);
         if (top != null) {
             setTop(new Extent(top));
         }
@@ -229,8 +229,8 @@ public class Synoptique extends Component implements Positionable, Sizeable {
     }
 
     @Override
-    public int getPosition() {
-        return (Integer) get(PROPERTY_POSITION);
+    public Position getPosition() {
+        return (Position) get(PROPERTY_POSITION);
     }
 
     @Override
@@ -250,11 +250,11 @@ public class Synoptique extends Component implements Positionable, Sizeable {
 
     @Override
     public boolean isPositioned() {
-        return getPosition() != Positionable.STATIC;
+        return getPosition() != Position.STATIC;
     }
 
     @Override
-    public void setPosition(int newValue) {
+    public void setPosition(Position newValue) {
         set(PROPERTY_POSITION, newValue);
     }
 
